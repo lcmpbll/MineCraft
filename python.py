@@ -24,14 +24,16 @@ def input(key):
  
 def update():
   global prevX, prevZ, prevTime
-  if abs(subject.z - prevZ) > 1 or abs(subject.x - prevX) > 1: generateShell() 
+  if abs(subject.z - prevZ) > 1 or abs(subject.x - prevX) > 1:
+    generateShell() 
   if time.time() - prevTime > 0.4 :
     generateSubset()
+  #   pass
  
  # terrain  
  #subcubes make up subsets and subsets make up terrain
 terrain = Entity(model=None, collider=None)
-terrainWidth = 10
+terrainWidth = 100
 subWidth = terrainWidth
 subsets = []
 subCubes = []
@@ -58,29 +60,17 @@ def generateSubset():
   for i in range(subWidth): 
     x = subCubes[i].x = floor((i + sci)/terrainWidth)
     z = subCubes[i].z = floor((i + sci)%terrainWidth)
-    subCubes[i].y = floor((noise([x/freq,z/freq]))*amp)
+    y = subCubes[i].y = floor((noise([x/freq,z/freq]))*amp)
     subCubes[i].parent = subsets[currentSubset]
     subCubes[i].color= color.green
     subCubes[i].visible = False
     
-    subsets[currentSubset].combine(auto_destroy = False)
-    subsets[currentSubset].texture = grassStrokeTex
-    sci += subWidth
-    currentSubset += 1 
+  subsets[currentSubset].combine(auto_destroy = False)
+  subsets[currentSubset].texture = grassStrokeTex
+  sci += subWidth
+  currentSubset += 1 
              
-# for i in range(terrainWidth * terrainWidth):
-#   bud = Entity(model='cube', color=color.green,)
-#               #makes rows and columns
-#   bud.x = floor(i/terrainWidth)
-#   bud.z = floor(i%terrainWidth)
-#   bud.y = floor((noise([bud.x/freq,bud.z/freq])) * amp)
-#   bud.parent = terrain
-# terrain.combine()
-# terrain.collider = 'mesh'
-# terrain.texture = grassStrokeTex
-  # collider for all cubes
-  
-  
+
   #below collider for 6 * 6 area
 shellies = []
 shellWidth = 6
