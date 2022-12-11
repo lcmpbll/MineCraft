@@ -26,15 +26,19 @@ def update():
   global prevX, prevZ, prevTime
   if abs(subject.z - prevZ) > 1 or abs(subject.x - prevX) > 1:
     generateShell() 
-  if time.time() - prevTime > 0.4 :
+  if time.time() - prevTime > 0.004 :
     generateSubset()
-  #   pass
- 
+    prevTime = time.time()
+  if subject.y < -amp + 1:  #safety net sets user back at a height of subject height incase of glitching through terrain
+    subject.y = subject.height + floor((noise([subject.x/freq,subject.z/freq]))*amp) 
+    subject.land()
+    
+    
  # terrain  
  #subcubes make up subsets and subsets make up terrain
 terrain = Entity(model=None, collider=None)
 terrainWidth = 100
-subWidth = terrainWidth
+subWidth = int(terrainWidth/10)
 subsets = []
 subCubes = []
 sci = 0 # subcubeindex
@@ -73,7 +77,7 @@ def generateSubset():
 
   #below collider for 6 * 6 area
 shellies = []
-shellWidth = 6
+shellWidth = 3
 for i in range(shellWidth * shellWidth): 
   bud = Entity(model='cube', collider='box')
   bud.visible = False
