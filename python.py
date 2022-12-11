@@ -4,6 +4,7 @@ from numpy import floor
 from numpy import abs
 import time
 from perlin_noise import PerlinNoise
+from nMap import nMap
 
 app = Ursina()
 prevTime = time.time()
@@ -32,20 +33,21 @@ def update():
   if subject.y < -amp + 1:  #safety net sets user back at a height of subject height incase of glitching through terrain
     subject.y = subject.height + floor((noise([subject.x/freq,subject.z/freq]))*amp) 
     subject.land()
-    
+  vincent.look_at(subject, 'forward')
+  #vincent.rotation_x = 0 <- prevents vincent from leaning forward
     
  # terrain  
  #subcubes make up subsets and subsets make up terrain
 terrain = Entity(model=None, collider=None)
-terrainWidth = 100
+terrainWidth = 20
 subWidth = int(terrainWidth/10)
 subsets = []
 subCubes = []
 sci = 0 # subcubeindex
 currentSubset = 0
 # Perlin Noise
-noise = PerlinNoise(octaves=2, seed=2022)
-amp = 32
+noise = PerlinNoise(octaves=4, seed=99)
+amp = 24
 freq = 100
 
 #Instanciate ghost subset cubes
@@ -66,13 +68,32 @@ def generateSubset():
     z = subCubes[i].z = floor((i + sci)%terrainWidth)
     y = subCubes[i].y = floor((noise([x/freq,z/freq]))*amp)
     subCubes[i].parent = subsets[currentSubset]
-    subCubes[i].color= color.green
+    #Set color of subcube
+    r = 0 
+    g = 0 
+    b = 0
+    if y > amp* 0.03: 
+      b = 255
+    if y == 4: 
+      r=g=b=255
+    else:
+      g = nMap(y, 0, amp*.5, 0, 255)
+    subCubes[i].color = color.rgb(r,g,b)
     subCubes[i].visible = False
     
   subsets[currentSubset].combine(auto_destroy = False)
   subsets[currentSubset].texture = grassStrokeTex
   sci += subWidth
   currentSubset += 1 
+  
+  terrainFinished = False 
+  def finishTerrain():
+    if terrainFinished == True : return
+    terrain.texture = grassStrokeTex
+    terrain.combine()
+    terrainFinished = True
+    
+    
              
 
   #below collider for 6 * 6 area
@@ -100,6 +121,12 @@ subject.x = subject.z = 5
 subject.y = 12
 prevZ = subject.Z
 prevX = subject.x
+
+chickenModel = load_model('cube')
+vincent = Entity(model=chickenModel, scale = 3,
+                  x = 22, z = 16, y = 4,
+                  color = (color.red),
+                  double_sided=True)
 
 generateShell()
   
