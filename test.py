@@ -19,11 +19,11 @@ window.fullscreen = False
 scene.fog_color = color.rgb( 0, 222, 0 )
 scene.fog_density = 0.10
 # Texture make lighter on the outside
-grassStrokeTex = load_texture('grass.png')
+grassStrokeTex = load_texture('grass_mono.png')
+wireTex = load_texture('wireframe.png')
 #wireTex = load_texture('wireframe.png)
 #storeText = load_textuure('grass_mono.png)
-bte = Entity(model='cube') 
-              #texture=wireTex)
+bte = Entity(model='cube', texture=wireTex)
 class BTYPE:
   STONE = color.rgb(255, 255, 255)
   GRASS = color.rgb(0, 255, 0) 
