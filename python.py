@@ -29,16 +29,23 @@ class BTYPE:
             
             
 blockType = BTYPE.SOIL
+buildMode = -1 # -1 is off 1 is on
 
-## I think this isn't workin yet because of your texture.
+## I think this isn't workin yet because of texture.
 
 def buildTool(): 
+  if buildMode == -1:
+    bte.visible = False
+    return
+  else: bte.visible = True
+  
   bte.position = round(subject.position + camera.forward * 3)
   bte.y += 2
   bte.y = round(bte.y)
   bte.x = round(bte.x)
   bte.z = round(bte.z)
   bte.color = blockType
+  
  
 def build():
   e = duplicate(bte)
@@ -50,16 +57,18 @@ def build():
   
   
 def input(key):
-  global blockType
+  global blockType, buildMode
   if key == 'q' or key == 'escape':
     quit()
   if key == 'g':
     generateSubset()
-  if key == 'left mouse up':
-    build()
-  elif key == 'right mouse up':  ##else if
-    e = mouse.hovered_entity
-    destroy(e)
+  if buildMode == 1:
+    if key == 'left mouse up': 
+        build()
+    elif key == 'right mouse up':  ##else if
+      e = mouse.hovered_entity
+      destroy(e)
+  if key == 'f': buildMode *= -1
   if key == '1': blockType = BTYPE.SOIL
   if key == '2': blockType = BTYPE.GRASS
   if key == '3': blockType = BTYPE.STONE
