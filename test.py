@@ -1,11 +1,8 @@
 from ursina import *
+# Petter Amland
 from ursina.prefabs.first_person_controller import FirstPersonController
-from numpy import floor
-from numpy import abs
-from numpy import sin
-from numpy import cos
+from numpy import floor, abs, sin, cos, radians
 # from random import randrange
-from numpy import radians
 import time
 from perlin_noise import PerlinNoise
 from nMap import nMap
@@ -16,19 +13,19 @@ prevTime = time.time()
 window.color = color.rgb(0, 200, 211)
 window.exit_button.visible = False
 window.fullscreen = False
-scene.fog_color = color.rgb( 0, 222, 0 )
-scene.fog_density = 0.10
+# scene.fog_color = color.rgb( 0, 222, 0 )
+# scene.fog_density = 0.10
 # Texture make lighter on the outside
-grassStrokeTex = load_texture('grass_mono.png')
-wireTex = load_texture('wireframe.png')
-stoneTex = load_texture('block_texture.png')
-chickenTex = load_texture('chicken.png')
-cubeTex = load_texture('block_texture.png')
-cubeModel = load_model('block.obj')
-wireTex = load_texture('wireframe.png')
-storeText = load_texture('grass_mono.png')
-axoTex= load_texture('axoltl.png')
-axoModel = load_model('axolotl.obj')
+grassStrokeTex = 'grass_mono.png'
+wireTex = 'wireframe.png'
+stoneTex = 'block_texture.png'
+chickenTex = 'chicken.png'
+cubeTex = 'block_texture.png'
+cubeModel = 'block.obj'
+wireTex = 'wireframe.png'
+storeText = 'grass_mono.png'
+axoTex= 'axoltl.png'
+axoModel = 'axolotl.obj'
 
 bte = Entity(model='cube', texture=wireTex)
 class BTYPE:
@@ -91,7 +88,7 @@ def input(key):
   
  
 def update():
-  global prevX, prevZ, prevTime, genSpeed, perCycle, origin, rad, generating, canGenerate, theta
+  global prevX, prevZ, prevTime, genSpeed, perCycle, origin, rad, generating, canGenerate, theta, subject
   if abs(subject.z - prevZ) > 1 or abs(subject.x - prevX) > 1:
     origin = subject.position
     rad = 0
@@ -104,7 +101,9 @@ def update():
     for i in range(perCycle):
       genTerrain()
     prevTime = time.time()
-    
+  # if subject.y < - genPerlin(subject.x, subject.y) - 100:  #safety net sets user back at a height of subject height incase of glitching through terrain
+  #   subject.y = subject.height + genPerlin(subject.x, subject.y) + 2
+  #   subject.land() 
   vincent.look_at(subject, 'forward')
   #vincent.rotation_x = 0 <- prevents vincent from leaning forward
   buildTool()
@@ -122,39 +121,39 @@ subCubes = []
 noise = PerlinNoise(octaves=1, seed=99)
 
 # New Terrain variables
-
 genSpeed = 0
-perCycle = 16
+#generate terrain called 16 times update perloop
+perCycle = 64
 currentCube = 0
-numSubCubes = 16
+numSubCubes = 64
 theta = 0
 rad = 0
 currentSubset = 0
 # how many combine in to a megaset
-numSubsets = 42
+numSubsets = 420
 radLimit = 128
-
 # a dictionary for recording wether terrain exist at location specified in key
 subDic = {}
-
+caveDic = { 'x9z9': 'cave', 'x10z9': 'cave', 'x11z9': 'cave', 'x12z9': 'cave'  }
 
 #Instantiate ghost subset cubes
 for i in range(numSubCubes):
   #switching to cubeModel is not great.
-  bud = Entity(model='cube')
+  bud = Entity(model=cubeModel, texture=cubeTex)
   bud.rotation_y = random.randint(0, 4) * 90
   bud.disable()
   subCubes.append(bud)
    
 # Instantiate empty Subsets
 for i in range(numSubsets):
-  bud = Entity(model=None) 
-  bud.texture = grassStrokeTex
+  bud = Entity(model=cubeModel) 
+  bud.texture = cubeTex
   bud.disable()
   subsets.append(bud)
   
 # making y for positions
 def genPerlin(_x, _z):
+  global caveDic
   y = 0
   freq = 64
   amp = 42
@@ -163,6 +162,8 @@ def genPerlin(_x, _z):
   freq = 32
   amp = 21
   y += ((noise([_x/freq, _z/freq]))*amp)
+  if caveDic.get('x' + str(int(_x)) + 'z' + str(int(_z))) == 'cave':
+    y += -32
   return floor(y)
 
 
@@ -181,9 +182,10 @@ def genTerrain():
     subDic['x'+ str(x) + 'z' + str(z)] = 'i'
     subCubes[currentCube].parent = subsets[currentSubset]
     y = subCubes[currentCube].y = genPerlin(x,z)
-    g = nMap(y, -8, 21, 12, 243)
-    g += random.randint(-12, 12)
-    subCubes[currentCube].color = color.rgb(0, g, 0)
+    #nMap takes the y position and will take a 21? returns a number between 112 243
+    c = nMap(y, -8, 21, 132, 223)
+    c += random.randint(-32, 32)
+    subCubes[currentCube].color = color.rgb(c, c, c)
     subCubes[currentCube].disable()
     currentCube += 1
     
@@ -196,7 +198,7 @@ def genTerrain():
       # Ready to build a megaset? 
       # [-1] last thing in list
       if currentSubset == numSubsets:
-        megasets.append(Entity(texture=cubeTex))
+        megasets.append(Entity(model=cubeModel, texture=cubeTex))
         # parent all subsets to new megaset
         for s in subsets:
           s.parent = megasets[-1]
@@ -220,24 +222,32 @@ def genTerrain():
 
   #below collider for 6 * 6 area
 shellies = []
-shellWidth = 4
+shellWidth = 3
 for i in range(shellWidth * shellWidth): 
   bud = Entity(model='cube', collider='box')
   bud.visible = False
   shellies.append(bud)
 
 def generateShell():
-  global shellWidth, amp, freq
-  for i in range(len(shellies)):
-    x = shellies[i].x = floor((i/shellWidth) + subject.x - 0.5 * shellWidth)
-    z = shellies[i].z = floor((i%shellWidth) + subject.z - 0.5 * shellWidth)
-    shellies[i].y = genPerlin(x,z)
+  # new gravity system for moving the subject
+  global subject
+  target_y = genPerlin(subject.x, subject.z) + 2
+  if target_y - subject.y > 1: #cant step up that far
+    pass
+  else:
+    subject.y = lerp(subject.y, target_y, 9.807 * time.dt)
+  #lerp goes from one number to another in a controlled way, by time.dt multiply to standardize for different performance
+  # global shellWidth
+  # for i in range(len(shellies)):
+  #   x = shellies[i].x = floor((i/shellWidth) + subject.x - 0.5 * shellWidth)
+  #   z = shellies[i].z = floor((i%shellWidth) + subject.z - 0.5 * shellWidth)
+  #   shellies[i].y = genPerlin(x,z)
    
    
  
 subject = FirstPersonController()
 subject.cursor.visible = False
-subject.gravity = .5
+subject.gravity = 0
 # subject.height = 2
 # can set two variables at the same time
 subject.x = subject.z = 5
@@ -254,11 +264,11 @@ vincent = Entity(model=chickenModel, scale = 2,
                   double_sided=True)
                   
 
-baby = Entity(model=axoModel, scale = 2,
-                  texture=axoTex,
-                  x = 13, z = 12, y = 4 ,
-                  # color = (color.red),
-                  double_sided=True)
+# baby = Entity(model=axoModel, scale = 2,
+#                   texture=axoTex,
+#                   x = 13, z = 12, y = 4 ,
+#                   # color = (color.red),
+#                   double_sided=True)
 
 generateShell()
   
