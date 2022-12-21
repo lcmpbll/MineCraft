@@ -6,8 +6,12 @@ from numpy import floor, abs, sin, cos, radians
 import time
 from perlin_noise import PerlinNoise
 from nMap import nMap
+from cave_system import Caves
 
 app = Ursina()
+#will create a cave system object called anush
+anush = Caves()
+
 prevTime = time.time()
  #window
 window.color = color.rgb(0, 200, 211)
@@ -24,10 +28,11 @@ cubeTex = 'block_texture.png'
 cubeModel = 'block.obj'
 wireTex = 'wireframe.png'
 storeText = 'grass_mono.png'
-axoTex= 'axoltl.png'
-axoModel = 'axolotl.obj'
+axoTex= 'b_axolotl.png'
+axoModel = 'b_axolotl.obj'
 
 bte = Entity(model='cube', texture=wireTex)
+build_distance = 3
 class BTYPE:
   STONE = color.rgb(255, 255, 255)
   GRASS = color.rgb(0, 255, 0) 
@@ -45,12 +50,13 @@ generating = 1
 ## I think this isn't workin yet because of texture.
 
 def buildTool(): 
+  global build_distance
   if buildMode == -1:
     bte.visible = False
     return
   else: bte.visible = True
   
-  bte.position = round(subject.position + camera.forward * 3)
+  bte.position = round(subject.position + camera.forward * build_distance)
   bte.y += 2
   bte.y = round(bte.y)
   bte.x = round(bte.x)
@@ -68,7 +74,7 @@ def build():
   
   
 def input(key):
-  global blockType, buildMode, generating, canGenerate
+  global blockType, buildMode, generating, canGenerate, build_distance
   if key == 'q' or key == 'escape':
     quit()
   if key == 'g':
@@ -85,6 +91,10 @@ def input(key):
   if key == '2': blockType = BTYPE.GRASS
   if key == '3': blockType = BTYPE.STONE
   if key == '4': blockType = BTYPE.RUBY
+  if key == 'scroll up':
+    build_distance += 1
+  if key == 'scroll down':
+    build_distance -= 1
   
  
 def update():
@@ -117,24 +127,24 @@ megasets = []
 subsets = []
 subCubes = []
 
-# Perlin Noise
-noise = PerlinNoise(octaves=1, seed=99)
+# # Perlin Noise
+# noise = PerlinNoise(octaves=1, seed=99)
 
-# New Terrain variables
-genSpeed = 0
-#generate terrain called 16 times update perloop
-perCycle = 64
-currentCube = 0
-numSubCubes = 64
-theta = 0
-rad = 0
-currentSubset = 0
-# how many combine in to a megaset
-numSubsets = 420
-radLimit = 128
-# a dictionary for recording wether terrain exist at location specified in key
-subDic = {}
-caveDic = { 'x9z9': 'cave', 'x10z9': 'cave', 'x11z9': 'cave', 'x12z9': 'cave'  }
+# # New Terrain variables
+# genSpeed = 0
+# #generate terrain called 16 times update perloop
+# perCycle = 64
+# currentCube = 0
+# numSubCubes = 64
+# theta = 0
+# rad = 0
+# currentSubset = 0
+# # how many combine in to a megaset
+# numSubsets = 420
+# radLimit = 128
+# # a dictionary for recording wether terrain exist at location specified in key
+# subDic = {}
+
 
 #Instantiate ghost subset cubes
 for i in range(numSubCubes):
@@ -162,8 +172,8 @@ def genPerlin(_x, _z):
   freq = 32
   amp = 21
   y += ((noise([_x/freq, _z/freq]))*amp)
-  if caveDic.get('x' + str(int(_x)) + 'z' + str(int(_z))) == 'cave':
-    y += -32
+  if anush.checkCave(_x, _z) == True:
+    y += -9
   return floor(y)
 
 
@@ -228,15 +238,21 @@ for i in range(shellWidth * shellWidth):
   bud.visible = False
   shellies.append(bud)
 
-def generateShell():
   # new gravity system for moving the subject
-  global subject
+def generateShell():
+  global subject, grav_speed, grav_acc
   target_y = genPerlin(subject.x, subject.z) + 2
-  if target_y - subject.y > 1: #cant step up that far
-    pass
-  else:
-    subject.y = lerp(subject.y, target_y, 9.807 * time.dt)
+  target_dist = target_y - subject.y
+  step_height = 5
+  # Can we step up or down
+  # if target_dist < step_height and target_dist > -step_height: 
+  subject.y = lerp(subject.y, target_y, 9.807 * time.dt)
+  # elif target_dist < -step_height: #falling
+  #   grav_speed += (grav_acc * time.dt)
+  #   subject.y -= grav_speed 
   #lerp goes from one number to another in a controlled way, by time.dt multiply to standardize for different performance
+ 
+ 
   # global shellWidth
   # for i in range(len(shellies)):
   #   x = shellies[i].x = floor((i/shellWidth) + subject.x - 0.5 * shellWidth)
@@ -248,6 +264,8 @@ def generateShell():
 subject = FirstPersonController()
 subject.cursor.visible = False
 subject.gravity = 0
+grav_speed = 0
+grav_acc = 0.9807
 # subject.height = 2
 # can set two variables at the same time
 subject.x = subject.z = 5
@@ -264,11 +282,11 @@ vincent = Entity(model=chickenModel, scale = 2,
                   double_sided=True)
                   
 
-# baby = Entity(model=axoModel, scale = 2,
-#                   texture=axoTex,
-#                   x = 13, z = 12, y = 4 ,
-#                   # color = (color.red),
-#                   double_sided=True)
+baby = Entity(model=axoModel, scale = 2,
+                  texture=axoTex,
+                  x = 13, z = 12, y = 4 ,
+                  color = (color.red),
+                  double_sided=True)
 
 generateShell()
   
