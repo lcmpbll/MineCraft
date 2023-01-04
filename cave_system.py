@@ -1,7 +1,7 @@
 """
 Our cave system used by gen perlin function
 """
-from perlin_noise import PerlinNoise
+
 
 class Caves: 
   #a function created when ever we use this module
