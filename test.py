@@ -19,7 +19,7 @@ window.exit_button.visible = False
 window.fullscreen = False
 # scene.fog_color = color.rgb( 0, 222, 0 )
 # scene.fog_density = 0.10
-# Texture make lighter on the outside
+
 grassStrokeTex = 'grass_mono.png'
 wireTex = 'wireframe.png'
 stoneTex = 'block_texture.png'
@@ -30,6 +30,9 @@ wireTex = 'wireframe.png'
 storeText = 'grass_mono.png'
 axoTex= 'b_axolotl.png'
 axoModel = 'b_axolotl.obj'
+axeModel = 'Diamond-Pickaxe.obj'
+axeTex = 'Diamond_axe_tex.png'
+
 
 bte = Entity(model='cube', texture=wireTex)
 build_distance = 3
@@ -127,26 +130,27 @@ megasets = []
 subsets = []
 subCubes = []
 
-# # Perlin Noise
-# noise = PerlinNoise(octaves=1, seed=99)
+# Perlin Noise
+noise = PerlinNoise(octaves=1, seed=99)
 
-# # New Terrain variables
-# genSpeed = 0
-# #generate terrain called 16 times update perloop
-# perCycle = 64
-# currentCube = 0
-# numSubCubes = 64
-# theta = 0
-# rad = 0
-# currentSubset = 0
-# # how many combine in to a megaset
-# numSubsets = 420
-# radLimit = 128
-# # a dictionary for recording wether terrain exist at location specified in key
-# subDic = {}
+# New Terrain variables
+genSpeed = 0
+#generate terrain called 16 times update perloop
+perCycle = 64
+currentCube = 0
+numSubCubes = 64
+theta = 0
+rad = 0
+currentSubset = 0
+# how many combine in to a megaset
+numSubsets = 420
+radLimit = 128
+# a dictionary for recording wether terrain exist at location specified in key
+subDic = {}
 
 
 #Instantiate ghost subset cubes
+# in terrain_system
 for i in range(numSubCubes):
   #switching to cubeModel is not great.
   bud = Entity(model=cubeModel, texture=cubeTex)
@@ -154,7 +158,7 @@ for i in range(numSubCubes):
   bud.disable()
   subCubes.append(bud)
    
-# Instantiate empty Subsets
+# # Instantiate empty Subsets
 for i in range(numSubsets):
   bud = Entity(model=cubeModel) 
   bud.texture = cubeTex
@@ -218,7 +222,7 @@ def genTerrain():
         
   else:
     pass   
-  #there was terrain already there so continue rotaation to find new terrain spot
+  #there was terrain already there so continue rotation to find new terrain spot
   if rad > 0:
     theta += 45/rad
   else: 
@@ -273,6 +277,15 @@ subject.y = 32
 prevZ = subject.Z
 prevX = subject.x
 origin = subject.position #Vec 3 objet, .x, .y, .z
+# Our axe
+axe = Entity(model=axeModel, scale=0.05, texture=axeTex, position=subject.position, always_on_top=True)
+axe.x -= 3
+axe.z -= 2.2
+axe.y -= subject.y
+axe.rotation_y = 90
+axe.rotation_x = 90
+
+axe.parent = camera
 
 chickenModel = load_model('chicken.obj')
 vincent = Entity(model=chickenModel, scale = 2,
