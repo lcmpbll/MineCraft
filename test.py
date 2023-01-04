@@ -7,10 +7,12 @@ import time
 from perlin_noise import PerlinNoise
 from nMap import nMap
 from cave_system import Caves
+from tree_roots import Trees
 
 app = Ursina()
 #will create a cave system object called anush
 anush = Caves()
+solar = Trees()
 
 prevTime = time.time()
  #window
@@ -166,7 +168,7 @@ for i in range(numSubsets):
   subsets.append(bud)
   
 # making y for positions
-def genPerlin(_x, _z):
+def genPerlin(_x, _z, plantTree=False):
   global caveDic
   y = 0
   freq = 64
@@ -178,6 +180,8 @@ def genPerlin(_x, _z):
   y += ((noise([_x/freq, _z/freq]))*amp)
   if anush.checkCave(_x, _z) == True:
     y += -9
+  elif plantTree == True : solar.checkTree(_x, floor(y), _z)
+  
   return floor(y)
 
 
@@ -195,7 +199,7 @@ def genTerrain():
     subCubes[currentCube].z = z
     subDic['x'+ str(x) + 'z' + str(z)] = 'i'
     subCubes[currentCube].parent = subsets[currentSubset]
-    y = subCubes[currentCube].y = genPerlin(x,z)
+    y = subCubes[currentCube].y = genPerlin(x,z,True)
     #nMap takes the y position and will take a 21? returns a number between 112 243
     c = nMap(y, -8, 21, 132, 223)
     c += random.randint(-32, 32)
