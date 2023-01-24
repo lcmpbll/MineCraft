@@ -9,9 +9,16 @@ class Caves:
     this.caveDic = {}
     this.buildCaves()
   def buildCaves(this):
-    this.caveDic = { 'x9z9': 'cave', 'x10z9': 'cave', 'x11z9': 'cave', 'x12z9': 'cave'  }
+    this.caveDic = { 'x9z9': -9, 'x10z9': -9, 'x11z9': -9, 'x12z9': -9  }
   def checkCave(this, _x, _z):
-    if this.caveDic.get('x' + str(int(_x)) + 'z' + str(int(_z))) == 'cave':
-      return True
-    else: 
-      return False
+    tempStr = this.caveDic.get('x' + str(int(_x)) + 'z' + str(int(_z)))
+    return tempStr
+  def makeCave(this, _x, _z, _height):
+    tempStr = this.caveDic.get('x' + str(int(_x)) + 'z' + str(int(_z)))
+    this.caveDic[tempStr] = _height
+  # def makeHill(this, _x, _z, _height):
+  #   if(checkCave(_x, _z) != None)
+  #   this.caveDic.update('x' + str(int(_x)) + 'z' + str(int(_z)) : += 1)
+  
+  
+    
