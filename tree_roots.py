@@ -8,11 +8,8 @@ from ursina import Entity, Vec3, color
 class Trees:
   def __init__(this):
     this.noise = PerlinNoise(seed=4)
-    # this.treeDic = {}
-    # this.plantTrees()
-    # this.checkY
   def checkTree(this, _x, _y, _z):
-    freq = 2
+    freq = 1.5
     amp = 100
     treeChance = ((this.noise([_x/freq, _z/freq]))*amp)
     if treeChance > 30:
