@@ -13,13 +13,9 @@ from mining_system import Mining_system
 app = Ursina()
 
 ## Textures 
-grassStrokeTex = 'grass_mono.png'
-wireTex = 'wireframe.png'
-stoneTex = 'block_texture.png'
 chickenTex = 'chicken.png'
 cubeTex = 'block_texture.png'
 cubeModel = 'block.obj'
-storeText = 'grass_mono.png'
 axoTex= 'b_axolotl.png'
 axoModel = 'b_axolotl.obj'
 axeModel = 'Diamond-Pickaxe.obj'
