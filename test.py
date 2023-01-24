@@ -36,7 +36,8 @@ axeModel = 'Diamond-Pickaxe.obj'
 axeTex = 'Diamond_axe_tex.png'
 
 
-bte = Entity(model='cube', texture=wireTex)
+bte = Entity(model='cube', texture=wireTex, scale=1.01)
+
 build_distance = 3
 class BTYPE:
   STONE = color.rgb(255, 255, 255)
@@ -70,14 +71,43 @@ def buildTool():
   
  
 def build():
-  e = duplicate(bte)
-  e.collider = 'cube'
+  # e = duplicate(bte)
+  e = Entity(model='cube', position=bte.position)
+  e.collider = 'box'
   e.texture = grassStrokeTex
   e.color = blockType
   e.shake(duration=0.5, speed=0.01)
   #stone text
   
-  
+def mine():
+  e = mouse.hovered_entity
+  destroy(e)
+  # iterate over all the subsets
+  # s is an integer from 0 to subset length -1
+  # v is the corners of each of the cubes in each of the cubes of the subsets
+  # is the vertex close enought to where we want to mine? bte position
+  for s in range(len(subsets)):
+    vChange = False
+    totalY = 0
+    for v in subsets[s].model.vertices:
+      if(v[0] >= bte.x - 0.5 and 
+        v[0] <= bte.x + 0.5 and
+        v[1] >= bte.y - 0.5 and
+        v[1] <= bte.y + 0.5 and
+        v[2] >= bte.z - 0.5 and
+        v[2] <= bte.z + 0.5 ):
+        v[1] -= 1
+        vCount += 1
+        #Note that we have made change gather average height for cave ditionary
+        totalY += v[1]
+        vChange = True
+        print('Hi mom Im mining!')
+    subsets[s].model.generate()
+    #Record change of height in cave dictionary
+    if vChange == True:
+      totalY = floor(totalY/8)
+      anush.makeCave(bte.x, bte.z, bte.y-1)
+        
 def input(key):
   global blockType, buildMode, generating, canGenerate, build_distance
   if key == 'q' or key == 'escape':
@@ -87,10 +117,9 @@ def input(key):
     canGenerate *= -1
   if buildMode == 1:
     if key == 'left mouse up': 
-        build()
+      build()
     elif key == 'right mouse up':  ##else if
-      e = mouse.hovered_entity
-      destroy(e)
+      mine()
   if key == 'f': buildMode *= -1
   if key == '1': blockType = BTYPE.SOIL
   if key == '2': blockType = BTYPE.GRASS
@@ -120,7 +149,7 @@ def update():
   #   subject.y = subject.height + genPerlin(subject.x, subject.y) + 2
   #   subject.land() 
   vincent.look_at(subject, 'forward')
-  #vincent.rotation_x = 0 <- prevents vincent from leaning forward
+  vincent.rotation_x = 0 #<- prevents vincent from leaning forward
   buildTool()
     
  # terrain  
@@ -156,6 +185,7 @@ subDic = {}
 for i in range(numSubCubes):
   #switching to cubeModel is not great.
   bud = Entity(model=cubeModel, texture=cubeTex)
+  bud.scale *= 0.99999
   bud.rotation_y = random.randint(0, 4) * 90
   bud.disable()
   subCubes.append(bud)
@@ -169,7 +199,6 @@ for i in range(numSubsets):
   
 # making y for positions
 def genPerlin(_x, _z, plantTree=False):
-  global caveDic
   y = 0
   freq = 64
   amp = 42
@@ -178,8 +207,9 @@ def genPerlin(_x, _z, plantTree=False):
   freq = 32
   amp = 21
   y += ((noise([_x/freq, _z/freq]))*amp)
-  if anush.checkCave(_x, _z) == True:
-    y += -9
+  whatCaveHeight = anush.checkCave(_x, _z)
+  if whatCaveHeight != None:
+    y = anush.checkCave(_x, _z)
   elif plantTree == True : solar.checkTree(_x, floor(y), _z)
   
   return floor(y)
