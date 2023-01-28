@@ -123,7 +123,7 @@ def update():
   #   subject.y = subject.height + genPerlin(subject.x, subject.y) + 2
   #   subject.land() 
   vincent.look_at(subject, 'forward')
-  vincent.rotation_z = 0 #<- prevents vincent from leaning forward
+  vincent.rotation_y = 0 #<- prevents vincent from leaning forward
   #controls mining and building functions
   varch.buildTool()
 
@@ -155,9 +155,10 @@ def genTerrain():
     subCubes[currentCube].enable()
     subCubes[currentCube].x = x
     subCubes[currentCube].z = z
-    subDic['x'+ str(x) + 'z' + str(z)] = 'i'
     subCubes[currentCube].parent = subsets[currentSubset]
     y = subCubes[currentCube].y = genPerlin(x,z,True)
+    subDic['x'+ str(x) + 'z' + str(z)] = 'i'
+    varch.tDic['x'+str(x)+ 'y'+str(y)+ 'z'+str(z)] = y
     #nMap takes the y position and will take a 21? returns a number between 112 243
     c = nMap(y, -8, 21, 132, 223)
     c += random.randint(-32, 32)
