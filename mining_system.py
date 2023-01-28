@@ -53,6 +53,53 @@ class Mining_system:
         this.build_distance -= 1
     elif key == 'f': this.buildMode *= -1
     
+  def mineSpawn(this):
+    if this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y - 1)+ 'z'+str(this.bte.z)) == None:
+      # record terrain change in dictionary
+      this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'gap'
+      
+      #then we need to spawn a new cube in position where gaps are.
+      e = Entity(model= this.cubeModel, texture = this.buildTex)
+      #Makes cubes slightly smaller to allow for accurate verticies collection. 
+      e.scale *= 0.99999
+      # change color to soil
+      e.color = this.blockTypes[2]
+      #position under mine area
+      e.position = this.bte.position
+      e.y -= 1
+      # parent spawned cube into builds entity.
+      e.parent = this.builds
+      #Record newly spawned block in dictionary
+      this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = e.y
+      # Check for cave wall cubes, in areas that are not filled with terrain, no gaps, finally no terrain below position
+      x = this.bte.x
+      y = this.bte.Y
+      z = this.bte.z
+      pos1 = (x + 1, y, z)
+      pos2 = (x -1, y, z)
+      pos3 = (x, y, z + 1)
+      pos4 = (x, y , z - 1)
+      spawnPos = []
+      spawnPos.append(pos1)
+      spawnPos.append(pos2)
+      spawnPos.append(pos3)
+      spawnPos.append(pos4)
+      for i in range(4):
+        x = spawnPos[i][0]
+        z = spawnPos[i][2]
+        y = spawnPos[i][1]
+        if this.tDic.get('x'+str(x)+ 'y'+str(y)+ 'z'+str(z)) == None and \
+        this.tDic.get('x'+str(x)+ 'y'+str(y - 1)+ 'z'+str(z)) == None:
+          e.position = spawnPos[i]
+          e.parent = this.builds
+          #Record newly spawned block in dictionary
+          this.tDic ['x'+str(x)+ 'y'+str(y)+ 'z'+str(z)] = e.y
+              #After swapnnning , update subset model and finish
+              # also combine newly spawned blocks into builds entity
+          this.builds.combine()
+          
+              
+    
   # Place a block at the bte posion 
   def build(this):
     if this.buildMode == -1:
@@ -101,54 +148,13 @@ class Mining_system:
           vChange = True
           totalV += 1
       if vChange == True:
-        if this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y - 1)+ 'z'+str(this.bte.z)) == None:
-          # record terrain change in dictionary
-          this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'gap'
-          
-          #then we need to spawn a new cube in position where gaps are.
-          e = Entity(model= this.cubeModel, texture = this.buildTex)
-          #Makes cubes slightly smaller to allow for accurate verticies collection. 
-          e.scale *= 0.99999
-          # change color to soil
-          e.color = this.blockTypes[2]
-          #position under mine area
-          e.position = this.bte.position
-          e.y -= 1
-          # parent spawned cube into builds entity.
-          e.parent = this.builds
-          #Record newly spawned block in dictionary
-          this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = e.y
-          # Check for cave wall cubes, in areas that are not filled with terrain, no gaps, finally no terrain below position
-          x = this.bte.x
-          y = this.bte.Y
-          z = this.bte.z
-          pos1 = (x + 1, y, z)
-          pos2 = (x -1, y, z)
-          pos3 = (x, y, z + 1)
-          pos4 = (x, y , z - 1)
-          spawnPos = []
-          spawnPos.append(pos1)
-          spawnPos.append(pos2)
-          spawnPos.append(pos3)
-          spawnPos.append(pos4)
-          for i in range(4):
-            x = spawnPos[i][0]
-            z = spawnPos[i][2]
-            y = spawnPos[i][1]
-            if this.tDic.get('x'+str(x)+ 'y'+str(y)+ 'z'+str(z)) == None and \
-            this.tDic.get('x'+str(x)+ 'y'+str(y - 1)+ 'z'+str(z)) == None:
-              e.position = spawnPos[i]
-              e.parent = this.builds
-              #Record newly spawned block in dictionary
-              this.tDic ['x'+str(x)+ 'y'+str(y)+ 'z'+str(z)] = e.y
-            
-        #After swapnnning , update subset model and finish
-        # also combine newly spawned blocks into builds entity
-        this.builds.combine()
+        this.mineSpawn()
         this.subsets[s].model.generate()
-        if totalV == 36: break
-        return 
-          #anush.makeCave(bte.x, bte.z, bte.y-1)
+      if totalV == 36: break
+      return
+            
+      
+
     
   
     
