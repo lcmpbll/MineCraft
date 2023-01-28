@@ -8,9 +8,15 @@ class Mining_system:
     this.grassStrokeTex = 'grass_mono.png'
     this.wireTex = 'wireframe.png'
     this.stoneTex = 'grass_mono.png'
+    this.cubeModel = 'moonCube.obj'
+    this.buildTex = 'build_texture.png'
     # store a reference of these here so we can use them in buildTool(), and elsewhere
     this.subject = _subject
     this.camera = _camera
+    # Dictionary for recording position of terrain gaps
+    this.tDic = {}
+    # Entity for new builds
+    this.builds = Entity(model=this.cubeModel, texture=this.buildTex)
     # subsets stored to reference in mining
     this.subsets = _subsets
     # Build tool entity --floating wire frame cube
@@ -81,6 +87,7 @@ class Mining_system:
     # is the vertex close enought to where we want to mine? bte position
     for s in range(len(this.subsets)):
       vChange = False
+      totalV = 0
       for v in this.subsets[s].model.vertices:
         if(v[0] >= this.bte.x - 0.5 and 
           v[0] <= this.bte.x + 0.5 and
@@ -88,14 +95,60 @@ class Mining_system:
           v[1] <= this.bte.y + 0.5 and
           v[2] >= this.bte.z - 0.5 and
           v[2] <= this.bte.z + 0.5 ):
-          #v[1] -= 1
+          #Throw it up super high! To give illusion of mining. 
           v[1] = 9999
-          #Note that we have made change gather average height for cave ditionary
+          
           vChange = True
+          totalV += 1
       if vChange == True:
+        if this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y - 1)+ 'z'+str(this.bte.z)) == None:
+          # record terrain change in dictionary
+          this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'gap'
+          
+          #then we need to spawn a new cube in position where gaps are.
+          e = Entity(model= this.cubeModel, texture = this.buildTex)
+          #Makes cubes slightly smaller to allow for accurate verticies collection. 
+          e.scale *= 0.99999
+          # change color to soil
+          e.color = this.blockTypes[2]
+          #position under mine area
+          e.position = this.bte.position
+          e.y -= 1
+          # parent spawned cube into builds entity.
+          e.parent = this.builds
+          #Record newly spawned block in dictionary
+          this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = e.y
+          # Check for cave wall cubes, in areas that are not filled with terrain, no gaps, finally no terrain below position
+          x = this.bte.x
+          y = this.bte.Y
+          z = this.bte.z
+          pos1 = (x + 1, y, z)
+          pos2 = (x -1, y, z)
+          pos3 = (x, y, z + 1)
+          pos4 = (x, y , z - 1)
+          spawnPos = []
+          spawnPos.append(pos1)
+          spawnPos.append(pos2)
+          spawnPos.append(pos3)
+          spawnPos.append(pos4)
+          for i in range(4):
+            x = spawnPos[i][0]
+            z = spawnPos[i][2]
+            y = spawnPos[i][1]
+            if this.tDic.get('x'+str(x)+ 'y'+str(y)+ 'z'+str(z)) == None and \
+            this.tDic.get('x'+str(x)+ 'y'+str(y - 1)+ 'z'+str(z)) == None:
+              e.position = spawnPos[i]
+              e.parent = this.builds
+              #Record newly spawned block in dictionary
+              this.tDic ['x'+str(x)+ 'y'+str(y)+ 'z'+str(z)] = e.y
+            
+        #After swapnnning , update subset model and finish
+        # also combine newly spawned blocks into builds entity
+        this.builds.combine()
         this.subsets[s].model.generate()
+        if totalV == 36: break
         return 
-        #anush.makeCave(bte.x, bte.z, bte.y-1)
+          #anush.makeCave(bte.x, bte.z, bte.y-1)
     
   
     
