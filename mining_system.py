@@ -1,5 +1,5 @@
 from ursina import Entity, color
-from numpy import floor
+# from numpy import floor
 # from cave_system import makeCave
 
 class Mining_system: 
@@ -70,7 +70,7 @@ class Mining_system:
       # parent spawned cube into builds entity.
       e.parent = this.builds
       #Record newly spawned block in dictionary
-      this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = e.y
+      this.tDic ['x'+str(this.bte.x)+ 'y'+str(e.y)+ 'z'+str(this.bte.z)] = e.y
       # Check for cave wall cubes, in areas that are not filled with terrain, no gaps, finally no terrain below position
       x = this.bte.x
       y = this.bte.Y
@@ -104,11 +104,19 @@ class Mining_system:
   def build(this):
     if this.buildMode == -1:
       return
-    e = Entity(model='cube', position= this.bte.position)
-    e.collider = 'box'
-    e.texture = this.grassStrokeTex
+    e = Entity(model= this.cubeModel, position= this.bte.position)
+    #e.collider = 'box'
+    e.texture = this.buildTex
+    e.scale *= 0.99999
+    # e.color = 4
+    # e.texture = this.grassStrokeTex
     e.color = this.blockTypes[this.blockType]
-    e.shake(duration=0.5, speed=0.01)
+    e.parent = this.builds
+    # record new block in dictionary
+    this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'b'
+    this.builds.combine()
+    # shaking wont work because we are destroying temp block in combining.
+    # e.shake(duration=0.5, speed=0.01)
   
   # This is called from the main update loop
   def buildTool(this): 
@@ -135,7 +143,7 @@ class Mining_system:
     for s in range(len(this.subsets)):
       vChange = False
       totalV = 0
-      for v in this.subsets[s].model.vertices:
+      for v in this.subsets[s].model.verticies:
         if(v[0] >= this.bte.x - 0.5 and 
           v[0] <= this.bte.x + 0.5 and
           v[1] >= this.bte.y - 0.5 and
@@ -148,8 +156,23 @@ class Mining_system:
           vChange = True
           totalV += 1
       if vChange == True:
-        this.mineSpawn()
+        buildBlock = True
+        if this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)) != 'b':
+          # record new gap in dictionary should this be only if it isn't b? also should we delete the b from the tdic?
+          this.tDic['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'gap'
+          buildBlock = False
+          this.mineSpawn()
+          #update subsets model
+        else:
+          #might prevent gravity from doing it's thing
+          this.tDic['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'nb'
         this.subsets[s].model.generate()
+        if buildBlock == False: 
+          this.builds.combine()
+          
+          # this.buids.combine()?
+          # mystery of 36 verticies
+          # print('tv=' + str(totalV))
       if totalV == 36: break
       return
             
