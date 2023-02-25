@@ -2,7 +2,7 @@ from ursina import *
 # Petter Amland
 from ursina.prefabs.first_person_controller import FirstPersonController
 from numpy import floor, abs, sin, cos, radians
-# from random import randrange
+from random import randrange
 import time
 from perlin_noise import PerlinNoise
 from nMap import nMap
@@ -31,7 +31,14 @@ megasets = []
 subsets = []
 subCubes = []
 # Perlin Noise
-noise = PerlinNoise(octaves=1, seed=99)
+noise = PerlinNoise(octaves=1, seed=int(randrange(1,99)))
+seedMouth = Text( text='Your seed is ' + str(noise.seed), background=True)
+seedMouth.background.color=color.rgba(0, 20, 100, 222)
+seedMouth.scale *= 0.09
+# seedMouth.x = -1
+# seedMouth.y = 0.5
+seedMouth.appear(speed = .15)
+
 # New Terrain variables
 genSpeed = 0
 #generate terrain called 16 times update perloop
@@ -93,13 +100,16 @@ window.fullscreen = False
 # scene.fog_density = 0.10
       
 def input(key):
-  global blockType, buildMode, generating, canGenerate, build_distance
+  global blockType, buildMode, generating, canGenerate, build_distance, seedMouth
 
   if key == 'q' or key == 'escape':
     quit()
   if key == 'g':
     generating *= -1
     canGenerate *= -1
+  if key == 'c':
+    pass
+    #seedMouth.destroy()
   else: 
     varch.input(key)
 
@@ -175,13 +185,19 @@ def genTerrain():
       # Ready to build a megaset? 
       # [-1] last thing in list
       if currentSubset == numSubsets:
-        megasets.append(Entity(model=cubeModel, texture=cubeTex))
-        # parent all subsets to new megaset
-        for s in subsets:
-          s.parent = megasets[-1]
-        megasets[-1].combine(auto_destroy = False)
         currentSubset = 0
-        print("megaset # " + str(len(megasets)))
+        print('Hey that is a lot of cubes')
+        print("*** check the megasets ***")
+      # commented out until mining system works with megasets
+      #   megasets.append(Entity(model=cubeModel, texture=cubeTex))
+      #   # parent all subsets to new megaset
+      #   for s in subsets:
+      #     s.parent = megasets[-1]
+      #   megasets[-1].combine(auto_destroy = False)
+      #   for s in subsets:
+      #     s.parent=scene
+      #   currentSubset = 0
+      #   print("megaset # " + str(len(megasets)))
         
   else:
     pass   
@@ -194,28 +210,37 @@ def genTerrain():
     theta = 0
     rad += .5
 
-  #below collider for 6 * 6 area, do not need when just setting position equal to y
-# shellies = []
-# shellWidth = 3
-# for i in range(shellWidth * shellWidth): 
-#   bud = Entity(model='cube', collider='box')
-#   bud.visible = False
-#   shellies.append(bud)
-
   # new gravity system for moving the subject
 def generateShell():
+  # new system
   global subject, grav_speed, grav_acc
+  step_height = 3
+  gravityOn = True
+  for i in range(step_height, -step_height, -1):
+    terra = varch.tDic.get('x' + str(floor(subject.x)) + 'y' + str(floor(subject.y+i)) + 'z' + str(floor(subject.z)))
+    if terra != None and terra != 'gap':
+      target_y = floor(subject.y + i) +2
+      gravityOn = False
+      break
+    
+  if gravityOn == True:
+     grav_speed += (grav_acc * time.dt)
+     subject.y -= grav_speed
+  else:
+    subject.y = lerp(subject.y, target_y, 9.807 * time.dt)
+    grav_speed = 0
+  """
+  old new system
   target_y = genPerlin(subject.x, subject.z) + 2
   target_dist = target_y - subject.y
-  step_height = 5
   # Can we step up or down
   # if target_dist < step_height and target_dist > -step_height: 
   subject.y = lerp(subject.y, target_y, 9.807 * time.dt)
   # elif target_dist < -step_height: #falling
-  #   grav_speed += (grav_acc * time.dt)
-  #   subject.y -= grav_speed 
+    # grav_speed += (grav_acc * time.dt)
+    # subject.y -= grav_speed 
   #lerp goes from one number to another in a controlled way, by time.dt multiply to standardize for different performance
- 
+  """
  
   # global shellWidth
   # for i in range(len(shellies)):
