@@ -1,10 +1,10 @@
-from ursina import Entity, color
+from ursina import Entity, color, Vec3
 # from numpy import floor
 # from cave_system import makeCave
 
 class Mining_system: 
 
-  def __init__(this, _subject, _camera, _subsets):
+  def __init__(this, _subject, _axe, _camera, _subsets ):
     this.grassStrokeTex = 'grass_mono.png'
     this.wireTex = 'wireframe.png'
     this.stoneTex = 'grass_mono.png'
@@ -12,6 +12,7 @@ class Mining_system:
     this.buildTex = 'build_texture.png'
     # store a reference of these here so we can use them in buildTool(), and elsewhere
     this.subject = _subject
+    this.axe = _axe
     this.camera = _camera
     # Dictionary for recording position of terrain gaps
     this.tDic = {}
@@ -39,8 +40,16 @@ class Mining_system:
     if this.buildMode == 1:
       if key == 'left mouse up': 
         this.build()
+        this.axe.shake(duration=1.3, magnitude=4, speed = 1, direction = (-5,.4))
+        
+        # this.axe.position = Vec3(0.3, -0.5, 2.8)
       elif key == 'right mouse up':  ##else if
         this.mine()
+        this.axe.animate_position(value=Vec3(0.3, -0.5, 2.8), duration = 0.1)
+        # this.axe.position = Vec3(0.3, -0.5, 2.8)
+      # else: 
+      #   #default axe position if not mining or building
+      #   this.axe.position = Vec3(2, 0, 2.8)
       if key == 'f': this.buildMode *= -1
       if key == '1': this.blockType = 0
       if key == '2': this.blockType = 1
