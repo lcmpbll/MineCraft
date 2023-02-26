@@ -68,6 +68,14 @@ prevZ = subject.Z
 prevX = subject.x
 origin = subject.position #Vec 3 objet, .x, .y, .z
 
+# Our axe
+axe = Entity(model=axeModel, scale=0.05, texture=axeTex, position=subject.position, always_on_top=True)
+axe.x -= 3
+axe.z -= 2.2
+axe.y -= subject.y
+axe.rotation_y = 90
+axe.rotation_x = 90
+axe.parent = camera
 
 
 # in terrain_system
@@ -89,7 +97,7 @@ for i in range(numSubsets):
 #will create a cave system object called anush
 anush = Caves()
 solar = Trees()
-varch = Mining_system(subject, camera, subsets)
+varch = Mining_system(subject, axe, camera, subsets)
 # bte = BuildToolEntity()
 prevTime = time.time()
  #window
@@ -248,15 +256,7 @@ def generateShell():
   #   z = shellies[i].z = floor((i%shellWidth) + subject.z - 0.5 * shellWidth)
   #   shellies[i].y = genPerlin(x,z)
    
-# Our axe
-axe = Entity(model=axeModel, scale=0.05, texture=axeTex, position=subject.position, always_on_top=True)
-axe.x -= 3
-axe.z -= 2.2
-axe.y -= subject.y
-axe.rotation_y = 90
-axe.rotation_x = 90
 
-axe.parent = camera
 
 chickenModel = load_model('chicken.obj')
 vincent = Entity(model=chickenModel, scale = 2,
