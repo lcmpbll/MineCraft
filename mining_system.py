@@ -108,7 +108,7 @@ class Mining_system:
           this.tDic ['x'+str(x)+ 'y'+str(y)+ 'z'+str(z)] = e.y
               #After swapnnning , update subset model and finish
               # also combine newly spawned blocks into builds entity
-          this.builds.combine()
+          # this.builds.combine()
           
               
     
@@ -145,139 +145,157 @@ class Mining_system:
     this.bte.z = round(this.bte.z)
     this.bte.color = this.blockTypes[this.blockType]
     
-  # def mine(this):
-  #   # e = mouse.hovered_entity
-  #   # destroy(e)
-  #   # iterate over all the subsets
-  #   # s is an integer from 0 to subset length -1
-  #   # v is the corners of each of the cubes in each of the cubes of the subsets
-  #   # is the vertex close enought to where we want to mine? bte position
-  #   for s in range(len(this.subsets)):
-  #     vChange = False
-  #     totalV = 0
-  #     for v in this.subsets[s].model.vertices:
-  #       # if(v[0] >= this.bte.x - 0.5 and 
-  #       #   v[0] <= this.bte.x + 0.5 and
-  #       #   v[1] >= this.bte.y - 0.5 and
-  #       #   v[1] <= this.bte.y + 0.5 and
-  #       #   v[2] >= this.bte.z - 0.5 and
-  #       #   v[2] <= this.bte.z + 0.5 ):
-  #         #Throw it up super high! To give illusion of mining. 
-  #             print("mine")
-  #             v[1] = 9999
-          
-  #             vChange = True
-  #             totalV += 1
-  #             print(totalV)
-  #     if vChange == True:
-  #       buildBlock = True
-  #       if this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)) != 'b':
-  #         # record new gap in dictionary should this be only if it isn't b? also should we delete the b from the tdic?
-  #         this.tDic['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'gap'
-  #         buildBlock = False
-  #         this.mineSpawn()
-  #         #update subsets model
-  #       else:
-  #         #might prevent gravity from doing it's thing
-  #         this.tDic['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'nb'
-  #       this.subsets[s].model.generate()
-  #       if buildBlock == False: 
-  #         this.builds.combine()
-          
-  #         # this.buids.combine()?
-  #         # mystery of 36 verticies
-  #         # print('tv=' + str(totalV))
-  #     if totalV == 36: break
-  #     return
-  
   def mine(this):
-
-    vChange = False
-        
-    for v in this.builds.model.vertices:
-        # Is the vertex close enough to
-        # where we want to mine (bte position)?
-        if (v[0] >=this.bte.x - 0.5 and
-            v[0] <=this.bte.x + 0.5 and
-            v[1] >=this.bte.y - 0.5 and
-            v[1] <=this.bte.y + 0.5 and
-            v[2] >=this.bte.z - 0.5 and
-            v[2] <=this.bte.z + 0.5):
-
-            # Move vertex high into air to
-            # give illusion of being destroyed.
-            v[1] = 9999
-            # Note that we have made change.
-            vChange = True
-            # Record new gap on dictionary.
-            this.tDic[  'x'+str(this.bte.x)+
-                        'y'+str(this.bte.y)+
-                        'z'+str(this.bte.z)] = 'gap'
-            
-    if vChange == True:
-        buildBlock = True
-        if this.tDic.get(   'x'+str(this.bte.x)+
-                            'y'+str(this.bte.y)+
-                            'z'+str(this.bte.z)) \
-            !='b':
-            buildBlock = False
-            this.mineSpawn()
-        this.builds.model.generate()
-        if buildBlock == False:
-            this.builds.combine()
-        # Not done! Also combine newly spawned blocks
-        # into builds entity :)
-        return  
-
-    # Our real mining of the terrain :)
-    # Iterate over all the subsets that we have...
-    totalV = 0
+    # e = mouse.hovered_entity
+    # destroy(e)
+    # iterate over all the subsets
+    # s is an integer from 0 to subset length -1
+    # v is the corners of each of the cubes in each of the cubes of the subsets
+    # is the vertex close enought to where we want to mine? bte position
     for s in range(len(this.subsets)):
+      vChange = False
+      totalV = 0
+      for v in this.builds.model.vertices:
+        if(v[0] >= this.bte.x - 0.5 and 
+          v[0] <= this.bte.x + 0.5 and
+          v[1] >= this.bte.y - 0.5 and
+          v[1] <= this.bte.y + 0.5 and
+          v[2] >= this.bte.z - 0.5 and
+          v[2] <= this.bte.z + 0.5 ):
+          #Throw it up super high! To give illusion of mining. 
+              print("mine")
+              v[1] = 9999
+              vChange = True
+      if vChange == True:
+        buildBlock = True
+        if this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)) != 'b':
+        # record new gap in dictionary should this be only if it isn't b? also should we delete the b from the tdic?
+          this.tDic['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'gap'
+          buildBlock = False
+          this.mineSpawn()
+        
+        #update subsets model
+        else:
+        #might prevent gravity from doing it's thing
+          this.tDic['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'nb'
+        this.builds.model.generate()
+        if buildBlock == False: 
+          this.builds.combine()
+        return 
+        # this.buids.combine()?
+        # mystery of 36 verticies
+        # print('tv=' + str(totalV))
+      #The real mining
+      totalV = 0
+      for s in range(len(this.subsets)):
         vChange = False
-        
         for v in this.subsets[s].model.vertices:
-            # Is the vertex close enough to
-            # where we want to mine (bte position)?
-            if (v[0] >=this.bte.x - 0.5 and
-                v[0] <=this.bte.x + 0.5 and
-                v[1] >=this.bte.y - 0.5 and
-                v[1] <=this.bte.y + 0.5 and
-                v[2] >=this.bte.z - 0.5 and
-                v[2] <=this.bte.z + 0.5):
-                print('mine')
-                # Yes!
-                #v[1] -= 1
-                # Move vertex high into air to
-                # give illusion of being destroyed.
-                v[1] = 9999
-                # Note that we have made change.
-                # Gather average height for cave dic.
-                vChange = True
-                # Record new gap on dictionary.
-                this.tDic[  'x'+str(this.bte.x)+
-                            'y'+str(this.bte.y)+
-                            'z'+str(this.bte.z)] = 'gap'
-                totalV += 1
-                # The mystery of 36 vertices!! :o
-                # print('tV= ' + str(totalV))
-                if totalV==36: break
+          if(v[0] >= this.bte.x - 0.5 and 
+            v[0] <= this.bte.x + 0.5 and
+            v[1] >= this.bte.y - 0.5 and
+            v[1] <= this.bte.y + 0.5 and
+            v[2] >= this.bte.z - 0.5 and
+            v[2] <= this.bte.z + 0.5 ):
+            v[1] = 9999
+            vChange = True
+            this.tDic['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'gap'
+            totalV += 1
+            
+          # Is ther a vertex close enough to where we want the bte position?
+          
+            if totalV == 36: break
+      if vChange == True:
+        this.mineSpawn()
+        this.subsets[s].model.generate()
+        this.builds.combine()
+        return
+  
+  # def mine(this):
+
+  #   vChange = False
         
-        if vChange == True:
+  #   for v in this.builds.model.vertices:
+  #       # Is the vertex close enough to
+  #       # where we want to mine (bte position)?
+  #       if (v[0] >=this.bte.x - 0.5 and
+  #           v[0] <=this.bte.x + 0.5 and
+  #           v[1] >=this.bte.y - 0.5 and
+  #           v[1] <=this.bte.y + 0.5 and
+  #           v[2] >=this.bte.z - 0.5 and
+  #           v[2] <=this.bte.z + 0.5):
 
-            # Now we need to spawn a new cube below
-            # the bte's position -- if no cube or
-            # gap there already.
-            # Next, spawn 4 cubes to create illusion
-            # of more layers -- if each position is
-            # neither a gap nor a place where terrain
-            # already is.
+  #           # Move vertex high into air to
+  #           # give illusion of being destroyed.
+  #           v[1] = 9999
+  #           # Note that we have made change.
+  #           vChange = True
+  #           # Record new gap on dictionary.
+  #           this.tDic[  'x'+str(this.bte.x)+
+  #                       'y'+str(this.bte.y)+
+  #                       'z'+str(this.bte.z)] = 'gap'
+            
+    # if vChange == True:
+    #   buildBlock = True
+    #   if this.tDic.get( 'x'+str(this.bte.x)+
+    #                     'y'+str(this.bte.y)+
+    #                     'z'+str(this.bte.z)) \
+    #       !='b':
+    #       buildBlock = False
+    #       this.mineSpawn()
+    #   this.builds.model.generate()
+    #   if buildBlock == False:
+    #       this.builds.combine()
+    #   # Not done! Also combine newly spawned blocks
+    #   # into builds entity :)
+    #   return  
 
-            this.mineSpawn()
-            # Now that we've spawned what (if anything)
-            # we need to, update subset model. Done.
-            this.subsets[s].model.generate()
-            this.builds.combine()
-            return
+    # # Our real mining of the terrain :)
+    # # Iterate over all the subsets that we have...
+    # totalV = 0
+    # for s in range(len(this.subsets)):
+    #     vChange = False
+        
+    #     for v in this.subsets[s].model.vertices:
+    #       if(v[0] >= this.bte.x - 0.5 and 
+    #         v[0] <= this.bte.x + 0.5 and
+    #         v[1] >= this.bte.y - 0.5 and
+    #         v[1] <= this.bte.y + 0.5 and
+    #         v[2] >= this.bte.z - 0.5 and
+    #         v[2] <= this.bte.z + 0.5 ):
+    #             print('mine')
+    #             # Yes!
+    #             #v[1] -= 1
+    #             # Move vertex high into air to
+    #             # give illusion of being destroyed.
+    #             v[1] = 9999
+    #             # Note that we have made change.
+    #             # Gather average height for cave dic.
+    #             vChange = True
+    #             # Record new gap on dictionary.
+    #             this.tDic[  'x'+str(this.bte.x)+
+    #                         'y'+str(this.bte.y)+
+    #                         'z'+str(this.bte.z)] = 'gap'
+    #             totalV += 1
+    #             # The mystery of 36 vertices!! :o
+    #             # print('tV= ' + str(totalV))
+    #             if totalV==36: break
+        
+    #     if vChange == True:
+
+    #         # Now we need to spawn a new cube below
+    #         # the bte's position -- if no cube or
+    #         # gap there already.
+    #         # Next, spawn 4 cubes to create illusion
+    #         # of more layers -- if each position is
+    #         # neither a gap nor a place where terrain
+    #         # already is.
+
+    #         this.mineSpawn()
+    #         # Now that we've spawned what (if anything)
+    #         # we need to, update subset model. Done.
+    #         this.subsets[s].model.generate()
+    #         this.builds.combine()
+    #         return
             
       
 
