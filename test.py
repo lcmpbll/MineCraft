@@ -32,6 +32,7 @@ subsets = []
 subCubes = []
 # Perlin Noise
 noise = PerlinNoise(octaves=1, seed=int(randrange(1,99)))
+#Displays the seed number
 seedMouth = Text( text='Your seed is ' + str(noise.seed), background=True)
 seedMouth.background.color=color.rgba(0, 20, 100, 222)
 seedMouth.scale *= 0.09
@@ -108,8 +109,7 @@ window.fullscreen = False
 # scene.fog_density = 0.10
       
 def input(key):
-  global blockType, buildMode, generating, canGenerate, build_distance, seedMouth
-
+  global generating, canGenerate, seedMouth
   if key == 'q' or key == 'escape':
     quit()
   if key == 'g':
@@ -227,9 +227,9 @@ def generateShell():
   target_y=subject.y
   
   for i in range(step_height, -step_height, -1):
-    terra = varch.tDic.get('x' + str(floor(subject.x)) + 'y' + str(floor(subject.y+i)) + 'z' + str(floor(subject.z)))
+    terra = varch.tDic.get('x' + str(floor(subject.x + 0.5)) + 'y' + str(floor(subject.y+i)) + 'z' + str(floor(subject.z + 0.5)))
     if terra != None and terra != 'gap':
-      target_y = floor(subject.y + i) +2
+      target_y = floor(subject.y + i) + 1
       gravityOn = False
       break
     
