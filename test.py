@@ -15,7 +15,7 @@ app = Ursina()
 ## Textures 
 chickenTex = 'chicken.png'
 cubeTex = 'block_texture.png'
-cubeModel = 'block.obj'
+cubeModel = 'moonCube'
 axoTex= 'b_axolotl.png'
 axoModel = 'b_axolotl.obj'
 axeModel = 'Diamond-Pickaxe.obj'
@@ -58,8 +58,8 @@ subDic = {}
 subject = FirstPersonController()
 subject.cursor.visible = False
 subject.gravity = 0
-grav_speed = 0
-grav_acc = 0.9807
+grav_speed = 1
+grav_acc = .1
 # subject.height = 2
 # can set two variables at the same time
 subject.x = subject.z = 5
@@ -141,7 +141,7 @@ def update():
   #   subject.y = subject.height + genPerlin(subject.x, subject.y) + 2
   #   subject.land() 
   vincent.look_at(subject, 'forward')
-  vincent.rotation_y = 0 #<- prevents vincent from leaning forward
+  vincent.rotation_x = 0 #<- prevents vincent from leaning forward
   #controls mining and building functions
   varch.buildTool()
 
@@ -224,6 +224,8 @@ def generateShell():
   global subject, grav_speed, grav_acc
   step_height = 3
   gravityOn = True
+  target_y=subject.y
+  
   for i in range(step_height, -step_height, -1):
     terra = varch.tDic.get('x' + str(floor(subject.x)) + 'y' + str(floor(subject.y+i)) + 'z' + str(floor(subject.z)))
     if terra != None and terra != 'gap':
@@ -232,8 +234,9 @@ def generateShell():
       break
     
   if gravityOn == True:
-     grav_speed += (grav_acc * time.dt)
-     subject.y -= grav_speed
+    grav_speed += (grav_acc * time.dt)
+    subject.y -= grav_speed
+    
   else:
     subject.y = lerp(subject.y, target_y, 9.807 * time.dt)
     grav_speed = 0
