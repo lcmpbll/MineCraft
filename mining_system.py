@@ -235,21 +235,19 @@ class Mining_system:
                         'z'+str(this.bte.z)] = 'gap'
             
     if vChange == True:
-      buildBlock = True
-      if this.tDic.get( 'x'+str(this.bte.x)+
+      whatsHere = this.tDic.get( 'x'+str(this.bte.x)+
                         'y'+str(this.bte.y)+
-                        'z'+str(this.bte.z)) \
-          !='b':
-          buildBlock = False
+                        'z'+str(this.bte.z)) 
+      if whatsHere !='b' and whatsHere != 'gap':
           this.mineSpawn()
-      this.builds.model.generate()
-      if buildBlock == False:
           this.builds.combine()
+        #update builds models Entity so that we see gaps -- update verticies
+      this.builds.model.generate()
       # Not done! Also combine newly spawned blocks
       # into builds entity :)
       return  
 
-    # Our real mining of the terrain :)
+    # Our real mining of the terrain :) if not mining blocks
     # Iterate over all the subsets that we have...
     totalV = 0
     for s in range(len(this.subsets)):
@@ -262,7 +260,6 @@ class Mining_system:
             v[1] <= this.bte.y + 0.5 and
             v[2] >= this.bte.z - 0.5 and
             v[2] <= this.bte.z + 0.5 ):
-                print('mine')
                 # Yes!
                 #v[1] -= 1
                 # Move vertex high into air to
