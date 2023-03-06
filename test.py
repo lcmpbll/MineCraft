@@ -59,8 +59,8 @@ subDic = {}
 subject = FirstPersonController()
 subject.cursor.visible = False
 subject.gravity = 0
-grav_speed = 1
-grav_acc = .1
+grav_speed = 0
+grav_acc = 0.1
 # subject.height = 2
 # can set two variables at the same time
 subject.x = subject.z = 5
@@ -218,58 +218,44 @@ def genTerrain():
     theta = 0
     rad += .5
 
-  # new gravity system for moving the subject
-# def generateShell():
-#   # new system
-#   global subject, grav_speed, grav_acc
-#   step_height = 3
-#   gravityOn = True
-#   target_y=subject.y
-  
-#   for i in range(step_height, -step_height, -1):
-#     terra = varch.tDic.get('x' + str(floor(subject.x + 0.5)) + 'y' + str(floor(subject.y+i)) + 'z' + str(floor(subject.z + 0.5)))
-#     if terra != None and terra != 'gap':
-#       target_y = floor(subject.y + i) + 2
-#       gravityOn = False
-#       break
-    
-#   if gravityOn == True:
-#     grav_speed += (grav_acc * time.dt)
-#     subject.y -= grav_speed
-    
-#   else:
-#     subject.y = lerp(subject.y, target_y, 9.807 * time.dt)
-#     grav_speed = 0
+
 
 def generateShell():
-    global subject, grav_speed, grav_acc
+  global subject, grav_speed, grav_acc
 
     # New 'new' system :D
     # How high or low can we step/drop?
-    step_height = 3
-    gravityON = True
+  step_height = 3
+  gravityON = True
+  target_y = subject.y
+
+  for i in range(step_height,-step_height,-1):
     
-    target_y = subject.y
+      # What y is the terrain at this position?
+      # terra = genPerlin(subject.x,subject.z)
+    terra = varch.tDic.get( 'x'+str((floor(subject.x+ 0.5)))+
+                            'y'+str((floor(subject.y+i)))+
+                            'z'+str((floor(subject.z + 0.5))))
+    #block one above you
+    terraTop = varch.tDic.get( 'x'+str((floor(subject.x + 0.5)))+
+                            'y'+str((floor(subject.y + i + 1)))+
+                            'z'+str((floor(subject.z + 0.5))))
+    if terra != None and terra != 'gap':
+      if terraTop == 'gap' or terraTop == None:
+        target_y = floor(subject.y+i) + 2
+        gravityON = False
+        break
 
-    for i in range(step_height,-step_height,-1):
-        # What y is the terrain at this position?
-        # terra = genPerlin(subject.x,subject.z)
-        terra = varch.tDic.get( 'x'+str((floor(subject.x)))+
-                                'y'+str((floor(subject.y+i)))+
-                                'z'+str((floor(subject.z))))
-        if terra != None and terra != 'gap':
-            # print('TERRAIN FOUND! ' + str(terra + 2))
-            target_y = floor(subject.y+i) + 2
-            gravityON = False
-            break
+  if gravityON==True:
+    # This means we're falling!
+    grav_speed += (grav_acc * time.dt) * 4
+    subject.y -= grav_speed
+  else:
+    
+    subject.y = lerp(subject.y, target_y, 9.807*time.dt)
+    grav_speed = 0 # Reset gravity speed: gfloored.
+    
 
-    if gravityON==True:
-        # This means we're falling!
-        grav_speed += (grav_acc * time.dt)
-        subject.y -= grav_speed
-    else:
-        subject.y = lerp(subject.y, target_y, 9.807*time.dt)
-        grav_speed = 0 # Reset gravity speed: gfloored.
         
   
   # old new system
