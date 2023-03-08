@@ -34,7 +34,12 @@ class Mining_system:
     this.blockTypes.append(color.rgb(0, 0, 0))
     this.howManyBlockTypes = len(this.blockTypes)
     this.blockType = 0
-    
+  
+  def tDicGet(this, x_, y_, z_):
+     return this.tDic.get('x'+str(x_)+ 'y'+str(y_)+ 'z'+str(z_)) 
+
+  def tDicRec(this, x_, y_, z_, rec):
+     this.tDic['x'+str(x_)+ 'y'+str(y_)+ 'z'+str(z_)] = rec
     
   def input(this, key):
     if this.buildMode == 1:
@@ -60,10 +65,16 @@ class Mining_system:
        this.build_distance += 1
       if key == 'scroll down':
         this.build_distance -= 1
+      # if key == '-':
+      #   this.bteHeight(-1)
+      # if key == '=':
+      #   this.bteHeight(1)
     elif key == 'f': this.buildMode *= -1
     
   def mineSpawn(this):
-    if this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y - 1)+ 'z'+str(this.bte.z)) == None:
+    if this.tDicGet(this.bte.x, this.bte.y -1, this.bte.z) == None:
+      print("gotten")
+      #this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y - 1)+ 'z'+str(this.bte.z)) == None:
       # record terrain change in dictionary
       # this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'gap'
       
@@ -79,7 +90,7 @@ class Mining_system:
       # parent spawned cube into builds entity.
       e.parent = this.builds
       #Record newly spawned block in dictionary
-      this.tDic ['x'+str(this.bte.x)+ 'y'+str(e.y)+ 'z'+str(this.bte.z)] = e.y
+      this.tDic['x'+str(this.bte.x)+ 'y'+str(e.y)+ 'z'+str(this.bte.z)] = e.y
       # Check for cave wall cubes, in areas that are not filled with terrain, no gaps, finally no terrain below position
       x = this.bte.x
       y = this.bte.Y
@@ -108,7 +119,7 @@ class Mining_system:
               #After swapnnning , update subset model and finish
               # also combine newly spawned blocks into builds entity
           # this.builds.combine()
-          
+        
               
     
   # Place a block at the bte posion 
@@ -137,14 +148,14 @@ class Mining_system:
   
   # This is called from the main update loop
   def buildTool(this): 
-    # global build_distance
+    
     if this.buildMode == -1:
       this.bte.visible = False
       return
     else: this.bte.visible = True
     
     this.bte.position = round(this.subject.position + this.camera.forward * this.build_distance)
-    this.bte.y += 1
+    this.bte.y += 2
     this.bte.y = round(this.bte.y)
     this.bte.x = round(this.bte.x)
     this.bte.z = round(this.bte.z)
@@ -174,9 +185,11 @@ class Mining_system:
             totalV += 1
             if totalV >= 36 : break
     if vChange == True:            
-      whatsHere = this.tDic.get( 'x'+str(this.bte.x)+
-                        'y'+str(this.bte.y)+
-                        'z'+str(this.bte.z)) 
+      #whatsHere = this.tDic( 'x'+str(this.bte.x)+
+                        # 'y'+str(this.bte.y)+
+                        # 'z'+str(this.bte.z)) 
+      whatsHere = this.tDicGet(this.bte.x, this.bte.y, this.bte.z)
+      print(whatsHere)
       if whatsHere !='b' :
           this.mineSpawn()
           this.builds.combine()
@@ -192,14 +205,13 @@ class Mining_system:
     for s in range(len(this.subsets)):
       vChange = False 
       for v in this.subsets[s].model.vertices:
-        if(v[0] >= this.bte.x - 0.5 and 
-          v[0] <= this.bte.x + 0.5 and
-          v[1] >= this.bte.y - 0.5 and
-          v[1] <= this.bte.y + 0.5 and
-          v[2] >= this.bte.z - 0.5 and
-          v[2] <= this.bte.z + 0.5 ):
+        if (v[0] >=this.bte.x - 0.5 and
+            v[0] <=this.bte.x + 0.5 and
+            v[1] >=this.bte.y - 0.5 and
+            v[1] <=this.bte.y + 0.5 and
+            v[2] >=this.bte.z - 0.5 and
+            v[2] <=this.bte.z + 0.5):
                 # Yes!
-                #v[1] -= 1
                 # Move vertex high into air to
                 # give illusion of being destroyed.
                 v[1] = 9999
@@ -207,46 +219,39 @@ class Mining_system:
                 # Gather average height for cave dic.
                 vChange = True
                 # Record new gap on dictionary.
-                this.tDic[  'x'+str(this.bte.x)+
-                            'y'+str(this.bte.y)+
-                            'z'+str(this.bte.z)] = 'gap'
+                # this.tDic[  'x'+str(this.bte.x)+
+                #             'y'+str(this.bte.y)+
+                #             'z'+str(this.bte.z)] = 'gap'
                 totalV += 1
                 # The mystery of 36 vertices!! :o
-                # print('tV= ' + str(totalV))
+                
                 if totalV==36: break
         
-        if vChange == True:
+      if vChange == True:
 
-            # Now we need to spawn a new cube below
-            # the bte's position -- if no cube or
-            # gap there already.
-            # Next, spawn 4 cubes to create illusion
-            # of more layers -- if each position is
-            # neither a gap nor a place where terrain
-            # already is.
-            # Record new gap on dictionary.
-            this.tDic[  'x'+str(this.bte.x)+
-                  'y'+str(this.bte.y)+
-                  'z'+str(this.bte.z)] = 'gap'
-            this.mineSpawn()
-            # Now that we've spawned what (if anything)
-            # we need to, update subset model. Done.
-            this.subsets[s].model.generate()
-            this.builds.combine()
-            return
-            
-      
-
-    
+        # Now we need to spawn a new cube below
+        # the bte's position -- if no cube or
+        # gap there already.
+        # Next, spawn 4 cubes to create illusion
+        # of more layers -- if each position is
+        # neither a gap nor a place where terrain
+        # already is.
+        # Record new gap on dictionary.
+        this.tDic[  'x'+str(this.bte.x)+
+              'y'+str(this.bte.y)+
+              'z'+str(this.bte.z)] = 'gap'
+        this.mineSpawn()
+        # Now that we've spawned what (if anything)
+        # we need to, update subset model. Done.
+        this.subsets[s].model.generate()
+        this.builds.combine()
+        return
   
-    
-
-     
-
   
   
 
 
- 
 
-  
+
+
+
