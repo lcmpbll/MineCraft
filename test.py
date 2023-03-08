@@ -15,7 +15,7 @@ app = Ursina()
 ## Textures 
 chickenTex = 'chicken.png'
 cubeTex = 'block_texture.png'
-cubeModel = 'moonCube'
+cubeModel = 'moonCube.obj'
 axoTex= 'b_axolotl.png'
 axoModel = 'b_axolotl.obj'
 axeModel = 'Diamond-Pickaxe.obj'
