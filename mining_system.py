@@ -77,7 +77,6 @@ class Mining_system:
       # record terrain change in dictionary, will do later
       # this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'gap'
       
-      
       e = Entity( model=this.cubeModel,
                     texture=this.buildTex)
       # Shrink spawned block so that it
@@ -91,41 +90,11 @@ class Mining_system:
       # Parent spawned cube into builds entity.
       e.parent = this.builds
       
-      
       # Record newly spawned block on dictionary.
         
-      #then we need to spawn a new cube in position where gaps are.
-      #e = Entity(model= this.cubeModel, texture = this.buildTex)
-      #Makes cubes slightly smaller to allow for accurate verticies collection. 
-      # e.scale *= 0.99999
-      # # change color to soil
-      # e.color = this.blockTypes[0]
-      # #position under mine area
-      # e.position = this.bte.position
-      # e.y -= 1
-      # # parent spawned cube into builds entity.
-      # e.parent = this.builds
-      #Record newly spawned block in dictionary
       this.tDicRec(this.bte.x, e.y, this.bte.z, e.y)
       # this.tDic['x'+str(this.bte.x)+ 'y'+str(e.y)+ 'z'+str(this.bte.z)] = e.y
       # Check for cave wall cubes, in areas that are not filled with terrain, no gaps, finally no terrain below position
-      # x = this.bte.x
-      # y = this.bte.Y
-      # z = this.bte.z
-      # pos1 = (x + 1, y, z)
-      # pos2 = (x -1, y, z)
-      # pos3 = (x, y, z + 1)
-      # pos4 = (x, y , z - 1)
-      # spawnPos = []
-      # spawnPos.append(pos1)
-      # spawnPos.append(pos2)
-      # spawnPos.append(pos3)
-      # spawnPos.append(pos4)
-      # for i in range(4):
-      #   x = spawnPos[i][0]
-      #   z = spawnPos[i][2]
-      #   y = spawnPos[i][1]  
-      # 
       x = this.bte.x
       y = this.bte.y
       z = this.bte.z
@@ -141,7 +110,7 @@ class Mining_system:
       for i in range(4):
           x = spawnPos[i][0]
           z = spawnPos[i][2]
-          y = spawnPos[i][1]s
+          y = spawnPos[i][1]
       
       if this.tDicGet(x, y, z) == None and \
         this.tDicGet(x, y - 1, z) == None:
@@ -157,74 +126,6 @@ class Mining_system:
             #After swapnnning , update subset model and finish
             # also combine newly spawned blocks into builds entity
         # this.builds.combine()
-  
-  # def mineSpawn(this):
-  #       # Spawn one block below dig position?
-  #       if this.tDic.get(   'x'+str(this.bte.x)+
-  #                           'y'+str(this.bte.y-1)+
-  #                           'z'+str(this.bte.z)
-  #                           ) == None:
-
-  #           """
-  #           # Record gap location in dictionary.
-  #           this.tDic[  'x'+str(this.bte.x)+
-  #                       'y'+str(this.bte.y)+
-  #                       'z'+str(this.bte.z)] = 'gap'
-  #           """
-
-  #           e = Entity( model=this.cubeModel,
-  #                       texture=this.buildTex)
-  #           # Shrink spawned block so that it
-  #           # matches the size of ordinary terrain.
-  #           e.scale *= 0.99999
-  #           # Change colour to soil (this.blockTypes[2]).
-  #           e.color = this.blockTypes[0]
-  #           # Position under mined area.
-  #           e.position = this.bte.position
-  #           e.y -= 1
-  #           # Parent spawned cube into builds entity.
-  #           e.parent = this.builds
-  #           # Record newly spawned block on dictionary.
-  #           this.tDic[  'x'+str(this.bte.x)+
-  #                       'y'+str(e.y)+
-  #                       'z'+str(this.bte.z)] = e.y
-
-  #           # OK -- now spawn 4 'cave wall' cubes.
-  #           # For each cube, first check whether:
-  #           # 1) No terrain there already
-  #           # 2) No gaps
-  #           # 3) No terrain below this pos
-
-                    
-  #               # We can ask None both times because
-  #               # this covers both gaps and terrain
-  #               # being in these positions (i.e
-  #               # potential cave wall and below
-  #               # potential cave wall.
-  #               if this.tDic.get(   'x'+str(x)+
-  #                                   'y'+str(y)+
-  #                                   'z'+str(z)
-  #    a                   ) == None and \
-  #                       this.tDic.get(  'x'+str(x)+
-  #                                       'y'+str(y-1)+
-  #                                       'z'+str(z)
-  #                       ) == None:
-  #                           e = Entity( model=this.cubeModel,
-  #                                       texture=this.buildTex)
-  #                           # Shrink spawned block so that it
-  #                           # matches the size of ordinary terrain.
-  #                           e.scale *= 0.99999
-  #                           # Change colour to soil (this.blockTypes[2]).
-  #                           e.color = this.blockTypes[0]
-  #                           # Position around mined area.
-  #                           e.position = spawnPos[i]
-  #                           # Parent spawned cube into builds entity.
-  #                           e.parent = this.builds
-  #                           # Record newly spawned block on dictionary.
-  #                           this.tDic[  'x'+str(x)+
-  #                                       'y'+str(y)+
-  #                                       'z'+str(z)] = e.y
-        
               
     
   # Place a block at the bte posion 
