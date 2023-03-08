@@ -71,6 +71,8 @@ class Mining_system:
       #   this.bteHeight(1)
     elif key == 'f': this.buildMode *= -1
     
+  # WIP still leaves some gaps
+    
   def mineSpawn(this):
     if this.tDicGet(this.bte.x, this.bte.y -1, this.bte.z) == None:
       #this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y - 1)+ 'z'+str(this.bte.z)) == None:
@@ -248,9 +250,10 @@ class Mining_system:
         # neither a gap nor a place where terrain
         # already is.
         # Record new gap on dictionary.
-        this.tDic[  'x'+str(this.bte.x)+
-              'y'+str(this.bte.y)+
-              'z'+str(this.bte.z)] = 'gap'
+        # this.tDic[  'x'+str(this.bte.x)+
+        #       'y'+str(this.bte.y)+
+        #       'z'+str(this.bte.z)] = 'gap'
+        this.tDicRec(this.bte.x, this.bte.y, this.bte.z, 'gap')
         this.mineSpawn()
         # Now that we've spawned what (if anything)
         # we need to, update subset model. Done.
