@@ -133,9 +133,10 @@ class Mining_system:
     if this.buildMode == -1:
       return
     # is there a block already here?
-    whatsHere = this.tDic.get( 'x'+str(this.bte.x)+
-                        'y'+str(this.bte.y)+
-                        'z'+str(this.bte.z)) 
+    # whatsHere = this.tDic.get( 'x'+str(this.bte.x)+
+    #                     'y'+str(this.bte.y)+
+    #                     'z'+str(this.bte.z)) 
+    whatsHere = this.tDicGet(this.bte.x, this.bte.y, this.bte.z)
     if whatsHere != 'gap' and whatsHere != None:
        return 
     e = Entity(model= this.cubeModel, position= this.bte.position)
@@ -147,7 +148,8 @@ class Mining_system:
     e.color = this.blockTypes[this.blockType]
     e.parent = this.builds
     # record new block in dictionary
-    this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'b'
+    #this.tDic ['x'+str(this.bte.x)+ 'y'+str(this.bte.y)+ 'z'+str(this.bte.z)] = 'b'
+    this.tDicRec(this.bte.x, this.bte.y, this.bte.z, 'b')
     this.builds.combine()
     # shaking wont work because we are destroying temp block in combining.
     # e.shake(duration=0.5, speed=0.01)
