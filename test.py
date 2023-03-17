@@ -64,7 +64,7 @@ grav_acc = 0.1
 # subject.height = 2
 # can set two variables at the same time
 subject.x = subject.z = 5
-subject.y = 32
+subject.y = 0
 prevZ = subject.Z
 prevX = subject.x
 origin = subject.position #Vec 3 objet, .x, .y, .z
@@ -252,7 +252,7 @@ def generateShell():
     subject.y -= grav_speed
   else:
     
-    subject.y = lerp(subject.y, target_y, 9.807*time.dt)
+    subject.y = lerp(subject.y, target_y, 90.807*time.dt)
     grav_speed = 0 # Reset gravity speed: gfloored.
     
 
