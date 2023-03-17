@@ -1,5 +1,7 @@
 from ursina import Entity, color, Vec3
-# from numpy import floor
+from numpy import floor
+from random import randrange, randint
+
 # from cave_system import makeCave
 
 class Mining_system: 
@@ -89,6 +91,8 @@ class Mining_system:
       # Position under mined area.
       e.position = this.bte.position
       e.y -= 1
+      # Add Random Rotation
+      e.rotation_y = (90 * randint(0, 3))
       # Parent spawned cube into builds entity.
       e.parent = this.builds
       
