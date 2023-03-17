@@ -1,6 +1,6 @@
 from ursina import Entity, color, Vec3
 from numpy import floor
-from random import randrange, randint
+from random import randrange, randint, random
 
 # from cave_system import makeCave
 
@@ -29,9 +29,9 @@ class Mining_system:
     #Our new block type system 
     this.blockTypes = []
     # Stone, Grass, Soil, Ruby, Netherite
-    this.blockTypes.append(color.rgb(255, 255, 255))
-    this.blockTypes.append(color.rgb(0, 255, 0))
-    this.blockTypes.append(color.rgb(200, 100, 100))
+    this.blockTypes.append(color.rgb(255, 255, 255)) 
+    this.blockTypes.append(color.rgb(0, 240, 0))
+    this.blockTypes.append(color.rgb(155, 118, 100))
     this.blockTypes.append(color.rgb(255, 0, 0))
     this.blockTypes.append(color.rgb(0, 0, 0))
     this.howManyBlockTypes = len(this.blockTypes)
@@ -58,11 +58,11 @@ class Mining_system:
       #   #default axe position if not mining or building
       #   this.axe.position = Vec3(2, 0, 2.8)
       if key == 'f': this.buildMode *= -1
-      if key == '1': this.blockType = 0
-      if key == '2': this.blockType = 1
-      if key == '3': this.blockType = 2
-      if key == '4': this.blockType = 3
-      if key == '5': this.blockType = 4
+      if key == '1': this.blockType = 0 # stone
+      if key == '2': this.blockType = 1 # grass
+      if key == '3': this.blockType = 2 # dirt
+      if key == '4': this.blockType = 3 # ruby
+      if key == '5': this.blockType = 4 # netherite
       if key == 'scroll up':
        this.build_distance += 1
       if key == 'scroll down':
@@ -73,9 +73,23 @@ class Mining_system:
       #   this.bteHeight(1)
     elif key == 'f': this.buildMode *= -1
     
-  # WIP still leaves some gaps
+  def randomBlockType(this):
+     # maybe increase probability of rare things if digging further down?
+    blockNumber = randint(0,4)
+    randBlockType = None
+    if(blockNumber == 0 or blockNumber == 1):
+      randBlockType = 0
+    elif(blockNumber == 2 or blockNumber == 3):
+      randBlockType = 2
+    elif(blockNumber == 4):
+       randBlockType = randint(2, 4)
+     
+     
+    return randBlockType
     
+  # WIP still leaves some gaps
   def mineSpawn(this):
+    from copy import copy # for copying the color of the blocks
     if this.tDicGet(this.bte.x, this.bte.y -1, this.bte.z) == None:
       #this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y - 1)+ 'z'+str(this.bte.z)) == None:
       # record terrain change in dictionary, will do later
@@ -86,19 +100,27 @@ class Mining_system:
       # Shrink spawned block so that it
       # matches the size of ordinary terrain.
       e.scale *= 0.99999
-      # Change colour to soil (this.blockTypes[2]).
-      e.color = this.blockTypes[0]
       # Position under mined area.
       e.position = this.bte.position
       e.y -= 1
-      # Add Random Rotation
+      # Change colour to soil (this.blockTypes[2]).
+      c = this.randomBlockType()
+      e.color = copy(this.blockTypes[c])
+      # adjust tint
+      # shade = random()* 100 + 155
+      # e.color[0] *= 255 - shade 
+      # e.color[1] *= 255 - shade 
+      # e.color[2] *= 255 - shade 
+      e.color = e.color.tint(randint(1, 50) / 100)
+      
       e.rotation_y = (90 * randint(0, 3))
+      # get Random color
       # Parent spawned cube into builds entity.
       e.parent = this.builds
-      
       # Record newly spawned block on dictionary.
         
       this.tDicRec(this.bte.x, e.y, this.bte.z, e.y)
+      this.builds.combine()
       # this.tDic['x'+str(this.bte.x)+ 'y'+str(e.y)+ 'z'+str(this.bte.z)] = e.y
       # Check for cave wall cubes, in areas that are not filled with terrain, no gaps, finally no terrain below position
       x = this.bte.x
@@ -123,7 +145,7 @@ class Mining_system:
       # if this.tDic.get('x'+str(x)+ 'y'+str(y)+ 'z'+str(z)) == None and this.tDic.get('x'+str(x)+ 'y'+str(y - 1)+ 'z'+str(z)) == None:
         e = Entity(model=this.cubeModel, texture=this.buildTex)
         e.scale *= 0.99999
-        e.color= this.blockTypes[this.blockType]
+        e.color= this.blockTypes[c]
         e.position = spawnPos[i]
         e.parent = this.builds
         #Record newly spawned block in dictionary
