@@ -38,7 +38,7 @@ class Mining_system:
     this.blockType = 0
   
   def tDicGet(this, x_, y_, z_):
-     return this.tDic.get('x'+ str(x_)+ 'y'+ str(y_)+ 'z'+ str(z_)) a
+     return this.tDic.get('x'+ str(x_)+ 'y'+ str(y_)+ 'z'+ str(z_)) 
 
   def tDicRec(this, x_, y_, z_, rec):
      this.tDic['x'+ str(x_)+ 'y'+ str(y_)+ 'z'+ str(z_)] = rec
