@@ -86,10 +86,29 @@ class Mining_system:
      
      
     return randBlockType
+  
+  def adjustShadeAndRotation(this, _block):
+      from copy import copy # for copying the color of the blocks
+      c = this.randomBlockType()
+      _block.color = copy(this.blockTypes[c])
+      shade = randrange(-16, 64)/256
+      
+      
+      # adjust tint
+      # shade = random()* 100 + 155
+      _block.color[0] += shade
+      _block.color[1] += shade
+      _block.color[2] += shade
+      print(_block.color[2])
+      _block.rotation_y = (90 * randint(0, 3))
+      _block.rotation_x= (90 * randint(0, 3))
+      _block.rotation_z = (90 * randint(0, 3))
+      return _block
+     
     
   # WIP still leaves some gaps
   def mineSpawn(this):
-    from copy import copy # for copying the color of the blocks
+    
     if this.tDicGet(this.bte.x, this.bte.y -1, this.bte.z) == None:
       #this.tDic.get('x'+str(this.bte.x)+ 'y'+str(this.bte.y - 1)+ 'z'+str(this.bte.z)) == None:
       # record terrain change in dictionary, will do later
@@ -104,16 +123,18 @@ class Mining_system:
       e.position = this.bte.position
       e.y -= 1
       # Change colour to soil (this.blockTypes[2]).
-      c = this.randomBlockType()
-      e.color = copy(this.blockTypes[c])
-      # adjust tint
-      # shade = random()* 100 + 155
-      # e.color[0] *= 255 - shade 
-      # e.color[1] *= 255 - shade 
-      # e.color[2] *= 255 - shade 
-      e.color = e.color.tint(randint(1, 50) / 100)
+      # c = this.randomBlockType()
+      # e.color = copy(this.blockTypes[c])
+      # shade = randrange(-16, 64)/256
+      this.adjustShadeAndRotation(e)
+      # # adjust tint
+      # # shade = random()* 100 + 155
+      # e.color[0] += shade
+      # e.color[1] += shade
+      # e.color[2] += shade
+      # e.color = e.color.tint(randint(1, 50) / 100)
       
-      e.rotation_y = (90 * randint(0, 3))
+      
       # get Random color
       # Parent spawned cube into builds entity.
       e.parent = this.builds
@@ -121,7 +142,6 @@ class Mining_system:
         
       this.tDicRec(this.bte.x, e.y, this.bte.z, e.y)
       this.builds.combine()
-      # this.tDic['x'+str(this.bte.x)+ 'y'+str(e.y)+ 'z'+str(this.bte.z)] = e.y
       # Check for cave wall cubes, in areas that are not filled with terrain, no gaps, finally no terrain below position
       x = this.bte.x
       y = this.bte.y
@@ -142,11 +162,10 @@ class Mining_system:
       
       if this.tDicGet(x, y, z) == None and \
         this.tDicGet(x, y - 1, z) == None:
-      # if this.tDic.get('x'+str(x)+ 'y'+str(y)+ 'z'+str(z)) == None and this.tDic.get('x'+str(x)+ 'y'+str(y - 1)+ 'z'+str(z)) == None:
         e = Entity(model=this.cubeModel, texture=this.buildTex)
         e.scale *= 0.99999
-        e.color= this.blockTypes[c]
         e.position = spawnPos[i]
+        this.adjustShadeAndRotation(e)
         e.parent = this.builds
         #Record newly spawned block in dictionary
         this.tDicRec(x, y, z, e.y)
