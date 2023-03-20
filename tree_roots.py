@@ -8,6 +8,9 @@ from ursina import Entity, Vec3, color
 class Trees:
   def __init__(this):
     this.noise = PerlinNoise(seed=4)
+    # Parent of trees for optimization
+    this.trees = Entity()
+    this.treesCounter = 0
   def checkTree(this, _x, _y, _z):
     freq = 1.5
     amp = 100
@@ -22,5 +25,12 @@ class Trees:
     crown.parent = trunk.parent = tree
     tree.y += 4
     tree.rotation_y = randint(3, 360)
+    tree.parent = this.trees
+    this.treesCounter += 1
+    if this.treesCounter % 32 == 0:
+      print('combine')
+      this.trees.combine()
+      this.trees.collider = this.trees.model
+      
    
     
