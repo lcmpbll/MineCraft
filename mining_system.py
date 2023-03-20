@@ -29,16 +29,16 @@ class Mining_system:
     #Our new block type system 
     this.blockTypes = []
     # Stone, Grass, Soil, Ruby, Netherite
-    this.blockTypes.append(color.rgb(255, 255, 255)) 
-    this.blockTypes.append(color.rgb(0, 240, 0))
-    this.blockTypes.append(color.rgb(155, 118, 100))
-    this.blockTypes.append(color.rgb(255, 0, 0))
-    this.blockTypes.append(color.rgb(0, 0, 0))
+    this.blockTypes.append(color.rgb(255, 255, 255)) # 0 stone
+    this.blockTypes.append(color.rgb(0, 240, 0)) # 1 grass
+    this.blockTypes.append(color.rgb(101, 55, 0)) # 2 soil 
+    this.blockTypes.append(color.rgb(255, 0, 0)) # 3 ruby
+    this.blockTypes.append(color.rgb(0, 0, 0)) # 4 netherite
     this.howManyBlockTypes = len(this.blockTypes)
     this.blockType = 0
   
   def tDicGet(this, x_, y_, z_):
-     return this.tDic.get('x'+ str(x_)+ 'y'+ str(y_)+ 'z'+ str(z_)) 
+     return this.tDic.get('x'+ str(x_)+ 'y'+ str(y_)+ 'z'+ str(z_)) a
 
   def tDicRec(this, x_, y_, z_, rec):
      this.tDic['x'+ str(x_)+ 'y'+ str(y_)+ 'z'+ str(z_)] = rec
@@ -99,7 +99,6 @@ class Mining_system:
       _block.color[0] += shade
       _block.color[1] += shade
       _block.color[2] += shade
-      print(_block.color[2])
       _block.rotation_y = (90 * randint(0, 3))
       _block.rotation_x= (90 * randint(0, 3))
       _block.rotation_z = (90 * randint(0, 3))
