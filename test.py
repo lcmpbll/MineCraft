@@ -112,13 +112,21 @@ def input(key):
   global generating, canGenerate, seedMouth
   if key == 'q' or key == 'escape':
     quit()
+  #smooth building
+  if varch.buildMode == 1:
+    generating = -1
+    canGenerate = -1
   if key == 'g':
     generating *= -1
     canGenerate *= -1
   if key == 'c':
     pass
     #seedMouth.destroy()
+    
+ 
   else: 
+    # generating = 1
+    # canGenerate = 1
     varch.input(key)
 
   
@@ -226,6 +234,7 @@ def generateShell():
     # New 'new' system :D
     # How high or low can we step/drop?
   step_height = 3
+  subjectHeight = 2
   gravityON = True
   target_y = subject.y
 
@@ -241,10 +250,14 @@ def generateShell():
                             'y'+str((floor(subject.y + i + 1)))+
                             'z'+str((floor(subject.z + 0.5))))
     if terra != None and terra != 'gap':
+      gravityON = False
       if terraTop == 'gap' or terraTop == None:
-        target_y = floor(subject.y+i) + 2
-        gravityON = False
+        target_y = floor(subject.y+i) + subjectHeight
+        
         break
+      # if here then the tower is too tall so move subject from this position
+      subject.x -= 0.6
+      subject.z -= 0.6
 
   if gravityON==True:
     # This means we're falling!
@@ -252,7 +265,7 @@ def generateShell():
     subject.y -= grav_speed
   else:
     
-    subject.y = lerp(subject.y, target_y, 90.807*time.dt)
+    subject.y = lerp(subject.y, target_y, 9.807*time.dt)
     grav_speed = 0 # Reset gravity speed: gfloored.
     
 
