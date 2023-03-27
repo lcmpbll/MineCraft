@@ -45,12 +45,16 @@ genSpeed = 0
 #generate terrain called 16 times update perloop
 perCycle = 64
 currentCube = 0
-numSubCubes = 64
+currentSubset = 0
+currentMegaset = 0
 theta = 0
 rad = 0
-currentSubset = 0
+# How many to combine into a subset
+numSubCubes = 64
 # how many combine in to a megaset
 numSubsets = 420
+# number of instanciated megasets
+numMegasets = 99
 radLimit = 128
 # a dictionary for recording wether terrain exist at location specified in key
 subDic = {}  
@@ -78,27 +82,86 @@ axe.rotation_y = 90
 axe.rotation_x = 90
 axe.parent = camera
 
+def createTerrainEntities():
+  # global numMegasets
+  # in terrain_system
+  for i in range(numSubCubes):
+    #switching to cubeModel is not great.
+    bud = Entity(model=cubeModel, texture=cubeTex)
+    bud.scale *= 0.99999
+    bud.rotation_y = random.randint(0, 4) * 90
+    bud.disable()
+    subCubes.append(bud)
+    
+  # # Instantiate empty Subsets
+  for i in range(numSubsets):
+    bud = Entity(model=cubeModel) 
+    bud.texture = cubeTex
+    bud.disable()
+    subsets.append(bud)
+    
+  #instantiate empty megasets
+  for i in range(numMegasets):
+    bud = Entity(model=cubeModel)
+    bud.texture = cubeTex
+    bud.scale *= 0.99999999
+    bud.disable()
+    megasets.append(bud)
+    
+createTerrainEntities()
 
-# in terrain_system
-for i in range(numSubCubes):
-  #switching to cubeModel is not great.
-  bud = Entity(model=cubeModel, texture=cubeTex)
-  bud.scale *= 0.99999
-  bud.rotation_y = random.randint(0, 4) * 90
-  bud.disable()
-  subCubes.append(bud)
-   
-# # Instantiate empty Subsets
-for i in range(numSubsets):
-  bud = Entity(model=cubeModel) 
-  bud.texture = cubeTex
-  bud.disable()
-  subsets.append(bud)
+# Save and load file functions :-D
+def save():
+  global subsets, megasets, subDic, noise
+  import pickle, os, sys
+  # Create a new entity that combines all current variables
+  # ie subsets, megasets which we can place on to a file
+  # first open/create file in the folder(working directory) that we can save to
+  path = os.path.dirname(os.path.abspath(sys.argv[0]))
+  os.chdir(path)
+  with open('pickling.txt', 'wb') as f:
+    e = Entity()
+    for s in subsets:
+      if s.enabled == True:
+        s.parent = e
+    for m in megasets:
+      if m.enabled == True:
+        m.parent = e
+    e.combine(auto_destroy = False)
+    # take individual parts that make up a mesh
+    terrainModel = [  e.model.vertices,
+                      e.model.triangles,
+                      e.model.colors,
+                      e.model.uvs  ]
+    #reparent so they are not destroyed with e
+    for s in subsets:
+      s.parent = scene
+    for m in megasets:
+      m.parent = scene
+    destroy(e)
+    
+    newlist = [ 
+                subject.position,
+                varch.tDic,
+                subDic,
+                terrainModel,
+                noise
+              ]
+    # write game state object to file 
+    # then clear out temporary lists
+    pickle.dump(newlist, f)
+    newlist.clear()
+    terrainModel.clear()
+    
+    
+
+def load():
+  import pickle, os, sys
 
 #will create a cave system object called anush
 anush = Caves()
 solar = Trees()
-varch = Mining_system(subject, axe, camera, subsets)
+varch = Mining_system(subject, axe, camera, subsets, megasets)
 # bte = BuildToolEntity()
 prevTime = time.time()
  #window
@@ -122,6 +185,10 @@ def input(key):
   if key == 'c':
     pass
     #seedMouth.destroy()
+  if key == 'b':
+    save()
+  if key == 'o':
+    load()
     
  
   else: 
@@ -171,7 +238,7 @@ def genPerlin(_x, _z, plantTree=False):
   return floor(y)
 
 def genTerrain():
-  global currentCube, theta, rad, origin, currentSubset, generating
+  global currentCube, theta, rad, origin, currentSubset, generating, currentMegaset
   #Where the new terrain starts
   if generating == -1: return 
   x = floor(origin.x + sin(radians(theta)) * rad)
@@ -201,19 +268,20 @@ def genTerrain():
       # Ready to build a megaset? 
       # [-1] last thing in list
       if currentSubset == numSubsets:
+        
+      # Make mega sets at the start, to make it easier to save
+        # megasets.append(Entity(model=cubeModel, texture=cubeTex))
+        # parent all subsets to new megaset
+        for s in subsets:
+          s.parent = megasets[currentMegaset]
+        megasets[currentMegaset].combine(auto_destroy = False)
+        for s in subsets:
+          s.parent=scene
+          # ???
+          # s.disable()
+        currentMegaset += 1
         currentSubset = 0
-        print('Hey that is a lot of cubes')
-        print("*** check the megasets ***")
-      # commented out until mining system works with megasets
-      #   megasets.append(Entity(model=cubeModel, texture=cubeTex))
-      #   # parent all subsets to new megaset
-      #   for s in subsets:
-      #     s.parent = megasets[-1]
-      #   megasets[-1].combine(auto_destroy = False)
-      #   for s in subsets:
-      #     s.parent=scene
-      #   currentSubset = 0
-      #   print("megaset # " + str(len(megasets)))
+        print("megaset # " + str(currentMegaset))
         
   else:
     pass   
