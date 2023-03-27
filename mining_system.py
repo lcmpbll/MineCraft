@@ -6,7 +6,7 @@ from random import randrange, randint, random
 
 class Mining_system: 
 
-  def __init__(this, _subject, _axe, _camera, _subsets ):
+  def __init__(this, _subject, _axe, _camera, _subsets, _megasets ):
     this.grassStrokeTex = 'grass_mono.png'
     this.wireTex = 'wireframe.png'
     this.stoneTex = 'grass_mono.png'
@@ -20,8 +20,9 @@ class Mining_system:
     this.tDic = {}
     # Entity for new builds
     this.builds = Entity(model=this.cubeModel, texture=this.buildTex)
-    # subsets stored to reference in mining
+    # subsets and megasets stored to reference in mining
     this.subsets = _subsets
+    this.megasets = _megasets
     # Build tool entity --floating wire frame cube
     this.bte = Entity(model='cube', texture=this.wireTex, scale=1.01)
     this.build_distance = 3
@@ -255,7 +256,8 @@ class Mining_system:
       # Not done! Also combine newly spawned blocks
       # into builds entity :)
       return  
-
+    # this.iterateOverTerrain(this.subsets)
+    # this.iterateOverTerrain(this.megasets)
     # Our real mining of the terrain :) if not mining blocks
     # Iterate over all the subsets that we have...
     totalV = 0
@@ -283,7 +285,8 @@ class Mining_system:
                 # The mystery of 36 vertices!! :o
                 
                 if totalV==36: break
-        
+
+    
       if vChange == True:
 
         # Now we need to spawn a new cube below
@@ -304,7 +307,103 @@ class Mining_system:
         this.subsets[s].model.generate()
         this.builds.combine()
         return
-  
+      
+    #  totalV = 0
+    for s in range(len(this.megasets)):
+      vChange = False 
+      for v in this.megasets[s].model.vertices:
+        if (v[0] >=this.bte.x - 0.5 and
+            v[0] <=this.bte.x + 0.5 and
+            v[1] >=this.bte.y - 0.5 and
+            v[1] <=this.bte.y + 0.5 and
+            v[2] >=this.bte.z - 0.5 and
+            v[2] <=this.bte.z + 0.5):
+                # Yes!
+                # Move vertex high into air to
+                # give illusion of being destroyed.
+                v[1] = 9999
+                # Note that we have made change.
+                # Gather average height for cave dic.
+                vChange = True
+                # Record new gap on dictionary.
+                # this.tDic[  'x'+str(this.bte.x)+
+                #             'y'+str(this.bte.y)+
+                #             'z'+str(this.bte.z)] = 'gap'
+                totalV += 1
+                # The mystery of 36 vertices!! :o
+                
+                if totalV==36: break
+
+    
+      if vChange == True:
+
+        # Now we need to spawn a new cube below
+        # the bte's position -- if no cube or
+        # gap there already.
+        # Next, spawn 4 cubes to create illusion
+        # of more layers -- if each position is
+        # neither a gap nor a place where terrain
+        # already is.
+        # Record new gap on dictionary.
+        # this.tDic[  'x'+str(this.bte.x)+
+        #       'y'+str(this.bte.y)+
+        #       'z'+str(this.bte.z)] = 'gap'
+        this.tDicRec(this.bte.x, this.bte.y, this.bte.z, 'gap')
+        this.mineSpawn()
+        # Now that we've spawned what (if anything)
+        # we need to, update subset model. Done.
+        this.subsets[s].model.generate()
+        this.builds.combine()
+        return
+      
+  def iterateOverTerrain(this, _terrainType):
+    totalV = 0
+    for s in range(len(_terrainType)):
+      vChange = False 
+      for v in _terrainType[s].model.vertices:
+        if (v[0] >=this.bte.x - 0.5 and
+            v[0] <=this.bte.x + 0.5 and
+            v[1] >=this.bte.y - 0.5 and
+            v[1] <=this.bte.y + 0.5 and
+            v[2] >=this.bte.z - 0.5 and
+            v[2] <=this.bte.z + 0.5):
+                # Yes!
+                # Move vertex high into air to
+                # give illusion of being destroyed.
+                v[1] = 9999
+                # Note that we have made change.
+                # Gather average height for cave dic.
+                vChange = True
+                # Record new gap on dictionary.
+                # this.tDic[  'x'+str(this.bte.x)+
+                #             'y'+str(this.bte.y)+
+                #             'z'+str(this.bte.z)] = 'gap'
+                totalV += 1
+                # The mystery of 36 vertices!! :o
+      
+                if totalV==36: break
+        if vChange == True:
+
+        # Now we need to spawn a new cube below
+        # the bte's position -- if no cube or
+        # gap there already.
+        # Next, spawn 4 cubes to create illusion
+        # of more layers -- if each position is
+        # neither a gap nor a place where terrain
+        # already is.
+        # Record new gap on dictionary.
+        # this.tDic[  'x'+str(this.bte.x)+
+        #       'y'+str(this.bte.y)+
+        #       'z'+str(this.bte.z)] = 'gap'
+          this.tDicRec(this.bte.x, this.bte.y, this.bte.z, 'gap')
+          this.mineSpawn()
+        # Now that we've spawned what (if anything)
+        # we need to, update subset model. Done.
+          _terrainType[s].model.generate()
+          this.builds.combine()
+          return
+
+        
   
   
 
