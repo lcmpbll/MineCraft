@@ -15,6 +15,7 @@ app = Ursina()
 ## Textures 
 chickenTex = 'chicken.png'
 cubeTex = 'block_texture.png'
+buildTex = 'build_texture.png'
 cubeModel = 'moonCube.obj'
 axoTex= 'b_axolotl.png'
 axoModel = 'b_axolotl.obj'
@@ -82,6 +83,18 @@ axe.rotation_y = 90
 axe.rotation_x = 90
 axe.parent = camera
 
+def resetTerrainVs():
+  global currentCube, currentSubset, currentMegaset, theta
+  global rad, generating, canGenerate, subject
+  currentCube = 0
+  currentSubset = 0
+  currentMegaset = 1
+  theta = 0
+  rad = 0
+  generating = -1
+  canGenerate = -1
+  subject.rotation = Vec3(0, 0, 0)
+  
 def createTerrainEntities():
   # global numMegasets
   # in terrain_system
@@ -140,24 +153,83 @@ def save():
       m.parent = scene
     destroy(e)
     
+    buildsModel = [ varch.builds.model.vertices,
+                    varch.builds.model.triangles,
+                    varch.builds.model.colors,
+                    varch.builds.model.uvs  ]
     newlist = [ 
                 subject.position,
                 varch.tDic,
                 subDic,
                 terrainModel,
-                noise
+                noise,
+                buildsModel
               ]
     # write game state object to file 
     # then clear out temporary lists
     pickle.dump(newlist, f)
     newlist.clear()
     terrainModel.clear()
+
+
+   
+      
     
     
 
 def load():
   import pickle, os, sys
+  global subDic, noise, currentSubset, currentCube, currentMegaset
+  # Open main module directory of correct file
+  path = os.path.dirname(os.path.abspath(sys.argv[0]))
+  os.chdir(path)
+  with open('pickling.txt', 'rb') as f:
+    nd = pickle.load(f)
+    # populate our familiar terrain variables with the saved data.
+    subject.position = copy(nd[0])
+    varch.tDic = copy(nd[1])
+    subDic = copy(nd[2])
+    terrainModel = copy(nd[3])
+    noise = copy(nd[4])
+    buildsModel = copy(nd[5])
+    
+    # Now delete current terrain and builds
+    for s in subCubes:
+      destroy(s)
+    for s in subsets:
+      destroy(s)
+    for m in megasets:
+      destroy(m)
+    destroy(varch.builds)
+    
+    subCubes.clear()
+    subsets.clear()
+    megasets.clear()
+    
+    createTerrainEntities()
 
+    
+    megasets[0].enable()
+    
+    megasets[0] = Entity(model=Mesh(
+                    vertices = terrainModel[0],
+                    triangles = terrainModel[1],
+                    colors = terrainModel[2],
+                    uvs = terrainModel[3]
+                  ), texture = cubeTex)
+    # resest terrain Generation Varaibles
+    varch.builds = Entity(model=Mesh(
+        vertices = buildsModel[0],
+        triangles = buildsModel[1],
+        colors = buildsModel[2],
+        uvs = buildsModel[3]
+    ), texture = buildTex)
+    
+    resetTerrainVs()
+    
+      
+  
+  
 #will create a cave system object called anush
 anush = Caves()
 solar = Trees()
