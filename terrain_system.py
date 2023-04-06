@@ -8,7 +8,7 @@ class MeshTerrain:
         this.numSubsets = 1
         this.subWidth = 128
         this.block = load_model('block.obj')
-        this.textureAtlas = 'block_texture.png'
+        this.textureAtlas = 'texture_atlas_3.png'
         for i in range(0, this.numSubsets):
             e = Entity(model = Mesh(), texture = this.textureAtlas)
             e.texture_scale*=64/e.texture.width
