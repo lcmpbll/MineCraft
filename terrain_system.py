@@ -1,6 +1,6 @@
 # from ursina import Entity, load_model, Mesh, model
 from ursina import *
-from random import randrange
+from random import randrange, random
 from perlin import Perlin
 
 class MeshTerrain:
@@ -10,6 +10,8 @@ class MeshTerrain:
         this.subWidth = 128
         this.block = load_model('block.obj')
         this.textureAtlas = 'texture_atlas_3.png'
+        this.numVertices = len(this.block.vertices)
+        print(this.numVertices)
         this.terrainDic = {}
         this.perlin = Perlin()
         for i in range(0, this.numSubsets):
@@ -35,10 +37,16 @@ class MeshTerrain:
         model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
         # record terrain in dictionary
         this.recTerrainDic(_x, _y, _z, "t")
-        # texture atlas at coord for grass
+        # decide random tint for color of block
+        c = random() - 0.5
+        model.colors.extend((Vec4(1-c, 1-c, 1-c, 1)) * this.numVertices)
         if _y > 2:
+        # texture atlas at coord for grass
             uu = 8
             uv = 6
+        # elif _y < -2:
+        #     uu = 8 
+        #     uv = 8
         else:
             uu = 8
             uv = 7
