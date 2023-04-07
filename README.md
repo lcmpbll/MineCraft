@@ -9,7 +9,7 @@
 ## Technologies Used
 
 * Gimp
-* Ursina
+* Ursina by Peta Amland
 * Python
 * Perlin Noise
 * Numpy
