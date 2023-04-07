@@ -69,13 +69,16 @@ class MeshTerrain:
         elif _y < -2:
             uu = 9 
             uv = 7
-            this.genWaterBlock(_x, _y + 1, _z)
+            og_y = _y
+            this.genWaterBlock(_x, _y + 1, _z, og_y)
         else:
             uu = 8
             uv = 7
         model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
         
-    def genWaterBlock(this, _x, _y, _z, subset=-1):
+    def genWaterBlock(this, _x, _y, _z, og_y, subset=-1):
+        if subset == -1:
+            subset = this.currentSubset
         if _y < -1:
             if subset == -1:
                 subset = this.currentSubset
@@ -88,17 +91,15 @@ class MeshTerrain:
             # vob = (subset, len(model.vertices) - 37)
             # this.recDic(this.vertexDic, _x, _y, _z, vob)
             # decide random tint for color of block
-            c = random() - 0.5
-            model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
-            # if _y > 2:
-            # # texture atlas at coord for grass
-            #     uu = 8
-            #     uv = 6
+            c = abs(og_y) /100
+            model.colors.extend((Vec4(0.75 + c, 0.75 + c, 0.75 + c, 0.5),) * this.numVertices)
+            # water coords
             uu = 9 
             uv = 7
+            # if it is still deep do it again!
             if _y < -2:
                 _y += 1
-                this.genWaterBlock(_x, _y, _z)
+                this.genWaterBlock(_x, _y, _z, og_y)
             # else:
             #     uu = 8
             #     uv = 7
