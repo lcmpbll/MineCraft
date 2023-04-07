@@ -10,6 +10,8 @@ indra = Sky()
 indra.color = window.color
 subject = FirstPersonController()
 subject.gravity = 0.0
+subject.cursor.visible = False
+
 terrain = MeshTerrain()
 
 def input(key):
