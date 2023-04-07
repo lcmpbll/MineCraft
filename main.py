@@ -13,12 +13,24 @@ subject.gravity = 0.0
 subject.cursor.visible = False
 
 terrain = MeshTerrain()
-
+count = 0
+prev_x = subject.x
+prev_z = subject.z
 def input(key):
     if key == 'q':
         app.userExit()
 
 def update():
+    global count, prev_x, prev_z
+    count += 1
+    if count == 2:
+        #Generate terrain at current swirl position
+        terrain.genTerrain()
+        count = 0
+    if abs(subject.x - prev_x) > 4 or abs(subject.z - prev_z):
+        prev_x = subject.x
+        prev_z = subject.z
+        terrain.swirlEngine.reset(prev_x, prev_z)
     blockFound = False
     step = 2
     height = 1.86
