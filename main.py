@@ -19,14 +19,18 @@ prev_z = subject.z
 def input(key):
     if key == 'q':
         app.userExit()
+    elif key == 'space':
+        subject.y += 2
+    else:
+        terrain.input(key)
 
 def update():
     global count, prev_x, prev_z
     count += 1
     
-    if count == 2:
+    terrain.genTerrain()
+    if count == 4:
         #Generate terrain at current swirl position
-        terrain.genTerrain()
         terrain.update(subject.position, camera)
         count = 0
         
