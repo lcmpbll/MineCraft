@@ -12,21 +12,30 @@ subject = FirstPersonController()
 subject.gravity = 0.0
 subject.cursor.visible = False
 
-terrain = MeshTerrain()
+terrain = MeshTerrain(subject.position, camera)
 count = 0
 prev_x = subject.x
 prev_z = subject.z
 def input(key):
     if key == 'q':
         app.userExit()
+    elif key == 'space':
+        subject.y += 2
+    else:
+        terrain.input(key)
 
 def update():
     global count, prev_x, prev_z
     count += 1
-    if count == 2:
+    
+    terrain.genTerrain()
+    if count == 4:
         #Generate terrain at current swirl position
-        terrain.genTerrain()
+        terrain.update(subject.position, camera)
         count = 0
+        
+        # Vec3(0, 0, 1) camera.forward
+        #Vec3(0, 1.86, 0) starting position
     if abs(subject.x - prev_x) > 4 or abs(subject.z - prev_z):
         prev_x = subject.x
         prev_z = subject.z
@@ -39,7 +48,7 @@ def update():
     y = floor(subject.y + 0.5)
     z = floor(subject.z + 0.5)
     for i in range(-step, step):
-        if terrain.getTerrainDic(x, y + i, z) == 't': 
+        if terrain.getDic(terrain.terrainDic, x, y + i, z) == 't': 
             target = y + i + height
             blockFound = True
             break
