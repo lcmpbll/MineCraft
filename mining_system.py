@@ -25,7 +25,7 @@ def mine( terrainDic, vertexDic, subsets):
   if not bte.visible: 
     return
   else: 
-    wv = parseDict.getDictionary(vertexDic, floor(bte.x), floor(bte.y), floor(bte.z))
+    wv = parseDict.getDictionary(vertexDic, floor(bte.x), floor(bte.y - 0.5), floor(bte.z))
 
     #(25, 215) wv - subset, subcube?
     for v in range(wv[1] +1, wv[1] + 37):
@@ -34,8 +34,8 @@ def mine( terrainDic, vertexDic, subsets):
     subsets[wv[0]].model.generate()
     #Fall through floor
     # you could just floor once if you floored after passing through to the parse
-    parseDict.recDictionary(terrainDic, floor(bte.x), floor(bte.y), floor(bte.z), 'g')
-    parseDict.recDictionary(vertexDic, floor(bte.x), floor(bte.y), floor(bte.z), None)
+    parseDict.recDictionary(terrainDic, floor(bte.x), floor(bte.y - 0.5), floor(bte.z), 'g')
+    parseDict.recDictionary(vertexDic, floor(bte.x), floor(bte.y -0.5), floor(bte.z), None)
     # model is .5 off of the ursina model, the subset
     return (bte.position + Vec3(0, -0.5, 0), wv[0])
     
