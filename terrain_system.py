@@ -64,7 +64,7 @@ class MeshTerrain:
         this.recDic(this.terrainDic, _x, _y, _z, "t")
         # also recodr gap 
         if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
-            this.recDic(this.terrainDic, _x, _y + 1, _z, 'g')
+            this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # record subet index and first vertext of the block. 
         vob = (subset, len(model.vertices) - 37)
         this.recDic(this.vertexDic, _x, _y, _z, vob)
@@ -76,36 +76,45 @@ class MeshTerrain:
             uu = 8
             uv = 6
         elif _y < -2:
-            if this.getDic(this.terrainDic, _x, _y, _z) == 'g':
-                if this.checkForWater(_x, _y, _z) == True:
+            if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
+                print(this.getDic(this.terrainDic, _x,_y + 1, _z))
+                if this.checkForWater(_x, _y, _z, 'w') == True:
+                    # this.recDic(this.terrainDic, _x, _y, _z, 'w')
                     uu = 9 
                     uv = 7
-                    og_y = _y
+                    og_y = _y - 1
                     this.genWaterBlock(_x, _y + 1, _z, og_y)
                 else: 
                     uu = 10
                     uv = 7
-            uu = 9 
-            uv = 7
-            og_y = _y
-            this.genWaterBlock(_x, _y + 1, _z, og_y)
+            else:
+                uu = 9 
+                uv = 7
+                og_y = _y
+                this.genWaterBlock(_x, _y + 1, _z, og_y)
         else:
             uu = 8
             uv = 7
         model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
-    def checkForWater(this, _x, _y, _z, subset=-1):
+    
+    def checkForWater(this, _x, _y, _z, checkfor, subset=-1):
         cp = Vec3(_x, _y, _z)
         isByWater = False
         if subset == -1:
             subset = this.currentSubset
+        #figure out this posititioninng
         wp = [
-                Vec3(1, 0 , 0),
-                Vec3(-1, 0, 0),
-                Vec3(0, 0, 1),
-                Vec3(0, 0, -1)
+                Vec3(1, 1 , 0),
+                Vec3(-1, 1, 0),
+                Vec3(0, 1, 1),
+                Vec3(0, 1, -1)
         ]
         for i in range(0, 4):
-            this.getDic(this.terrainDic, )
+            np  = cp + wp[i]
+            if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
+                isByWater = True
+                break
+        return isByWater
         
     def genWaterBlock(this, _x, _y, _z, og_y, subset=-1):
         if subset == -1:
@@ -122,13 +131,13 @@ class MeshTerrain:
             # vob = (subset, len(model.vertices) - 37)
             # this.recDic(this.vertexDic, _x, _y, _z, vob)
             # decide random tint for color of block
-            c = abs(og_y) /100
-            model.colors.extend((Vec4(0.75 + c, 0.75 + c, 0.75 + c, 0.5),) * this.numVertices)
+            c = (abs(og_y) /100) * 4
+            model.colors.extend((Vec4( c,  c,  c, 0.5),) * this.numVertices)
             # water coords
             uu = 9 
             uv = 7
             # if it is still deep do it again!
-            if _y < -2:
+            if _y < -2 or this.checkForWater(_x, _y, _z, 'g') == True:
                 _y += 1
                 this.genWaterBlock(_x, _y, _z, og_y)
             # else:
@@ -150,6 +159,8 @@ class MeshTerrain:
         for i in range(0,6):
             np = epi + wp[i]
             if this.getDic(this.terrainDic, np.x, np.y, np.z) == None:
+                
+                
                 this.genBlock(np.x, np.y, np.z, subset)
         
             
