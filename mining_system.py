@@ -26,7 +26,8 @@ def mine( terrainDic, vertexDic, subsets):
     return
   else: 
     wv = parseDict.getDictionary(vertexDic, floor(bte.x), floor(bte.y - 0.5), floor(bte.z))
-
+    # have we got a block highlighted? if not return 
+    if wv == None: return
     #(25, 215) wv - subset, subcube?
     for v in range(wv[1] +1, wv[1] + 37):
       # for the spot in this subset for each of the verticies ++ 999 to pos y
