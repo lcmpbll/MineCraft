@@ -3,7 +3,8 @@ from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model
 from random import randrange, random
 from perlin import Perlin
 from swirl_engine import SwirlEngine
-from mining_system import MiningSystem
+from mining_system import *
+
 
 class MeshTerrain:
     def __init__(this, pos, cam):
@@ -20,14 +21,19 @@ class MeshTerrain:
         # our vertex dictionary  --- for mining
         this.vertexDic = {}
         this.perlin = Perlin()
-        this.mining = MiningSystem()
+       
         for i in range(0, this.numSubsets):
             e = Entity(model = Mesh(), texture = this.textureAtlas)
             e.texture_scale*=64/e.texture.width
             this.subsets.append(e)
+    def input(this, key):
+        if key == 'left mouse up':
+           epi = mine(this.terrainDic, this.vertexDic, this.subsets)
+           this.genWalls(epi[0], epi[1])
+           this.subsets[epi[1]].model.generate()
     def update(this, pos, cam):
         
-        this.mining.highlight(pos, cam, this.terrainDic)
+        highlight(pos, cam, this.terrainDic)
     def getDic(this, dic, _x, _y, _z):
         return dic.get('x' + str(floor(_x)) + 'y' + str(floor(_y)) + 'z' + str(floor(_z)))
     def recDic(this, dic, _x, _y, _z, _rec):
@@ -56,6 +62,9 @@ class MeshTerrain:
         model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
         # record terrain in dictionary
         this.recDic(this.terrainDic, _x, _y, _z, "t")
+        # also recodr gap 
+        if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
+            this.recDic(this.terrainDic, _x, _y + 1, _z, 'g')
         # record subet index and first vertext of the block. 
         vob = (subset, len(model.vertices) - 37)
         this.recDic(this.vertexDic, _x, _y, _z, vob)
@@ -67,6 +76,15 @@ class MeshTerrain:
             uu = 8
             uv = 6
         elif _y < -2:
+            if this.getDic(this.terrainDic, _x, _y, _z) == 'g':
+                if this.checkForWater(_x, _y, _z) == True:
+                    uu = 9 
+                    uv = 7
+                    og_y = _y
+                    this.genWaterBlock(_x, _y + 1, _z, og_y)
+                else: 
+                    uu = 10
+                    uv = 7
             uu = 9 
             uv = 7
             og_y = _y
@@ -75,6 +93,19 @@ class MeshTerrain:
             uu = 8
             uv = 7
         model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
+    def checkForWater(this, _x, _y, _z, subset=-1):
+        cp = Vec3(_x, _y, _z)
+        isByWater = False
+        if subset == -1:
+            subset = this.currentSubset
+        wp = [
+                Vec3(1, 0 , 0),
+                Vec3(-1, 0, 0),
+                Vec3(0, 0, 1),
+                Vec3(0, 0, -1)
+        ]
+        for i in range(0, 4):
+            this.getDic(this.terrainDic, )
         
     def genWaterBlock(this, _x, _y, _z, og_y, subset=-1):
         if subset == -1:
@@ -104,6 +135,23 @@ class MeshTerrain:
             #     uu = 8
             #     uv = 7
             model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
+    # After mining to create illusion of depth
+    def genWalls(this, epi, subset):
+        if epi == None: return
+        #wall position
+        wp = [
+                Vec3(0,1,0),
+                Vec3(0,-1,0),
+                Vec3(0,0,1),
+                Vec3(0,0,-1),
+                Vec3(1,0,0),
+                Vec3(-1,0,0)
+        ]
+        for i in range(0,6):
+            np = epi + wp[i]
+            if this.getDic(this.terrainDic, np.x, np.y, np.z) == None:
+                this.genBlock(np.x, np.y, np.z, subset)
+        
             
         
         
