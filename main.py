@@ -1,6 +1,8 @@
 from ursina import *
+from random import random
 from ursina.prefabs.first_person_controller import FirstPersonController 
 from terrain_system import MeshTerrain
+from flake import Flake
 
 # this is for updating and moving character
 app = Ursina()
@@ -13,6 +15,17 @@ subject.gravity = 0.0
 subject.cursor.visible = False
 
 terrain = MeshTerrain(subject.position, camera)
+# audio stuff
+step_audio = Audio('step.ogg', autoplay=False, loop=False)
+snow_step_audio = Audio('snowStep.mp3', autoplay=False, loop=False)
+# create and hold flakes
+flakes = []
+def generateFlakes():
+    
+    for i in range(128):
+        e = Flake(subject.position)
+        flakes.append(e)
+    
 count = 0
 prev_x = subject.x
 prev_z = subject.z
@@ -27,7 +40,12 @@ def input(key):
 def update():
     global count, prev_x, prev_z
     count += 1
+    if subject.position.y > 2 and len(flakes) < 128:
+        generateFlakes()
     
+    for i in range(len(flakes)):
+        flakes[i].physics(subject.position)
+        
     terrain.genTerrain()
     if count == 4:
         #Generate terrain at current swirl position
@@ -36,10 +54,21 @@ def update():
         
         # Vec3(0, 0, 1) camera.forward
         #Vec3(0, 1.86, 0) starting position
-    if abs(subject.x - prev_x) > 4 or abs(subject.z - prev_z):
+    if abs(subject.x - prev_x) > 1 or abs(subject.z - prev_z) > 1:
         prev_x = subject.x
         prev_z = subject.z
         terrain.swirlEngine.reset(prev_x, prev_z)
+        if step_audio.playing == False and snow_step_audio.playing == False:
+            snow_step_audio.pitch = random() + 0.25
+            if subject.y <= -2:
+               step_audio.pitch = 0.35 + random()/10
+            else: 
+                step_audio.pitch = random() + abs(subject.y/4)
+            if subject.y > 4:
+                snow_step_audio.play()
+            else:
+                print(step_audio.pitch, subject.y)
+                step_audio.play()
     blockFound = False
     step = 2
     height = 1.86
