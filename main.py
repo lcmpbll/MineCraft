@@ -67,7 +67,6 @@ def update():
             if subject.y > 4:
                 snow_step_audio.play()
             else:
-                print(step_audio.pitch, subject.y)
                 step_audio.play()
     blockFound = False
     step = 2
