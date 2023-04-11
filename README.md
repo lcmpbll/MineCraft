@@ -14,3 +14,4 @@
 * Perlin Noise
 * Numpy
 * Block Bench
+* Audacity - for sound oggs
