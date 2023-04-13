@@ -1,5 +1,5 @@
 
-from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model
+from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model, held_keys
 from random import random
 from perlin import Perlin
 from swirl_engine import SwirlEngine
@@ -28,12 +28,14 @@ class MeshTerrain:
             e = Entity(model = Mesh(), texture = this.textureAtlas)
             e.texture_scale*=64/e.texture.width
             this.subsets.append(e)
+    def do_mining(this):
+        epi = mine(this.terrainDic, this.vertexDic, this.subsets)
+        if epi != None:
+            this.genWalls(epi[0], epi[1])
+            this.subsets[epi[1]].model.generate()
     def input(this, key):
         if key == 'left mouse up' and bte.visible == True:
-            epi = mine(this.terrainDic, this.vertexDic, this.subsets)
-            if epi != None:
-                this.genWalls(epi[0], epi[1])
-                this.subsets[epi[1]].model.generate()
+           this.do_mining()
         if key == 'right mouse up' and bte.visible:
             buildSite = checkBuild(bte.position, this.terrainDic)
             if buildSite != None:
@@ -41,8 +43,15 @@ class MeshTerrain:
                 this.subsets[0].model.generate()
                 gapShell(buildSite, this.terrainDic)
     def update(this, pos, cam):
-        
         highlight(pos, cam, this.terrainDic)
+        #Blister mining == True
+        if bte.visible:
+            #this is a for loop iterating over two variables
+            for key, value in held_keys.items():
+                if key == 'left mouse' and value == 1:
+                    this.do_mining()
+                    
+                    
     def getDic(this, dic, _x, _y, _z):
         return dic.get((floor(_x), floor(_y), floor(_z)))
         
