@@ -1,18 +1,19 @@
 
-from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model
+from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model, held_keys
 from random import random
 from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
 from building_system import checkBuild, gapShell
 
-
+## WIP water flow
+# wip buildd on top of blocks
 class MeshTerrain:
     def __init__(this, pos, cam):
         this.subsets = []
-        this.numSubsets = 128
+        this.numSubsets = 1024
         # must be even see gen terrain
-        this.subWidth = 4
+        this.subWidth = 6
         this.currentSubset = 0
         this.swirlEngine = SwirlEngine(this.subWidth)
         this.block = load_model('block.obj')
@@ -27,12 +28,14 @@ class MeshTerrain:
             e = Entity(model = Mesh(), texture = this.textureAtlas)
             e.texture_scale*=64/e.texture.width
             this.subsets.append(e)
+    def do_mining(this):
+        epi = mine(this.terrainDic, this.vertexDic, this.subsets)
+        if epi != None:
+            this.genWalls(epi[0], epi[1])
+            this.subsets[epi[1]].model.generate()
     def input(this, key):
         if key == 'left mouse up' and bte.visible == True:
-            epi = mine(this.terrainDic, this.vertexDic, this.subsets)
-            if epi != None:
-                this.genWalls(epi[0], epi[1])
-                this.subsets[epi[1]].model.generate()
+           this.do_mining()
         if key == 'right mouse up' and bte.visible:
             buildSite = checkBuild(bte.position, this.terrainDic)
             if buildSite != None:
@@ -40,8 +43,15 @@ class MeshTerrain:
                 this.subsets[0].model.generate()
                 gapShell(buildSite, this.terrainDic)
     def update(this, pos, cam):
-        
         highlight(pos, cam, this.terrainDic)
+        #Blister mining == True
+        if bte.visible:
+            #this is a for loop iterating over two variables
+            for key, value in held_keys.items():
+                if key == 'left mouse' and value == 1:
+                    this.do_mining()
+                    
+                    
     def getDic(this, dic, _x, _y, _z):
         return dic.get((floor(_x), floor(_y), floor(_z)))
         
@@ -63,8 +73,9 @@ class MeshTerrain:
             this.currentSubset += 1 
         else:
             this.currentSubset = 0 
-        this.swirlEngine.move()   
-    def genBlock(this, _x, _y, _z, subset=-1, mining=False):
+        this.swirlEngine.move() 
+      
+    def genBlock(this, _x, _y, _z, subset=-1, mining=False, building=False):
         if subset == -1:
             subset = this.currentSubset
         # Extend to the vertices of our model, or first subset
@@ -73,8 +84,12 @@ class MeshTerrain:
         # record terrain in dictionary
         this.recDic(this.terrainDic, _x, _y, _z, "t")
         # also recodr gap 
-        if mining == False:
+        if mining == False and building != True:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
+                this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
+        if building == True:
+              #not sure if this is necessary
+              if this.getDic(this.terrainDic, _x, _y + 1, _z) == None or this.getDic(this.terrainDic, _x, _y +1, _z) == 'g' :
                 this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # record subet index and first vertext of the block. 
         vob = (subset, len(model.vertices) - 37)
@@ -202,10 +217,8 @@ class MeshTerrain:
         for i in range(0,6):
             np = epi + wp[i]
             if this.getDic(this.terrainDic, np.x, np.y, np.z) == None:
-                
-                
-                this.genBlock(np.x, np.y, np.z, subset, True)
-   
+                this.genBlock(np.x, np.y, np.z, subset, mining=True)
+
                 
 
         

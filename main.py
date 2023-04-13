@@ -4,6 +4,7 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 from terrain_system import MeshTerrain
 from flake import SnowFall
 
+
 # this is for updating and moving character
 app = Ursina()
 #Initial Variables / imports, creations
@@ -15,6 +16,10 @@ subject.gravity = 0.0
 subject.cursor.visible = False
 
 terrain = MeshTerrain(subject.position, camera)
+generatingTerrain = True
+# start with 128 * subwidth ready terrain blocks
+for i in range(128):
+    terrain.genTerrain()
 snowFall = SnowFall(subject)   
 # audio stuff
 step_audio = Audio('step.ogg', autoplay=False, loop=False)
@@ -30,21 +35,30 @@ count = 0
 prev_x = subject.x
 prev_z = subject.z
 def input(key):
+    global generatingTerrain
     if key == 'q':
         app.userExit()
     elif key == 'space':
         subject.y += 2
+    elif key == 'g':
+        generatingTerrain = not generatingTerrain
     else:
         terrain.input(key)
 
 def update():
     global count, prev_x, prev_z
-    count += 1     
-    terrain.genTerrain()
-    if count == 4:
-        #Generate terrain at current swirl position
-        terrain.update(subject.position, camera)
+    count += 1 
+    terrain.update(subject.position, camera)
+        
+  
+    if count == 5:
         count = 0
+        #Generate terrain at current swirl position
+        # genrate a certain number of terrain chunks
+        if generatingTerrain:
+            for i in range(4):    
+                terrain.genTerrain()
+    
         
         # Vec3(0, 0, 1) camera.forward
         #Vec3(0, 1.86, 0) starting position
@@ -85,7 +99,8 @@ def update():
         #gravity fall : <
         subject.y -= 9.8 * time.dt 
     pass
-terrain.genTerrain()
-  
+guy = Entity(model='panda_mod', texture='panda_tex')
+
+guy.position = copy(subject.position) + Vec3(-6, -1, 9)
 app.run()
 

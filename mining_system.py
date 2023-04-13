@@ -7,12 +7,15 @@ bte = Entity(model='cube', color=color.rgba(1,1,0,0.4))
 bte.scale = 1.001
 parseDict = DictionaryCraft()
 def highlight( pos, camera, terrainDic):
-  for i in range(15, 1, -1):
+  # some times I fall through the terrain after building
+
+  for i in range(1, 32):
     #adjust for player's height
-    wp = pos + Vec3(0, 1.86, 0) + camera.forward * i 
-    x = floor(wp.x)
+    wp = pos + Vec3(0, 1.86, 0) + camera.forward * (i * 0.5)
+    #round to improve accuracy,  can still be improved
+    x = round(wp.x)
     y = floor(wp.y)
-    z = floor(wp.z)
+    z = round(wp.z)
     bte.y = y + 0.5
     bte.z = z
     bte.x = x
