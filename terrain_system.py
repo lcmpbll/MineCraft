@@ -5,7 +5,8 @@ from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
 
-
+## WIP water flow
+# wip buildd on top of blocks
 class MeshTerrain:
     def __init__(this, pos, cam):
         this.subsets = []
@@ -54,8 +55,9 @@ class MeshTerrain:
             this.currentSubset += 1 
         else:
             this.currentSubset = 0 
-        this.swirlEngine.move()   
-    def genBlock(this, _x, _y, _z, subset=-1, mining=False):
+        this.swirlEngine.move() 
+      
+    def genBlock(this, _x, _y, _z, subset=-1, mining=False, building=False):
         if subset == -1:
             subset = this.currentSubset
         # Extend to the vertices of our model, or first subset
@@ -64,9 +66,12 @@ class MeshTerrain:
         # record terrain in dictionary
         this.recDic(this.terrainDic, _x, _y, _z, "t")
         # also recodr gap 
-        if mining == False:
+        if mining == False and building != True:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
                 this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
+        if building == True:
+              if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
+                this.recDic(this.terrainDic, _x, _y + 1, _z, 'g')
         # record subet index and first vertext of the block. 
         vob = (subset, len(model.vertices) - 37)
         this.recDic(this.vertexDic, _x, _y, _z, vob)
@@ -194,7 +199,7 @@ class MeshTerrain:
             if this.getDic(this.terrainDic, np.x, np.y, np.z) == None:
                 
                 
-                this.genBlock(np.x, np.y, np.z, subset, True)
+                this.genBlock(np.x, np.y, np.z, subset, mining=True)
                 
 
         
