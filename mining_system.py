@@ -8,7 +8,8 @@ bte.scale = 1.001
 parseDict = DictionaryCraft()
 def highlight( pos, camera, terrainDic):
   # some times I fall through the terrain after building
-  for i in range(30, 1, -1):
+
+  for i in range(1, 32):
     #adjust for player's height
     wp = pos + Vec3(0, 1.86, 0) + camera.forward * (i * 0.5)
     #round to improve accuracy,  can still be improved
