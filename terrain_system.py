@@ -1,4 +1,4 @@
-#from ursina import *
+
 from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model
 from random import randrange, random
 from perlin import Perlin
@@ -195,6 +195,9 @@ class MeshTerrain:
                 
                 
                 this.genBlock(np.x, np.y, np.z, subset, True)
+                
+
+        
         
             
         
