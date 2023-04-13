@@ -4,6 +4,7 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 from terrain_system import MeshTerrain
 from flake import SnowFall
 
+
 # this is for updating and moving character
 app = Ursina()
 #Initial Variables / imports, creations
@@ -98,7 +99,8 @@ def update():
         #gravity fall : <
         subject.y -= 9.8 * time.dt 
     pass
+guy = Entity(model='panda_mod', texture='panda_tex')
 
-  
+guy.position = copy(subject.position) + Vec3(-6, -1, 9)
 app.run()
 
