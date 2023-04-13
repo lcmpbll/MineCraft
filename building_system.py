@@ -9,10 +9,13 @@ def checkBuild(_bsite, _terrainDic):
     y = floor(_bsite.y +1)
     z = floor(_bsite.z)
     #first check there isn't already terrain there y + 1 because y is one below the site
-    if _terrainDic.get((x, y, z)) != 'a' and _terrainDic.get((x, y, z)) != None:
-      print('Cannot build here sorry')
-      return None
-   
+    if _terrainDic.get((x, y, z)) != 'a' and _terrainDic.get((x, y, z)) != 'g':
+      if _terrainDic.get((x, y, z)) != None:
+        print(_terrainDic.get((x, y, z)))
+        print('Cannot build here sorry')
+        return None
+      
+    
     # can build if we're here
     return Vec3(x, y, z)
 
