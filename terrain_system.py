@@ -4,6 +4,7 @@ from random import random
 from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
+from building_system import checkBuild, gapShell
 
 
 class MeshTerrain:
@@ -32,6 +33,12 @@ class MeshTerrain:
             if epi != None:
                 this.genWalls(epi[0], epi[1])
                 this.subsets[epi[1]].model.generate()
+        if key == 'right mouse up' and bte.visible:
+            buildSite = checkBuild(bte.position, this.terrainDic)
+            if buildSite != None:
+                this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0)
+                this.subsets[0].model.generate()
+                gapShell(buildSite, this.terrainDic)
     def update(this, pos, cam):
         
         highlight(pos, cam, this.terrainDic)
@@ -179,7 +186,8 @@ class MeshTerrain:
             #     uv = 7
             model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
     # After mining to create illusion of depth
-    # soil is perhaps pass  
+    # soil is perhaps pass 
+     
     def genWalls(this, epi, subset):
         if epi == None: return
         #wall position
@@ -197,6 +205,7 @@ class MeshTerrain:
                 
                 
                 this.genBlock(np.x, np.y, np.z, subset, True)
+   
                 
 
         
