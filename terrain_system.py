@@ -79,8 +79,9 @@ class MeshTerrain:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
                 this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         if building == True:
-              if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
-                this.recDic(this.terrainDic, _x, _y + 1, _z, 'g')
+              #not sure if this is necessary
+              if this.getDic(this.terrainDic, _x, _y + 1, _z) == None or this.getDic(this.terrainDic, _x, _y +1, _z) == 'g' :
+                this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # record subet index and first vertext of the block. 
         vob = (subset, len(model.vertices) - 37)
         this.recDic(this.vertexDic, _x, _y, _z, vob)
