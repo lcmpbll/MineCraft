@@ -70,7 +70,11 @@ def update():
     y = floor(subject.y + 0.5)
     z = floor(subject.z + 0.5)
     for i in range(-step, step):
-        if terrain.getDic(terrain.terrainDic, x, y + i, z) == 't':   
+        if terrain.getDic(terrain.terrainDic, x, y + i, z) == 't': 
+            if terrain.getDic(terrain.terrainDic, x, y+i + 1, z) == 't':
+                target = y + i + 1 + height
+                blockFound = True
+                break    
             target = y + i + height
             blockFound = True
             break
