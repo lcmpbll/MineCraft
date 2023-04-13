@@ -1,9 +1,10 @@
 
 from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model
-from random import randrange, random
+from random import random
 from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
+from building_system import checkBuild, gapShell
 
 
 class MeshTerrain:
@@ -32,13 +33,21 @@ class MeshTerrain:
             if epi != None:
                 this.genWalls(epi[0], epi[1])
                 this.subsets[epi[1]].model.generate()
+        if key == 'right mouse up' and bte.visible:
+            buildSite = checkBuild(bte.position, this.terrainDic)
+            if buildSite != None:
+                this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0)
+                this.subsets[0].model.generate()
+                gapShell(buildSite, this.terrainDic)
     def update(this, pos, cam):
         
         highlight(pos, cam, this.terrainDic)
     def getDic(this, dic, _x, _y, _z):
-        return dic.get('x' + str(floor(_x)) + 'y' + str(floor(_y)) + 'z' + str(floor(_z)))
+        return dic.get((floor(_x), floor(_y), floor(_z)))
+        
     def recDic(this, dic, _x, _y, _z, _rec):
-        dic['x' + str(floor(_x)) + 'y' + str(floor(_y)) + 'z' + str(floor(_z))] = _rec
+        dic[(floor(_x), floor(_y), floor(_z))] = _rec
+        
     def genTerrain(this):
         # get current position as we swirl around the world
         x = floor(this.swirlEngine.pos.x)
@@ -177,7 +186,8 @@ class MeshTerrain:
             #     uv = 7
             model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
     # After mining to create illusion of depth
-    # soil is perhaps pass  
+    # soil is perhaps pass 
+     
     def genWalls(this, epi, subset):
         if epi == None: return
         #wall position
@@ -195,6 +205,7 @@ class MeshTerrain:
                 
                 
                 this.genBlock(np.x, np.y, np.z, subset, True)
+   
                 
 
         

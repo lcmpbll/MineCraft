@@ -2,7 +2,7 @@ from ursina import *
 from random import random
 from ursina.prefabs.first_person_controller import FirstPersonController 
 from terrain_system import MeshTerrain
-from flake import Flake
+from flake import SnowFall
 
 # this is for updating and moving character
 app = Ursina()
@@ -15,17 +15,17 @@ subject.gravity = 0.0
 subject.cursor.visible = False
 
 terrain = MeshTerrain(subject.position, camera)
+snowFall = SnowFall(subject)   
 # audio stuff
 step_audio = Audio('step.ogg', autoplay=False, loop=False)
 snow_step_audio = Audio('snowStep.mp3', autoplay=False, loop=False)
 # create and hold flakes
-flakes = []
-def generateFlakes():
+# flakes = []
+# def generateFlakes():
     
-    for i in range(128):
-        e = Flake(subject.position)
-        flakes.append(e)
-    
+#     for i in range(128):
+#         e = Flake(subject.position)
+#         flakes.append(e)
 count = 0
 prev_x = subject.x
 prev_z = subject.z
@@ -39,13 +39,7 @@ def input(key):
 
 def update():
     global count, prev_x, prev_z
-    count += 1
-    if subject.position.y > 2 and len(flakes) < 128:
-        generateFlakes()
-    
-    for i in range(len(flakes)):
-        flakes[i].physics(subject.position)
-        
+    count += 1     
     terrain.genTerrain()
     if count == 4:
         #Generate terrain at current swirl position
@@ -77,6 +71,10 @@ def update():
     z = floor(subject.z + 0.5)
     for i in range(-step, step):
         if terrain.getDic(terrain.terrainDic, x, y + i, z) == 't': 
+            if terrain.getDic(terrain.terrainDic, x, y+i + 1, z) == 't':
+                target = y + i + 1 + height
+                blockFound = True
+                break    
             target = y + i + height
             blockFound = True
             break
