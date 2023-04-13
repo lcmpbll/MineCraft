@@ -1,6 +1,6 @@
 
 from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model
-from random import randrange, random
+from random import random
 from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
