@@ -36,9 +36,11 @@ class MeshTerrain:
         
         highlight(pos, cam, this.terrainDic)
     def getDic(this, dic, _x, _y, _z):
-        return dic.get('x' + str(floor(_x)) + 'y' + str(floor(_y)) + 'z' + str(floor(_z)))
+        return dic.get((floor(_x), floor(_y), floor(_z)))
+        #return dic.get('x' + str(floor(_x)) + 'y' + str(floor(_y)) + 'z' + str(floor(_z)))
     def recDic(this, dic, _x, _y, _z, _rec):
-        dic['x' + str(floor(_x)) + 'y' + str(floor(_y)) + 'z' + str(floor(_z))] = _rec
+        dic[(floor(_x), floor(_y), floor(_z))] = _rec
+        #dic['x' + str(floor(_x)) + 'y' + str(floor(_y)) + 'z' + str(floor(_z))] = _rec
     def genTerrain(this):
         # get current position as we swirl around the world
         x = floor(this.swirlEngine.pos.x)
