@@ -1,9 +1,9 @@
 from ursina import *
-from random import random
+from random import random as ra
 from ursina.prefabs.first_person_controller import FirstPersonController 
 from terrain_system import MeshTerrain
 from flake import SnowFall
-
+from mob_system import *
 
 # this is for updating and moving character
 app = Ursina()
@@ -14,6 +14,7 @@ indra.color = window.color
 subject = FirstPersonController()
 subject.gravity = 0.0
 subject.cursor.visible = False
+
 
 terrain = MeshTerrain(subject.position, camera)
 generatingTerrain = True
@@ -49,7 +50,8 @@ def update():
     global count, prev_x, prev_z
     count += 1 
     terrain.update(subject.position, camera)
-        
+    # handle mob ai
+    mob_movement(grey, subject.position, terrain.terrainDic)
   
     if count == 5:
         count = 0
@@ -67,11 +69,11 @@ def update():
         prev_z = subject.z
         terrain.swirlEngine.reset(prev_x, prev_z)
         if step_audio.playing == False and snow_step_audio.playing == False:
-            snow_step_audio.pitch = random() + 0.25
+            snow_step_audio.pitch = ra() + 0.25
             if subject.y <= -2:
-               step_audio.pitch = 0.35 + random()/10
+               step_audio.pitch = 0.35 + ra()/10
             else: 
-                step_audio.pitch = random() + abs(subject.y/4)
+                step_audio.pitch = ra() + abs(subject.y/4)
             if subject.y > 4:
                 snow_step_audio.play()
             else:
@@ -99,8 +101,6 @@ def update():
         #gravity fall : <
         subject.y -= 9.8 * time.dt 
     pass
-guy = Entity(model='panda_mod', texture='panda_tex')
 
-guy.position = copy(subject.position) + Vec3(-6, -1, 9)
 app.run()
 
