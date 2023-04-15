@@ -14,12 +14,13 @@ indra.color = window.color
 subject = FirstPersonController()
 subject.gravity = 0.0
 subject.cursor.visible = False
-
+subject.step = 2
+subject.jumpHeight = 3
 
 terrain = MeshTerrain(subject.position, camera)
 generatingTerrain = True
 # start with 128 * subwidth ready terrain blocks
-for i in range(128):
+for i in range(64):
     terrain.genTerrain()
 snowFall = SnowFall(subject)   
 # audio stuff
@@ -43,6 +44,15 @@ def input(key):
         subject.y += 2
     elif key == 'g':
         generatingTerrain = not generatingTerrain
+    elif key == '.':
+        #wip
+        currentLeft = subject.left
+        subject.forward = currentLeft
+        camera.forward = subject.right
+        
+        print(camera.forward) 
+        # sub.forward Vec3(-0.993681, 0, 0.11224)
+        # camera.forward Vec3(0, 0, 1)
     else:
         terrain.input(key)
 
