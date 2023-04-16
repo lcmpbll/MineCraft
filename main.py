@@ -4,6 +4,7 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 from terrain_system import MeshTerrain
 from flake import SnowFall
 from mob_system import *
+from bump_wall import *
 
 # this is for updating and moving character
 app = Ursina()
@@ -88,29 +89,31 @@ def update():
                 snow_step_audio.play()
             else:
                 step_audio.play()
-    blockFound = False
-    step = 2
-    height = 1.86
-    # Technically flooring twice, but prevents shaking
-    x = floor(subject.x + 0.5)
-    y = floor(subject.y + 0.5)
-    z = floor(subject.z + 0.5)
-    for i in range(-step, step):
-        if terrain.getDic(terrain.terrainDic, x, y + i, z) == 't': 
-            if terrain.getDic(terrain.terrainDic, x, y+i + 1, z) == 't':
-                target = y + i + 1 + height
-                blockFound = True
-                break    
-            target = y + i + height
-            blockFound = True
-            break
-    if blockFound == True: 
-        # step up or down : >
-        subject.y = lerp(subject.y, target, 6 * time.dt)
-    else: 
-        #gravity fall : <
-        subject.y -= 9.8 * time.dt 
-    pass
+    # Walk on solid terrain and wall collisions
+    bumpWall(subject, terrain)
+    # blockFound = False
+    # step = 2
+    # height = 1.86
+    # # Technically flooring twice, but prevents shaking
+    # x = floor(subject.x + 0.5)
+    # y = floor(subject.y + 0.5)
+    # z = floor(subject.z + 0.5)
+    # for i in range(-step, step):
+    #     if terrain.getDic(terrain.terrainDic, x, y + i, z) == 't': 
+    #         if terrain.getDic(terrain.terrainDic, x, y+i + 1, z) == 't':
+    #             target = y + i + 1 + height
+    #             blockFound = True
+    #             break    
+    #         target = y + i + height
+    #         blockFound = True
+    #         break
+    # if blockFound == True: 
+    #     # step up or down : >
+    #     subject.y = lerp(subject.y, target, 6 * time.dt)
+    # else: 
+    #     #gravity fall : <
+    #     subject.y -= 9.8 * time.dt 
+    # pass
 
 app.run()
 
