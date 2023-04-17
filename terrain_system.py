@@ -23,7 +23,9 @@ class MeshTerrain:
         # our vertex dictionary  --- for mining
         this.vertexDic = {}
         this.perlin = Perlin()
-       
+        this.setup_subsets()
+    def setup_subsets(this):
+       # instanciate subset entities
         for i in range(0, this.numSubsets):
             e = Entity(model = Mesh(), texture = this.textureAtlas)
             e.texture_scale*=64/e.texture.width
@@ -47,9 +49,9 @@ class MeshTerrain:
         #Blister mining == True
         if bte.visible:
             #this is a for loop iterating over two variables
-            for key, value in held_keys.items():
-                if key == 'left mouse' and value == 1:
-                    this.do_mining()
+            if held_keys['shift'] and held_keys['left mouse']:
+                this.do_mining()
+            
                     
                     
     def getDic(this, dic, _x, _y, _z):
@@ -87,10 +89,11 @@ class MeshTerrain:
         if mining == False and building != True:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
                 this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
-        if building == True:
-              #not sure if this is necessary
-              if this.getDic(this.terrainDic, _x, _y + 1, _z) == None or this.getDic(this.terrainDic, _x, _y +1, _z) == 'g' :
-                this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
+        # if building == True:
+        #       #not sure if this is necessary
+      
+        #       if this.getDic(this.terrainDic, _x, _y + 1, _z) == None or this.getDic(this.terrainDic, _x, _y +1, _z) == 'g' :
+        #         this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # record subet index and first vertext of the block. 
         vob = (subset, len(model.vertices) - 37)
         this.recDic(this.vertexDic, _x, _y, _z, vob)
@@ -154,30 +157,33 @@ class MeshTerrain:
         model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
     
     def checkForWater(this, _x, _y, _z, checkfor, subset=-1):
+        #can pass through water or air depending on initial generation or 
         cp = Vec3(_x, _y, _z)
         isByWater = False
         if subset == -1:
             subset = this.currentSubset
         #figure out this posititioninng
         wp = [
+                Vec3(0, -1, 0),
                 Vec3(1, 1 , 0),
                 Vec3(-1, 1, 0),
                 Vec3(0, 1, 1),
-                Vec3(0, 1, -1)
+                Vec3(0, 1, -1),
+                Vec3(1, -1, 0),
+                Vec3(-1, -1, 0),
+                Vec3(0, -1, -1)
         ]
-        for i in range(0, 4):
+        for i in range(0, 8):
             np  = cp + wp[i]
             if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
                 isByWater = True
-                break
+                # break
         return isByWater
         
-    def genWaterBlock(this, _x, _y, _z, og_y, subset=-1):
+    def genWaterBlock(this, _x, _y, _z, og_y, subset=-1, building = False):
         if subset == -1:
             subset = this.currentSubset
         if _y < -1:
-            # if subset == -1:
-            #     subset = this.currentSubset
             # Extend to the vertices of our model, or first subset
             model = this.subsets[subset].model
             model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
@@ -196,9 +202,6 @@ class MeshTerrain:
             if _y < -2 or this.checkForWater(_x, _y, _z, 'g') == True:
                 _y += 1
                 this.genWaterBlock(_x, _y, _z, og_y)
-            # else:
-            #     uu = 8
-            #     uv = 7
             model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
     # After mining to create illusion of depth
     # soil is perhaps pass 

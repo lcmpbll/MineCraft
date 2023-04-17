@@ -4,22 +4,32 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 from terrain_system import MeshTerrain
 from flake import SnowFall
 from mob_system import *
+from bump_wall import *
+from save_load_system import saveMap, loadMap
 
 # this is for updating and moving character
 app = Ursina()
 #Initial Variables / imports, creations
 window.color=color.rgb(0,200,255)
+scene.fog_density=0.02
 indra = Sky()
+scene.fog_color=indra.color
 indra.color = window.color
 subject = FirstPersonController()
 subject.gravity = 0.0
 subject.cursor.visible = False
-
-
+subject.step = 2
+subject.runSpeed = 12
+subject.walkSpeed = 4
+# property allowing us to jump
+subject.frog = False
+subject.jumpHeight = 3
+# rate at which fov changes when dashing
+camera.dash = 10
 terrain = MeshTerrain(subject.position, camera)
 generatingTerrain = True
 # start with 128 * subwidth ready terrain blocks
-for i in range(128):
+for i in range(64):
     terrain.genTerrain()
 snowFall = SnowFall(subject)   
 # audio stuff
@@ -40,9 +50,24 @@ def input(key):
     if key == 'q':
         app.userExit()
     elif key == 'space':
-        subject.y += 2
+        subject.frog = True
     elif key == 'g':
         generatingTerrain = not generatingTerrain
+    elif key == '.':
+        #wip
+        # currentLeft = subject.left
+        # subject.forward = currentLeft
+        # camera.forward = subject.right
+        subject.rotation_y += 10
+        print(camera.forward) # Vec3(-0.450372, -0.892841, 0)
+    elif key == ',':
+        subject.rotation_y -= 10
+        # maybe lerp
+    elif key == 'm':
+        saveMap(subject.position, terrain.terrainDic)
+    elif key == 'l':
+        loadMap(subject, terrain)
+       
     else:
         terrain.input(key)
 
@@ -78,29 +103,18 @@ def update():
                 snow_step_audio.play()
             else:
                 step_audio.play()
-    blockFound = False
-    step = 2
-    height = 1.86
-    # Technically flooring twice, but prevents shaking
-    x = floor(subject.x + 0.5)
-    y = floor(subject.y + 0.5)
-    z = floor(subject.z + 0.5)
-    for i in range(-step, step):
-        if terrain.getDic(terrain.terrainDic, x, y + i, z) == 't': 
-            if terrain.getDic(terrain.terrainDic, x, y+i + 1, z) == 't':
-                target = y + i + 1 + height
-                blockFound = True
-                break    
-            target = y + i + height
-            blockFound = True
-            break
-    if blockFound == True: 
-        # step up or down : >
-        subject.y = lerp(subject.y, target, 6 * time.dt)
-    else: 
-        #gravity fall : <
-        subject.y -= 9.8 * time.dt 
-    pass
+    # Walk on solid terrain and wall collisions
+    bumpWall(subject, terrain)
+    # runnning and dash effect
+    if held_keys['shift'] and held_keys['w']:
+        subject.speed = subject.runSpeed
+        if camera.fov < 100:
+            camera.fov += camera.dash * time.dt
+    else:
+        subject.speedd = subject.walkSpeed
+        if camera.fov > 90:
+            camera.fov -= camera.dash * 4 * time.dt
+            if camera.fov < 90: camera.fov = 90
 
 app.run()
 
