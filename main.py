@@ -11,17 +11,17 @@ from save_load_system import saveMap, loadMap
 app = Ursina()
 #Initial Variables / imports, creations
 window.color=color.rgb(0,200,255)
-scene.fog_density=0.02
+scene.fog_density=0.01
 indra = Sky()
 scene.fog_color=indra.color
 indra.color = window.color
 subject = FirstPersonController()
 subject.gravity = 0.0
-subject.cursor.visible = False
+subject.cursor.visible = True
 subject.step = 2
 subject.runSpeed = 12
 subject.walkSpeed = 4
-subject.height = 1.86
+subject.height=1.62 
 
 # property allowing us to jump
 subject.frog = False
@@ -56,12 +56,10 @@ def input(key):
     elif key == 'g':
         generatingTerrain = not generatingTerrain
     elif key == '.':
-        #wip
-        # currentLeft = subject.left
-        # subject.forward = currentLeft
-        # camera.forward = subject.right
+        # subjectOR = subject.rotation_y
+        # subject.rotation = Vec3(0, subject.rotation_y + 10, 0)
         subject.rotation_y += 10
-        print(camera.forward) # Vec3(-0.450372, -0.892841, 0)
+        # subject.rotation_y = lerp(subjectOR, subject.rotation + 10, 6 * time.dt)
     elif key == ',':
         subject.rotation_y -= 10
         # maybe lerp

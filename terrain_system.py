@@ -14,7 +14,7 @@ class MeshTerrain:
         this.numSubsets = 1024
         # passed in from main 
         this.sub = subject
-        this.subject_head_position = subject.position + Vec3(0, 1.86, 0)
+        
         this.cam = cam
         # must be even see gen terrain
         this.subWidth = 6
@@ -42,8 +42,11 @@ class MeshTerrain:
     def input(this, key):
         if key == 'left mouse up' and bte.visible == True:
            this.do_mining()
-        if key == 'right mouse up' and bte.visible:
-            buildSite = checkBuild(bte.position, this.terrainDic, this.subject_head_position, this.cam.forward)
+        if key=='right mouse up' and bte.visible==True:
+            buildSite = checkBuild( bte.position,
+                                    this.terrainDic,
+                                    this.cam.forward,
+                                    this.sub.position+Vec3(0,this.sub.height,0))
             if buildSite != None:
                 this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0)
                 this.subsets[0].model.generate()
