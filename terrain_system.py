@@ -9,14 +9,18 @@ from building_system import checkBuild, gapShell
 ## WIP water flow
 # wip buildd on top of blocks
 class MeshTerrain:
-    def __init__(this, pos, cam):
+    def __init__(this, subject, cam):
         this.subsets = []
         this.numSubsets = 1024
+        # passed in from main 
+        this.sub = subject
+        this.subject_head_position = subject.position + Vec3(0, 1.86, 0)
+        this.cam = cam
         # must be even see gen terrain
         this.subWidth = 6
         this.currentSubset = 0
         this.swirlEngine = SwirlEngine(this.subWidth)
-        this.block = load_model('block.obj')
+        this.block = load_model('block.obj', use_deepcopy=True)
         this.textureAtlas = 'texture_atlas_3.png'
         this.numVertices = len(this.block.vertices)
         this.terrainDic = {}
@@ -39,7 +43,7 @@ class MeshTerrain:
         if key == 'left mouse up' and bte.visible == True:
            this.do_mining()
         if key == 'right mouse up' and bte.visible:
-            buildSite = checkBuild(bte.position, this.terrainDic)
+            buildSite = checkBuild(bte.position, this.terrainDic, this.subject_head_position, this.cam.forward)
             if buildSite != None:
                 this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0)
                 this.subsets[0].model.generate()

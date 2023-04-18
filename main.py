@@ -21,12 +21,14 @@ subject.cursor.visible = False
 subject.step = 2
 subject.runSpeed = 12
 subject.walkSpeed = 4
+subject.height = 1.86
+
 # property allowing us to jump
 subject.frog = False
 subject.jumpHeight = 3
 # rate at which fov changes when dashing
 camera.dash = 10
-terrain = MeshTerrain(subject.position, camera)
+terrain = MeshTerrain(subject, camera)
 generatingTerrain = True
 # start with 128 * subwidth ready terrain blocks
 for i in range(64):

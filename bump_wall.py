@@ -137,19 +137,19 @@ def bumpWall(subject, terrain):
     held_keys['d'] = 0
       
   # Walking on the terrain itself.
- 
+ # walk on top of water
   for i in range(-2,step):
       whatT1=terrain.terrainDic.get((x,y+i,z))
-      if whatT1!=None and whatT1!='g' and whatT1 != 'a' and whatT1 != 'w':
+      if whatT1!=None and whatT1!='g' and whatT1 != 'a':
           whatT2=terrain.terrainDic.get((x,y+i+1,z))
-          if whatT2!=None and whatT2!='g' and whatT2 != 'a' and whatT2 != 'w':
+          if whatT2!=None and whatT2!='g' and whatT2 != 'a':
               # Also check any blocks above, still within stepping range.
               target = y+i+height+1
               blockFound=True
               break
           # Stomach height?
           whatT3=terrain.terrainDic.get((x,y+i+2,z))
-          if whatT3!=None and whatT3!='g' and whatT3 != 'a' and whatT3 != 'w':
+          if whatT3!=None and whatT3!='g' and whatT3 != 'a':
               target = y+i+height+2
               blockFound=True
               break
