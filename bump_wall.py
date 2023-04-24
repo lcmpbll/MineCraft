@@ -58,7 +58,7 @@ def bumpWall(subject, terrain):
       
   # Walking on the terrain itself.
  # walk on top of water
-  for i in range(-2,step):
+  for i in range(-step,step):
       whatT1=terrain.terrainDic.get((x,y+i,z))
       if whatT1!=None and whatT1!='g' and whatT1 != 'a':
           whatT2=terrain.terrainDic.get((x,y+i+1,z))
