@@ -2,6 +2,7 @@
 # move up ursina import to make loading textures simpler
 from ursina import *
 
+app = Ursina()
 from random import random as ra
 from ursina.prefabs.first_person_controller import FirstPersonController 
 from terrain_system import MeshTerrain
@@ -9,8 +10,6 @@ from flake import SnowFall
 from mob_system import *
 from bump_wall import *
 from save_load_system import saveMap, loadMap
-
-app = Ursina()
 from inventory_system import *
 #Initial Variables / imports, creations
 window.color=color.rgb(0,200,255)
@@ -22,7 +21,7 @@ scene.fog_color=color.white
 #subject
 subject = FirstPersonController()
 subject.gravity = 0.0
-subject.cursor.visible = True
+subject.cursor.visible = False
 subject.step = 2
 subject.runSpeed = 12
 subject.walkSpeed = 4
@@ -105,12 +104,12 @@ def update():
         prev_z = subject.z
         terrain.swirlEngine.reset(prev_x, prev_z)
         if step_audio.playing == False and snow_step_audio.playing == False:
-            snow_step_audio.pitch = ra() + 0.25
             if terrain.getDic(terrain.terrainDic, subject.x, subject.y, subject.z) == 'w':
                step_audio.pitch = 0.35 + ra()/10
             else: 
                 step_audio.pitch = ra() + abs(subject.y/4)
-            if subject.y > 4:
+            if subject.y > 10:
+                snow_step_audio.pitch = ra() + 0.25
                 snow_step_audio.play()
             else:
                 step_audio.play()

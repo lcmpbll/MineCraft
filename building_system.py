@@ -1,4 +1,5 @@
 from ursina import Vec3, floor
+from config import six_cube_dir
 """
 Our building system
 """
@@ -33,7 +34,7 @@ def checkBuild(_bsite, _terrainDic, _camF, _pos):
   return Vec3(x, y, z)
 
 def gapShell(_bsite, _terrainDic):
-  from config import six_cube_dir
+
   #what position
  
   for i in range(0,6):

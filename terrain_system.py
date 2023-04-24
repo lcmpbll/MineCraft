@@ -5,7 +5,7 @@ from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
 from building_system import checkBuild, gapShell
-
+from config import six_cube_dir
 ## WIP water flow
 # wip buildd on top of blocks
 class MeshTerrain:
@@ -215,7 +215,6 @@ class MeshTerrain:
     # soil is perhaps pass 
      
     def genWalls(this, epi, subset):
-        from config import six_cube_dir
         if epi == None: return
         for i in range(0,6):
             np = epi + six_cube_dir[i]
