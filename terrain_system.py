@@ -11,13 +11,13 @@ from building_system import checkBuild, gapShell
 class MeshTerrain:
     def __init__(this, subject, cam):
         this.subsets = []
-        this.numSubsets = 1024
+        this.numSubsets = 512
         # passed in from main 
         this.sub = subject
         
         this.cam = cam
         # must be even see gen terrain
-        this.subWidth = 6
+        this.subWidth = 10
         this.currentSubset = 0
         this.swirlEngine = SwirlEngine(this.subWidth)
         this.block = load_model('block.obj', use_deepcopy=True)
@@ -164,12 +164,13 @@ class MeshTerrain:
         model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
     
     def checkForWater(this, _x, _y, _z, checkfor, subset=-1):
+        from config import six_cube_dir
         #can pass through water or air depending on initial generation or 
         cp = Vec3(_x, _y, _z)
         isByWater = False
         if subset == -1:
             subset = this.currentSubset
-        #figure out this posititioninng
+        #figure out this posititioning
         wp = [
                 Vec3(0, -1, 0),
                 Vec3(1, 1 , 0),
@@ -180,7 +181,7 @@ class MeshTerrain:
                 Vec3(-1, -1, 0),
                 Vec3(0, -1, -1)
         ]
-        for i in range(0, 8):
+        for i in range(0, 6):
             np  = cp + wp[i]
             if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
                 isByWater = True
@@ -214,18 +215,10 @@ class MeshTerrain:
     # soil is perhaps pass 
      
     def genWalls(this, epi, subset):
+        from config import six_cube_dir
         if epi == None: return
-        #wall position
-        wp = [
-                Vec3(0,1,0),
-                Vec3(0,-1,0),
-                Vec3(0,0,1),
-                Vec3(0,0,-1),
-                Vec3(1,0,0),
-                Vec3(-1,0,0)
-        ]
         for i in range(0,6):
-            np = epi + wp[i]
+            np = epi + six_cube_dir[i]
             if this.getDic(this.terrainDic, np.x, np.y, np.z) == None:
                 this.genBlock(np.x, np.y, np.z, subset, mining=True)
 

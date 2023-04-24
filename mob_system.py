@@ -59,9 +59,9 @@ def terrain_walk(mob, _terrainDic):
           break
       elif _terrainDic.get((x, y, z)) == 'w':
           if mob.canSwim == False:
-              mob.rotation = Vec3(0, mob.rotation_y - 180, 0)
+              mob.rotation = Vec3(0, mob.rotation_y - 90, 0)
               mob.position -= mob.forward * mob.speed * time.dt
-              
+              mob.isChasing = False
               blockFound = True
   if blockFound == True: 
       # step up or down : >

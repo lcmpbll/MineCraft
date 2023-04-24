@@ -1,4 +1,7 @@
+# this is for updating and moving character
+# move up ursina import to make loading textures simpler
 from ursina import *
+
 from random import random as ra
 from ursina.prefabs.first_person_controller import FirstPersonController 
 from terrain_system import MeshTerrain
@@ -7,14 +10,16 @@ from mob_system import *
 from bump_wall import *
 from save_load_system import saveMap, loadMap
 
-# this is for updating and moving character
 app = Ursina()
+from inventory_system import *
 #Initial Variables / imports, creations
 window.color=color.rgb(0,200,255)
-scene.fog_density=0.01
 indra = Sky()
-scene.fog_color=indra.color
+
+scene.fog_density= (0, 50)
 indra.color = window.color
+scene.fog_color=color.white
+#subject
 subject = FirstPersonController()
 subject.gravity = 0.0
 subject.cursor.visible = True
@@ -28,9 +33,12 @@ subject.frog = False
 subject.jumpHeight = 3
 # rate at which fov changes when dashing
 camera.dash = 10
+
+
 terrain = MeshTerrain(subject, camera)
 generatingTerrain = True
 # start with 128 * subwidth ready terrain blocks
+# loadMap(subject, terrain)
 for i in range(64):
     terrain.genTerrain()
 snowFall = SnowFall(subject)   
@@ -53,6 +61,8 @@ def input(key):
         app.userExit()
     elif key == 'space':
         subject.frog = True
+    elif key == 'e':
+        inv_input(key, subject, mouse)
     elif key == 'g':
         generatingTerrain = not generatingTerrain
     elif key == '.':
@@ -83,7 +93,8 @@ def update():
         #Generate terrain at current swirl position
         # genrate a certain number of terrain chunks
         if generatingTerrain:
-            for i in range(4):    
+            # maybe you like rang 4 better
+            for i in range(1):    
                 terrain.genTerrain()
     
         
@@ -95,7 +106,7 @@ def update():
         terrain.swirlEngine.reset(prev_x, prev_z)
         if step_audio.playing == False and snow_step_audio.playing == False:
             snow_step_audio.pitch = ra() + 0.25
-            if subject.y <= -2:
+            if terrain.getDic(terrain.terrainDic, subject.x, subject.y, subject.z) == 'w':
                step_audio.pitch = 0.35 + ra()/10
             else: 
                 step_audio.pitch = ra() + abs(subject.y/4)
