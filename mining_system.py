@@ -4,7 +4,7 @@ from dictionary_craft import DictionaryCraft
 # class MiningSystem:
 #     def __init__(this): not a class ?
 # this lots of red and green make yellow, 0.4 makes it shiny
-bteModel = load_model('block.obj', use_deepcopy=True)
+bteModel =  'block.obj' #load_model('block.obj', use_deepcopy=True)
 bte = Entity(model=bteModel, color=color.rgba(1,1,0,0.4))
 # suggested 1.1 and 0.05
 bte.scale = 1.02
