@@ -32,6 +32,7 @@ camera.dash = 10
 terrain = MeshTerrain(subject, camera)
 generatingTerrain = True
 # start with 128 * subwidth ready terrain blocks
+# loadMap(subject, terrain)
 for i in range(64):
     terrain.genTerrain()
 snowFall = SnowFall(subject)   
@@ -84,7 +85,8 @@ def update():
         #Generate terrain at current swirl position
         # genrate a certain number of terrain chunks
         if generatingTerrain:
-            for i in range(4):    
+            # maybe you like rang 4 better
+            for i in range(1):    
                 terrain.genTerrain()
     
         
