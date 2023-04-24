@@ -11,10 +11,11 @@ from save_load_system import saveMap, loadMap
 app = Ursina()
 #Initial Variables / imports, creations
 window.color=color.rgb(0,200,255)
-scene.fog_density=0.01
 indra = Sky()
-scene.fog_color=indra.color
+scene.fog_density= (0, 50)
 indra.color = window.color
+scene.fog_color=color.white
+#subject
 subject = FirstPersonController()
 subject.gravity = 0.0
 subject.cursor.visible = True
