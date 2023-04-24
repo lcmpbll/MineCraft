@@ -98,7 +98,7 @@ def update():
         terrain.swirlEngine.reset(prev_x, prev_z)
         if step_audio.playing == False and snow_step_audio.playing == False:
             snow_step_audio.pitch = ra() + 0.25
-            if subject.y <= -2:
+            if terrain.getDic(terrain.terrainDic, subject.x, subject.y, subject.z) == 'w':
                step_audio.pitch = 0.35 + ra()/10
             else: 
                 step_audio.pitch = ra() + abs(subject.y/4)
