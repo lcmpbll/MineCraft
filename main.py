@@ -1,4 +1,7 @@
+# this is for updating and moving character
+# move up ursina import to make loading textures simpler
 from ursina import *
+
 from random import random as ra
 from ursina.prefabs.first_person_controller import FirstPersonController 
 from terrain_system import MeshTerrain
@@ -7,11 +10,12 @@ from mob_system import *
 from bump_wall import *
 from save_load_system import saveMap, loadMap
 
-# this is for updating and moving character
 app = Ursina()
+from inventory_system import *
 #Initial Variables / imports, creations
 window.color=color.rgb(0,200,255)
 indra = Sky()
+
 scene.fog_density= (0, 50)
 indra.color = window.color
 scene.fog_color=color.white
@@ -29,6 +33,8 @@ subject.frog = False
 subject.jumpHeight = 3
 # rate at which fov changes when dashing
 camera.dash = 10
+
+
 terrain = MeshTerrain(subject, camera)
 generatingTerrain = True
 # start with 128 * subwidth ready terrain blocks
@@ -55,6 +61,8 @@ def input(key):
         app.userExit()
     elif key == 'space':
         subject.frog = True
+    elif key == 'e':
+        inv_input(key, subject, mouse)
     elif key == 'g':
         generatingTerrain = not generatingTerrain
     elif key == '.':
