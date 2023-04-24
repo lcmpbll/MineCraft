@@ -11,13 +11,13 @@ from building_system import checkBuild, gapShell
 class MeshTerrain:
     def __init__(this, subject, cam):
         this.subsets = []
-        this.numSubsets = 1024
+        this.numSubsets = 512
         # passed in from main 
         this.sub = subject
         
         this.cam = cam
         # must be even see gen terrain
-        this.subWidth = 6
+        this.subWidth = 10
         this.currentSubset = 0
         this.swirlEngine = SwirlEngine(this.subWidth)
         this.block = load_model('block.obj', use_deepcopy=True)
