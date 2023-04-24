@@ -33,16 +33,10 @@ def checkBuild(_bsite, _terrainDic, _camF, _pos):
   return Vec3(x, y, z)
 
 def gapShell(_bsite, _terrainDic):
+  from config import six_cube_dir
   #what position
-  wp = [
-          Vec3(0,1,0),
-          Vec3(0,-1,0),
-          Vec3(0,0,1),
-          Vec3(0,0,-1),
-          Vec3(1,0,0),
-          Vec3(-1,0,0)
-  ]
+ 
   for i in range(0,6):
-    p = _bsite + wp[i]
+    p = _bsite + six_cube_dir[i]
     if _terrainDic.get((floor(p.x), floor(p.y), floor(p.z))) != 'g' or _terrainDic.get((floor(p.x), floor(p.y), floor(p.z))) != 'a':
       _terrainDic[(floor(p.x), floor(p.y), floor(p.z))] = 'g'
