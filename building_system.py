@@ -8,7 +8,7 @@ def checkBuild(_bsite, _terrainDic, _camF, _pos):
   #adjust bsite for build tool entity offset. No longer have to do this because using the same model
   # create some sort of vector from the players eyes to the highlighted block.
   dist = _bsite - _pos + Vec3(0, 1.62, 0)
-  print(dist.length())
+ 
   
   mouseInWorld = _pos + _camF * dist.length()
   mouseInWorld -= _camF * 0.75
