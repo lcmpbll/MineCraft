@@ -88,10 +88,10 @@ for i in range(99):
   
     
 def inv_input(key, subject, mouse):
-  if key == 'e' and subject.enable:
+  if key == 'e' and subject.enabled:
     subject.disable()
     mouse.locked = False
-  elif key == 'e' and not subject.enable:
+  elif key == 'e' and not subject.enabled:
     mouse.locked = True
     subject.enable() 
 
