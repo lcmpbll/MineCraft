@@ -1,6 +1,7 @@
 from ursina import *
 import random as rando
 from config import *
+import numpy as np
 
 hotBarModel=load_model('quad',use_deepcopy=True)
 hotbar = Entity(model=hotBarModel, parent=camera.ui)
@@ -30,8 +31,8 @@ class Hotspot(Entity):
     this.onHotbar = False
     this.visible=False
     this.occupied = False
-    #pick random block type
-    this.blockType = mins[rando.randint(0,len(mins) -1)]
+    #What item are we hosting 
+    this.item = None
 
 class Item(Draggable):
   def __init__(this):
@@ -45,6 +46,7 @@ class Item(Draggable):
     this.texture ='texture_atlas_3'
     this.texture_scale *= 64/this.texture.width
     this.blockType = mins[rando.randint(0,len(mins) -1)]
+    this.currentSpot = None
     this.setTexture()
     this.setColor()
   def setTexture(this):
@@ -57,11 +59,48 @@ class Item(Draggable):
     this.model.uvs = [Vec2(uu, uv) + u for u in cb]
     this.model.generate()
     this.rotation_z = 180
+  
   def setColor(this):
     if len(minerals[this.blockType]) > 2:
       this.color = minerals[this.blockType][2]
+  
   def fixPos(this):
-    pass   
+    closest = -1
+    closestHotty = None
+    # Look through hotspots, 
+    for h in hotspots:
+    # Find unoccupied hotspot that is closest
+      if h.occupied: continue
+      dist = h.position - this.position
+      # get magnitude of dist
+      dist = np.linalg.norm(dist)
+      if dist < closest or closest == -1:
+        # we have a new closest
+        closest = dist
+        closestHotty = h
+      #found a unoccupied hotspot
+    if closestHotty != None:
+      #update new host with item information
+      closestHotty.occupied = True
+      this.position = closestHotty.position
+      # update previous hotspot's status
+      if this.currentSpot:
+        this.currentSpot.occupied = False
+        this.currentSpot.item = None
+      # finally update current hotspot
+      this.currentSpot = closestHotty
+      
+      
+    elif this.currentSpot:
+      #no hot spot available, just move back
+      this.position = this.currentSpot.position
+    # If found copy hot spots position
+    
+    # Set previous hot spot host to unoccupied
+    # download items block type ect into host hot spot -- maybe just id
+    # no unoccupied hotspot? ? return to current host position
+      
+       
   def drop(this):
     this.fixPos()
   
