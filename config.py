@@ -12,11 +12,12 @@ six_cube_dir = [
 ]
 
 minerals = {
-    'grass': (9,6),
+    'grass': (8,7),
     'soil': (10,7),
     'stone': (8,5),
     'concrete': (9,6),
-    'water': (9,7, Vec4(0,0,0,0.5)),
+    # 'ice': (9, 7),
+    'water': (9,7),
     'snow': (8,6),
     'ruby': (9,6, Vec4(1,0,0,1)),
     'emerald': (9,6, Vec4(0,0.8,0, 0.8)) 
