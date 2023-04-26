@@ -26,6 +26,7 @@ subject.step = 2
 subject.runSpeed = 12
 subject.walkSpeed = 4
 subject.height=1.62 
+subject.blockType = 'stone'
 
 # property allowing us to jump
 subject.frog = False
@@ -60,8 +61,7 @@ def input(key):
         app.userExit()
     elif key == 'space':
         subject.frog = True
-    elif key == 'e':
-        inv_input(key, subject, mouse)
+    
     elif key == 'g':
         generatingTerrain = not generatingTerrain
     elif key == '.':
@@ -79,6 +79,7 @@ def input(key):
        
     else:
         terrain.input(key)
+        inv_input(key, subject, mouse)
 
 def update():
     global count, prev_x, prev_z

@@ -1,11 +1,11 @@
 
-from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model, held_keys
+from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model, held_keys, mouse
 from random import random
 from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
 from building_system import checkBuild, gapShell
-from config import six_cube_dir
+from config import six_cube_dir, minerals, mins
 ## WIP water flow
 # wip buildd on top of blocks
 class MeshTerrain:
@@ -40,21 +40,21 @@ class MeshTerrain:
             this.genWalls(epi[0], epi[1])
             this.subsets[epi[1]].model.generate()
     def input(this, key):
-        if key == 'left mouse up' and bte.visible == True:
+        if key == 'left mouse up' and bte.visible == True and mouse.locked == True:
            this.do_mining()
-        if key=='right mouse up' and bte.visible==True:
+        if key=='right mouse up' and bte.visible==True and mouse.locked == True:
             buildSite = checkBuild( bte.position,
                                     this.terrainDic,
                                     this.cam.forward,
                                     this.sub.position+Vec3(0,this.sub.height,0))
             if buildSite != None:
-                this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0)
+                this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0, building=True, blockType=this.sub.blockType)
                 this.subsets[0].model.generate()
                 gapShell(buildSite, this.terrainDic)
     def update(this, pos, cam):
         highlight(pos, cam, this.terrainDic)
         #Blister mining == True
-        if bte.visible:
+        if bte.visible and mouse.locked == True:
             #this is a for loop iterating over two variables
             if held_keys['shift'] and held_keys['left mouse']:
                 this.do_mining()
@@ -84,7 +84,82 @@ class MeshTerrain:
             this.currentSubset = 0 
         this.swirlEngine.move() 
       
-    def genBlock(this, _x, _y, _z, subset=-1, mining=False, building=False):
+    # def genBlock(this, _x, _y, _z, subset=-1, mining=False, building=False, blockType='soil'):
+    #     if subset == -1:
+    #         subset = this.currentSubset
+    #     # Extend to the vertices of our model, or first subset
+    #     model = this.subsets[subset].model
+    #     model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
+    #     # record terrain in dictionary
+    #     this.recDic(this.terrainDic, _x, _y, _z, "t")
+    #     # also recodr gap 
+    #     if mining == False and building != True:
+    #         if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
+    #             this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
+    #     # if building == True:
+    #     #       #not sure if this is necessary
+      
+    #     #       if this.getDic(this.terrainDic, _x, _y + 1, _z) == None or this.getDic(this.terrainDic, _x, _y +1, _z) == 'g' :
+    #     #         this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
+    #     # record subet index and first vertext of the block. 
+    #     vob = (subset, len(model.vertices) - 37)
+    #     this.recDic(this.vertexDic, _x, _y, _z, vob)
+      
+    #     # if building == False:
+    #     if _y > 4 and mining == False:
+    #     # texture atlas at coord icy mountais
+    #         # uu = 8
+    #         # uv = 6
+    #         blockType = 'snow'
+    #     elif _y < -2:
+    #         if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
+                
+    #             if this.checkForWater(_x, _y, _z, 'w') == True:
+    #                 #Check at this spot for water
+    #                 blockType = 'water'
+    #                 og_y = _y - 1
+    #                 this.genWaterBlock(_x, _y + 1, _z, og_y)
+    #             else: 
+    #                 blockType = 'soil'
+    #                 # uu = 10
+    #                 # uv = 7
+    #         else:
+    #             # uu = 9 
+    #             # uv = 7
+    #             blockType = 'water'
+    #             og_y = _y
+    #             this.genWaterBlock(_x, _y + 1, _z, og_y)
+    #     elif mining == False:
+    #         blockType = 'grass'
+    #     else: 
+    #         if building == False and mining == True:
+    #             if random() < 0.8:
+    #                 blockType = 'stone'
+    #             elif random() > 0.9:
+    #                 blockType = 'emerald'
+    #             elif random() > 0.95:
+    #                 blockType = 'ruby'
+    #             else:
+    #                 blockType = 'soil'
+    #         #soil
+    #         blockType = 'soil'
+    #     # uu = 10
+    #     # uv = 7
+    #     uu = minerals[blockType][0]
+    #     uv = minerals[blockType][1]
+    #     # if dictionary has a thrid entry set that as the color
+    #     if len(minerals[blockType]) > 2:
+    #         colorChange = minerals[blockType][2]
+    #         #model.colors.extend((minerals[blockType][2],) * this.numVertices)
+        
+    #       # decide random tint for color of block
+    #     c = random() - 0.5
+    #     colorChange = Vec4(1-c, 1-c, 1-c, 1)
+    #     model.colors.extend(colorChange * this.numVertices)
+        
+    #     model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
+    
+    def genBlock(this, _x, _y, _z, subset=-1, mining=False, building=False, blockType='soil'):
         if subset == -1:
             subset = this.currentSubset
         # Extend to the vertices of our model, or first subset
@@ -92,13 +167,13 @@ class MeshTerrain:
         model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
         # record terrain in dictionary
         this.recDic(this.terrainDic, _x, _y, _z, "t")
-        # also recodr gap 
+        # also record gap 
         if mining == False and building != True:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
                 this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # if building == True:
         #       #not sure if this is necessary
-      
+    
         #       if this.getDic(this.terrainDic, _x, _y + 1, _z) == None or this.getDic(this.terrainDic, _x, _y +1, _z) == 'g' :
         #         this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # record subet index and first vertext of the block. 
@@ -107,12 +182,12 @@ class MeshTerrain:
         # decide random tint for color of block
         c = random() - 0.5
         model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
-         
+        
         if _y > 2 and mining == False:
         # texture atlas at coord icy mountais
             # uu = 8
             # uv = 6
-            blockType = 'ice'
+            blockType = 'snow'
         elif _y < -2:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
                 
@@ -134,7 +209,7 @@ class MeshTerrain:
                 og_y = _y
                 this.genWaterBlock(_x, _y + 1, _z, og_y)
         elif mining == False:
-           #grass
+        #grass
             # uu = 8
             # uv = 7
             blockType = 'grass'
@@ -143,49 +218,55 @@ class MeshTerrain:
             blockType = 'soil'
             # uu = 10
             # uv = 7
-        if blockType == 'soil':
-            uu = 10
-            uv = 7
-        elif blockType == 'stone':   
-            uu = 8
-            uv = 5
-        elif blockType == 'ice':
-            uu = 8
-            uv = 6
-        elif blockType == 'water':
-            uu = 9
-            uv = 7
-        elif random() > 0.86: # randomly place stone
-            uu = 8
-            uv = 5
-        else: 
-            uu = 8
-            uv = 7 
+        uu = minerals[blockType][0]
+        uv = minerals[blockType][1]
+        if len(minerals[blockType]) > 2:
+            ce = minerals[blockType][2]
+            model.colors.extend((Vec4(ce[0] - c, ce[1]-c, ce[3]),) * this.numVertices)
+        # if blockType == 'soil':
+        #     uu = 10
+        #     uv = 7
+        # elif blockType == 'stone':   
+        #     uu = 8
+        #     uv = 5
+        # elif blockType == 'ice':
+        #     uu = 8
+        #     uv = 6
+        # elif blockType == 'water':
+        #     uu = 9
+        #     uv = 7
+        # elif random() > 0.86: # randomly place stone
+        #     uu = 8
+        #     uv = 5
+        # else: 
+        #     uu = 8
+        #     uv = 7 
         model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
     
     def checkForWater(this, _x, _y, _z, checkfor, subset=-1):
-        from config import six_cube_dir
-        #can pass through water or air depending on initial generation or 
+        
+        #can pass through water or air depending on initial generation or
+        # Make ice?  
         cp = Vec3(_x, _y, _z)
         isByWater = False
         if subset == -1:
             subset = this.currentSubset
         #figure out this posititioning
         wp = [
-                Vec3(0, -1, 0),
-                Vec3(1, 1 , 0),
-                Vec3(-1, 1, 0),
-                Vec3(0, 1, 1),
-                Vec3(0, 1, -1),
-                Vec3(1, -1, 0),
-                Vec3(-1, -1, 0),
-                Vec3(0, -1, -1)
+            Vec3(0, -1, 0),
+            Vec3(1, 1 , 0),
+            Vec3(-1, 1, 0),
+            Vec3(0, 1, 1),
+            Vec3(0, 1, -1),
+            Vec3(1, -1, 0),
+            Vec3(-1, -1, 0),
+            Vec3(0, -1, -1)
         ]
         for i in range(0, 6):
             np  = cp + wp[i]
             if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
                 isByWater = True
-                # break
+                break
         return isByWater
         
     def genWaterBlock(this, _x, _y, _z, og_y, subset=-1, building = False):
@@ -213,7 +294,9 @@ class MeshTerrain:
             model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
     # After mining to create illusion of depth
     # soil is perhaps pass 
-     
+    
+
+    
     def genWalls(this, epi, subset):
         if epi == None: return
         for i in range(0,6):
