@@ -83,6 +83,7 @@ class Item(Draggable):
       #update new host with item information
       closestHotty.occupied = True
       this.position = closestHotty.position
+      closestHotty.item = this
       # update previous hotspot's status
       if this.currentSpot:
         this.currentSpot.occupied = False
@@ -117,7 +118,7 @@ for i in range(Hotspot.rowFit):
   
   hotspots.append(bud)
 
-for i in range(99):
+for i in range(9):
   bud = Item()
   bud.onHotBar=True
   bud.visible=True
@@ -125,8 +126,24 @@ for i in range(99):
   bud.y = rando.random() - 0.5
   items.append(bud)  
   
+def resetHotSpots(): 
+  for h in hotspots:
+    h.color = color.white
     
 def inv_input(key, subject, mouse):
+  try:
+    wnum = int(key) -1
+    if wnum > 0 and wnum < 10:
+      #make sure no hotspots are highlighted
+      for h in hotspots:
+        h.color = color.white
+      resetHotSpots()
+      hotspots[wnum].color = color.yellow
+      if hotspots[wnum].occupied:
+        subject.blockType = hotspots[wnum].item.blockType
+      
+  except:
+    pass
   if key == 'e' and subject.enabled:
     subject.disable()
     mouse.locked = False
