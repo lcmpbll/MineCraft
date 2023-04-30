@@ -19,12 +19,17 @@ grey.sub = False
 def mob_movement(mob, _subjectPos, _terrainDic):
   #WIP chasing
   dist = _subjectPos - mob.position
-  print(_terrainDic.get((floor(mob.position.x), floor(mob.position.y), floor(mob.position.z))))
+  mobTerrainSpot =_terrainDic.get((floor(mob.position.x), floor(mob.position.y), floor(mob.position.z)))
+  thingToLookAt = _subjectPos
+  if mob.isChasing == False and dist.length() > mob.intamacyDistance:
+    thingToLookAt = findLand(mob, _terrainDic)
+  
+  # turn off chasing if mob is in the water and can't swim
   if _terrainDic.get((floor(mob.position.x), floor(mob.position.y), floor(mob.position.z))) == 'w' and mob.canSwim == False:
     mob.isChasing = False
-  
+  # turn off chasing if mob is too far or too close
 
-  if dist.length() > mob.chaseDistance:
+  elif dist.length() > mob.chaseDistance:
     mob.isChasing = False
     mob.is_playing = False
     mob.pause()
@@ -37,7 +42,7 @@ def mob_movement(mob, _subjectPos, _terrainDic):
   #turn speed not affected? BUG
   if mob.isChasing == True:
     tempOR = mob.rotation_y
-    mob.lookAt(_subjectPos)
+    mob.lookAt(thingToLookAt)
     mob.rotation = Vec3(0, mob.rotation_y + 180, 0)
     mob.rotation_y = lerp(tempOR, mob.rotation_y, mob.turnSpeed * time.dt)
     # now move towards target
@@ -47,7 +52,7 @@ def mob_movement(mob, _subjectPos, _terrainDic):
   elif mob.isChasing == False and dist.length() > mob.intamacyDistance:
     #add count to only change lookat infrequently
     tempOR = mob.rotation_y
-    mob.lookAt(findLand(mob, _terrainDic))
+    mob.lookAt(thingToLookAt)
     mob.rotation = Vec3(0, mob.rotation_y + 180, 0)
     mob.rotation_y = lerp(tempOR, mob.rotation_y, mob.turnSpeed * time.dt)
     mob.position -= mob.forward * mob.speed * time.dt
