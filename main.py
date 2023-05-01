@@ -45,13 +45,7 @@ snowFall = SnowFall(subject)
 # audio stuff
 step_audio = Audio('step.ogg', autoplay=False, loop=False)
 snow_step_audio = Audio('snowStep.mp3', autoplay=False, loop=False)
-# create and hold flakes
-# flakes = []
-# def generateFlakes():
-    
-#     for i in range(128):
-#         e = Flake(subject.position)
-#         flakes.append(e)
+
 count = 0
 prev_x = subject.x
 prev_z = subject.z
