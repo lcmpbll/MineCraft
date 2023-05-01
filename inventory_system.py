@@ -6,11 +6,9 @@ import numpy as np
 hotBarModel=load_model('quad',use_deepcopy=True)
 hotbar = Entity(model=hotBarModel, parent=camera.ui)
 # set size and position
-# hotbar.scale_y = 0.08
-# hotbar.scale_x = 0.68
-# set appearance
 hotbar.scale=Vec3(0.68,0.08,0)
 hotbar.position.y = -0.45 + (hotbar.scale_y * 0.5)
+# set appearance
 # ui_cols=hotbar.scale[0]/9
 hotbar.y=(-0.45 + (hotbar.scale_y*0.5))
 hotbar.color = color.dark_gray
@@ -120,8 +118,8 @@ for i in range(Hotspot.rowFit):
 
 for i in range(9):
   bud = Item()
-  bud.onHotBar=True
-  bud.visible=True
+  bud.onHotBar= True
+  bud.visible= True
   bud.x = rando.random() -0.5
   bud.y = rando.random() - 0.5
   items.append(bud)  
@@ -141,6 +139,7 @@ def inv_input(key, subject, mouse):
       hotspots[wnum].color = color.yellow
       if hotspots[wnum].occupied:
         subject.blockType = hotspots[wnum].item.blockType
+        print(subject.blockType)
       
   except:
     pass
