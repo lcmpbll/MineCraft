@@ -6,6 +6,8 @@ grey = FrameAnimation3d('panda_walk_', fps=1)
 #WIP texture
 grey.texture='panda_texture'
 # grey.position = copy(subject.position) + Vec3(-6, -1, 9)
+# static for reset
+grey.startPoint = Vec3(-6, -1, 9)
 grey.position = Vec3(-6, -1, 9)
 grey.turnSpeed = 2
 grey.speed = 1
@@ -23,6 +25,9 @@ def mob_movement(mob, _subjectPos, _terrainDic):
   thingToLookAt = _subjectPos
   if mob.isChasing == False and dist.length() > mob.intamacyDistance:
     thingToLookAt = findLand(mob, _terrainDic)
+  
+  if thingToLookAt == None:
+    thingToLookAt = mob.startPoint
   
   # turn off chasing if mob is in the water and can't swim
   if _terrainDic.get((floor(mob.position.x), floor(mob.position.y), floor(mob.position.z))) == 'w' and mob.canSwim == False:
@@ -115,11 +120,11 @@ def terrain_walk(mob, _terrainDic):
       mob.y -= 9.8 * time.dt 
 
 def findLand(mob, _terrainDic):
-   # BUG still not avoiding water
    for i in range(-10, 10):
       for j in range(-10, 10):
          for k in range(-mob.step, mob.step):
           if _terrainDic.get((floor(mob.position.x + i), floor(mob.position.y + k), floor(mob.position.z + j))) == 't':
             return Vec3(floor(mob.position.x + i), floor(mob.position.y + k), floor(mob.position.z + j))
-           
+          
+          
           
