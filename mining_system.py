@@ -24,7 +24,7 @@ def highlight( pos, camera, terrainDic):
     # + 0.5
     bte.z = z
     bte.x = x
-    if parseDict.getDictionary(terrainDic, x, y, z) == 't': 
+    if parseDict.getDictionary(terrainDic, x, y, z) != None and parseDict.getDictionary(terrainDic, x, y, z) != 'g' and parseDict.getDictionary(terrainDic, x, y, z) != 'a': 
       bte.visible  = True
       
       break
