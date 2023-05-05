@@ -1,5 +1,6 @@
 
 from ursina import Vec3, held_keys, time, lerp
+from config import minerals
 # all things using this system must have height, step height, and jumpheight
 # maybe canSwim
 
@@ -62,7 +63,7 @@ def bumpWall(subject, terrain):
       whatT1=terrain.terrainDic.get((x,y+i,z))
       whatT0 = terrain.terrainDic.get((x, y-1, z))
       print(whatT0, whatT1)
-      if whatT1!=None and whatT1!='g' and whatT1 != 'a' and whatT1 != 'w':
+      if whatT1 in minerals:
           # walking on water
           # if whatT1 == 'w' or whatT0 == 'w':
           #   waterFound = False
@@ -92,14 +93,14 @@ def bumpWall(subject, terrain):
           # else:
           # if there is a block at level, check one above and one below
             whatT2=terrain.terrainDic.get((x,y+i+1,z))
-            if whatT2!=None and whatT2!='g' and whatT2 != 'a' and whatT2 != 'w':
+            if whatT2 in minerals:
                 # Also check any blocks above, still within stepping range.
                 target = y+i+height+1
                 blockFound=True
                 break
             # Stomach height?
             whatT3=terrain.terrainDic.get((x,y+i+2,z))
-            if whatT3!=None and whatT3!='g' and whatT3 != 'a' and whatT3 != 'w':
+            if whatT3 in minerals:
                 target = y+i+height+2
                 blockFound=True
                 break
