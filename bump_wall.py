@@ -116,7 +116,7 @@ def bumpWall(subject, terrain):
           subject.frog=False
           subject.y+=jumpHeight
   else:
-    if whatT1 == 'w':
+    if whatT0 == 'w' and whatT1 != 'water':
       subject.y -= 9.8 * time.dt * 0.5
     else:
       # Gravity fall :<
