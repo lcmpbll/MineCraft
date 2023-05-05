@@ -48,7 +48,6 @@ class MeshTerrain:
                                     this.sub.position+Vec3(0,this.sub.height,0))
             if buildSite != None:
                 this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0, building=True, blockType=this.sub.blockType)
-                print(this.sub.blockType)
                 this.subsets[0].model.generate()
                 gapShell(buildSite, this.terrainDic)
     def update(this, pos, cam):
@@ -92,20 +91,7 @@ class MeshTerrain:
         # Extend to the vertices of our model, or first subset
         model = this.subsets[subset].model
         model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
-        # record terrain in dictionary
-        this.recDic(this.terrainDic, _x, _y, _z, "t")
-        # also record gap 
-        if mining == False and building != True:
-            if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
-                this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
-        # if building == True:
-        #       #not sure if this is necessary
-    
-        #       if this.getDic(this.terrainDic, _x, _y + 1, _z) == None or this.getDic(this.terrainDic, _x, _y +1, _z) == 'g' :
-        #         this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
-        # record subet index and first vertext of the block. 
-        vob = (subset, len(model.vertices) - 37)
-        this.recDic(this.vertexDic, _x, _y, _z, vob)
+        
         # decide random tint for color of block
         c = random() - 0.5
         model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
@@ -135,6 +121,7 @@ class MeshTerrain:
                 blockType = 'water'
                 og_y = _y
                 this.genWaterBlock(_x, _y + 1, _z, og_y)
+      
         elif mining == False and building == False:
         #grass
             # uu = 8
@@ -155,6 +142,20 @@ class MeshTerrain:
             # adjust each color channel separately to ensure hard-coded RGB combination is continued
             model.colors.extend((Vec4(ce[0] - c, ce[1]-c, ce[2] - c, ce[3]),) * this.numVertices)
         model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
+        # record terrain in dictionary
+        this.recDic(this.terrainDic, _x, _y, _z, blockType)
+        # also record gap 
+        if mining == False and building != True:
+            if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
+                this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
+        # if building == True:
+        #       #not sure if this is necessary
+    
+        #       if this.getDic(this.terrainDic, _x, _y + 1, _z) == None or this.getDic(this.terrainDic, _x, _y +1, _z) == 'g' :
+        #         this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
+        # record subet index and first vertext of the block. 
+        vob = (subset, len(model.vertices) - 37)
+        this.recDic(this.vertexDic, _x, _y, _z, vob)
     
     def checkForWater(this, _x, _y, _z, checkfor, subset=-1):
         
