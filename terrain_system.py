@@ -97,36 +97,38 @@ class MeshTerrain:
         model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
         
         if _y > 2 and mining == False and building == False:
-        # texture atlas at coord icy mountais
-            # uu = 8
-            # uv = 6
-            blockType = 'snow'
+            # if random() > 0.86:
+            #     blockType = 'stone'
+            # elif random() > 0.9: 
+            #     blockType = 'emerald'
+            # elif random() > 0.95:
+            #     blockType = 'ruby'
+            # else:
+                blockType = 'snow'
         elif _y < -2 and building == False:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
                 
                 if this.checkForWater(_x, _y, _z, 'w') == True:
-                    # this.recDic(this.terrainDic, _x, _y, _z, 'w')
-                    # uu = 9 
-                    # uv = 7
                     blockType = 'water'
                     og_y = _y - 1
                     this.genWaterBlock(_x, _y + 1, _z, og_y)
                 else: 
                     blockType = 'soil'
-                    # uu = 10
-                    # uv = 7
             else:
-                # uu = 9 
-                # uv = 7
                 blockType = 'water'
                 og_y = _y
                 this.genWaterBlock(_x, _y + 1, _z, og_y)
       
         elif mining == False and building == False:
-        #grass
-            # uu = 8
-            # uv = 7
-            blockType = 'grass'
+            if random() > 0.86:
+                blockType = 'stone'
+            # elif random() > 0.9: 
+            #     blockType = 'emerald'
+            # elif random() > 0.95:
+            #     blockType = 'ruby'
+            else:
+                blockType = 'grass'
+    
         elif building == False: 
             #soil
             blockType = 'soil'
@@ -141,11 +143,13 @@ class MeshTerrain:
             ce = minerals[blockType][2]
             # adjust each color channel separately to ensure hard-coded RGB combination is continued
             model.colors.extend((Vec4(ce[0] - c, ce[1]-c, ce[2] - c, ce[3]),) * this.numVertices)
+  
+         
         model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
         # record terrain in dictionary
         this.recDic(this.terrainDic, _x, _y, _z, blockType)
         # also record gap 
-        if mining == False and building != True:
+        if mining == False and building == False:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
                 this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # if building == True:
