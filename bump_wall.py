@@ -60,24 +60,55 @@ def bumpWall(subject, terrain):
  # walk on top of water
   for i in range(-2,step):
       whatT1=terrain.terrainDic.get((x,y+i,z))
-      if whatT1!=None and whatT1!='g' and whatT1 != 'a':
-          whatT2=terrain.terrainDic.get((x,y+i+1,z))
-          if whatT2!=None and whatT2!='g' and whatT2 != 'a':
-              # Also check any blocks above, still within stepping range.
-              target = y+i+height+1
-              blockFound=True
-              break
-          # Stomach height?
-          whatT3=terrain.terrainDic.get((x,y+i+2,z))
-          if whatT3!=None and whatT3!='g' and whatT3 != 'a':
-              target = y+i+height+2
-              blockFound=True
-              break
-          target = y+i+height
-          blockFound=True
-          break
+      whatT0 = terrain.terrainDic.get((x, y-1, z))
+      print(whatT0, whatT1)
+      if whatT1!=None and whatT1!='g' and whatT1 != 'a' and whatT1 != 'w':
+          # walking on water
+          # if whatT1 == 'w' or whatT0 == 'w':
+          #   waterFound = False
+          #   if whatT1 == 'water':
+          #     target = y + i + height
+          #     blockFound = True
+          #   whatT2 = terrain.terrainDic.get((x, y+i+2, z))
+          #   print(whatT2, 'wt2')
+          #   if whatT2 == 'water':
+          #     # Also check any blocks below withing range
+          #     target = y+i+height + 2
+          #     blockFound = True
+          #     break
+          #   # Stomach height?
+          #   whatT3=terrain.terrainDic.get((x,y+i+1,z))
+          #   print(whatT3, 'wt3')
+          #   if whatT3 == 'water':
+          #     target = y + i + height + 1
+          #     blockFound = True
+          #     break
+          #   if blockFound == True:
+          #     print(waterFound)
+          #     subject.y = lerp(subject.position, target, 3 * time.dt)
+          #   else: 
+          
+          #     subject.y -= 9.8 * time.dt * 0.5
+          # else:
+          # if there is a block at level, check one above and one below
+            whatT2=terrain.terrainDic.get((x,y+i+1,z))
+            if whatT2!=None and whatT2!='g' and whatT2 != 'a' and whatT2 != 'w':
+                # Also check any blocks above, still within stepping range.
+                target = y+i+height+1
+                blockFound=True
+                break
+            # Stomach height?
+            whatT3=terrain.terrainDic.get((x,y+i+2,z))
+            if whatT3!=None and whatT3!='g' and whatT3 != 'a' and whatT3 != 'w':
+                target = y+i+height+2
+                blockFound=True
+                break
+            target = y+i+height
+            blockFound=True
+            break
+    
   if blockFound==True:
-      
+     
       # Step up or down :>
       subject.y = lerp(subject.y, target, 6 * time.dt)
       # We are grounded -- so can jump...
@@ -85,6 +116,9 @@ def bumpWall(subject, terrain):
           subject.frog=False
           subject.y+=jumpHeight
   else:
+    if whatT1 == 'w':
+      subject.y -= 9.8 * time.dt * 0.5
+    else:
       # Gravity fall :<
       subject.y -= 9.8 * time.dt
 
