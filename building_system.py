@@ -1,5 +1,5 @@
 from ursina import Vec3, floor
-from config import six_cube_dir
+from config import six_cube_dir, minerals
 """
 Our building system
 """
@@ -19,13 +19,15 @@ def checkBuild(_bsite, _terrainDic, _camF, _pos):
 
   print(x, y, z)
   # Oh, but what if we're trying to build inside bte?
-  # Build 1 above current block!
+  # Build 1 above current block! _ do we still need to do this?
   if _bsite == Vec3(x,y,z):
-      y+=1
+      y +=1
+    
 
   #first check there isn't already terrain there y + 1 because y is one below the site
-  if _terrainDic.get((x, y, z)) != 'a' and _terrainDic.get((x, y, z)) != 'g':
-    if _terrainDic.get((x, y, z)) != None:
+  # if _terrainDic.get((x, y, z)) != 'a' and _terrainDic.get((x, y, z)) != 'g':
+  #   if _terrainDic.get((x, y, z)) != None:
+  if _terrainDic.get((x, y, z)) in minerals:
       print('Cannot build here sorry')
       return None
     
@@ -39,5 +41,5 @@ def gapShell(_bsite, _terrainDic):
  
   for i in range(0,6):
     p = _bsite + six_cube_dir[i]
-    if _terrainDic.get((floor(p.x), floor(p.y), floor(p.z))) != 'g' or _terrainDic.get((floor(p.x), floor(p.y), floor(p.z))) != 'a':
+    if _terrainDic.get((floor(p.x), floor(p.y), floor(p.z))) in minerals:
       _terrainDic[(floor(p.x), floor(p.y), floor(p.z))] = 'g'
