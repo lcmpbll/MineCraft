@@ -1,4 +1,5 @@
 from ursina import *
+from config import minerals
 
 
 
@@ -6,6 +7,8 @@ grey = FrameAnimation3d('panda_walk_', fps=1)
 #WIP texture
 grey.texture='panda_texture'
 # grey.position = copy(subject.position) + Vec3(-6, -1, 9)
+# static for reset
+grey.startPoint = Vec3(-6, -1, 9)
 grey.position = Vec3(-6, -1, 9)
 grey.turnSpeed = 2
 grey.speed = 1
@@ -23,6 +26,9 @@ def mob_movement(mob, _subjectPos, _terrainDic):
   thingToLookAt = _subjectPos
   if mob.isChasing == False and dist.length() > mob.intamacyDistance:
     thingToLookAt = findLand(mob, _terrainDic)
+  
+  if thingToLookAt == None:
+    thingToLookAt = mob.startPoint
   
   # turn off chasing if mob is in the water and can't swim
   if _terrainDic.get((floor(mob.position.x), floor(mob.position.y), floor(mob.position.z))) == 'w' and mob.canSwim == False:
@@ -73,8 +79,9 @@ def terrain_walk(mob, _terrainDic):
   y = floor(mob.y + 0.5)
   z = floor(mob.z + 0.5)
   for i in range(-mob.step, mob.step):
-      if _terrainDic.get(( x, y + i, z)) == 't': 
-          if _terrainDic.get(( x, y+i + 1, z)) == 't':
+      
+      if _terrainDic.get(( x, y + i, z)) in minerals: 
+          if _terrainDic.get(( x, y+i + 1, z)) in minerals:
               target = y + i + 1 + height
               blockFound = True
               break    
@@ -91,14 +98,15 @@ def terrain_walk(mob, _terrainDic):
           if mob.canSwim == False: 
             print('help, I cant swim')
             for j in range(-mob.step, mob.step):
-              if _terrainDic.get((x + j, y + i, z)) == 't':
+              currentTX = _terrainDic.get((x + j, y + i, z))
+              if currentTX != 'a' and currentTX != 'g' and currentTX != 'w':
                 target = (x + j, y + i, z)
                 # mob.rotation = Vec3(0, mob.rotation_y - (45 * i), 0)
                 mob.position -= mob.back * mob.speed * time.dt
                 mob.position = lerp(mob.position, target, 6 * time.dt)
               
               
-              elif _terrainDic.get((x, y + i, z + j)) == 't':
+              elif _terrainDic.get((x, y + i, z + j)) in minerals:
                 
                   # mob.rotation = Vec3(0, mob.rotation_y - (45 * i), 0)
                   mob.position -= mob.back * mob.speed * time.dt
@@ -115,11 +123,14 @@ def terrain_walk(mob, _terrainDic):
       mob.y -= 9.8 * time.dt 
 
 def findLand(mob, _terrainDic):
-   # BUG still not avoiding water
-   for i in range(-10, 10):
-      for j in range(-10, 10):
-         for k in range(-mob.step, mob.step):
-          if _terrainDic.get((floor(mob.position.x + i), floor(mob.position.y + k), floor(mob.position.z + j))) == 't':
-            return Vec3(floor(mob.position.x + i), floor(mob.position.y + k), floor(mob.position.z + j))
-           
+  x = floor(mob.x + 0.5)
+  y = floor(mob.y + 0.5)
+  z = floor(mob.z + 0.5)
+  for i in range(-10, 10):
+    for j in range(-10, 10):
+        for k in range(-mob.step, mob.step):
+          if _terrainDic.get((floor(x + i), floor(y + k), floor(z + j))) in minerals:
+            return Vec3(floor(x + i), floor(y + k), floor(z + j))
+          
+          
           

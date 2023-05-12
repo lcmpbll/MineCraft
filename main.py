@@ -11,6 +11,7 @@ from mob_system import *
 from bump_wall import *
 from save_load_system import saveMap, loadMap
 from inventory_system import *
+
 #Initial Variables / imports, creations
 window.color=color.rgb(0,200,255)
 indra = Sky()
@@ -45,18 +46,15 @@ snowFall = SnowFall(subject)
 # audio stuff
 step_audio = Audio('step.ogg', autoplay=False, loop=False)
 snow_step_audio = Audio('snowStep.mp3', autoplay=False, loop=False)
-# create and hold flakes
-# flakes = []
-# def generateFlakes():
-    
-#     for i in range(128):
-#         e = Flake(subject.position)
-#         flakes.append(e)
+
+# For Earth quakes
+earthCounter = 0
+quaking = False
 count = 0
 prev_x = subject.x
 prev_z = subject.z
 def input(key):
-    global generatingTerrain
+    global generatingTerrain, quaking
     if key == 'q':
         app.userExit()
     elif key == 'space':
@@ -76,13 +74,15 @@ def input(key):
         saveMap(subject.position, terrain.terrainDic)
     elif key == 'l':
         loadMap(subject, terrain)
-       
+    elif key == 'k':
+        quaking = not quaking
+        print(quaking)
     else:
         terrain.input(key)
         inv_input(key, subject, mouse)
 
 def update():
-    global count, prev_x, prev_z
+    global count, prev_x, prev_z, earthCounter
     count += 1 
     terrain.update(subject.position, camera)
     # handle mob ai
@@ -114,15 +114,28 @@ def update():
                 snow_step_audio.play()
             else:
                 step_audio.play()
-    # Walk on solid terrain and wall collisions
-    bumpWall(subject, terrain)
+    #**********************
+    for h in terrain.subsets:
+        if quaking == True:
+            # Earthquake expereriment: sin wave through subsets to lift them up
+            earth_freq = 0.5
+            earthCounter += earth_freq
+            earth_amplitude = 0.5
+            
+            h.y = h.y + (math.sin(terrain.subsets.index(h) + earthCounter) * earth_amplitude) * time.dt
+        else:
+            h.y = 0
+        #**********************
+        # Walk on solid terrain and wall collisions
+    
+    bumpWall(subject, terrain, quaking, h.y)
     # runnning and dash effect
     if held_keys['shift'] and held_keys['w']:
         subject.speed = subject.runSpeed
         if camera.fov < 100:
             camera.fov += camera.dash * time.dt
     else:
-        subject.speedd = subject.walkSpeed
+        subject.speed = subject.walkSpeed
         if camera.fov > 90:
             camera.fov -= camera.dash * 4 * time.dt
             if camera.fov < 90: camera.fov = 90
