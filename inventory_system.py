@@ -34,6 +34,7 @@ iPan.visible = False
 
 # moved up so they can be referred to in the static method
 hotspots = []
+#iPanSlots = []
 items = []
 
 class Hotspot(Entity):
@@ -164,12 +165,16 @@ for i in range(Hotspot.rowFit):
   
   hotspots.append(bud)
   # HotSpots for Main Inventory panel
-iPanSlots = []
-items = []
+
 #Hotspots for the hot bar, 
+count = 0
 for j in range(iPan.rows):
   for i in range(Hotspot.rowFit):
+    count += 1
+    
+    
     bud = Hotspot()
+    bud.onHotBar = False
     bud.visible = False
     y_padding = (iPan.scale_x - Hotspot.scalar * iPan.rows) * 0.5 
     x_padding = (iPan.scale_x - Hotspot.scalar * Hotspot.rowFit) * 0.5
@@ -177,7 +182,8 @@ for j in range(iPan.rows):
     bud.y = (iPan.y + iPan.scale_y * 0.5 + Hotspot.scalar * 0.5 - y_padding + Hotspot.scalar * j)
     bud.x = (iPan.x - iPan.scale_x * 0.5 + Hotspot.scalar * 0.5 + x_padding + bud.scale_x * i)
   
-  iPanSlots.append(bud)
+  hotspots.append(bud)
+print(len(hotspots), 'len')
 # main inventory Items
 for i in range(8):
   bud = Item()
