@@ -132,7 +132,8 @@ def resetHotSpots():
 def inv_input(key, subject, mouse):
   try:
     wnum = int(key) -1
-    if wnum > 0 and wnum < 10:
+    
+    if wnum >= 0 and wnum < 10:
       #make sure no hotspots are highlighted
       for h in hotspots:
         h.color = color.white
