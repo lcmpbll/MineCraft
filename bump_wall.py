@@ -5,7 +5,9 @@ from config import minerals
 # maybe canSwim
 
    
-def bumpWall(subject, terrain):
+def bumpWall(subject, terrain, quaking, eQuake):
+  if quaking == False:
+    eQuake = 0
   blockFound = False
   step = subject.step
   jumpHeight = subject.jumpHeight
@@ -62,6 +64,7 @@ def bumpWall(subject, terrain):
   for i in range(-2,step):
       whatT1=terrain.terrainDic.get((x,y+i,z))
       whatT0 = terrain.terrainDic.get((x, y-1, z))
+      
       # print(whatT0, whatT1)
       if whatT1 in minerals:
           # walking on water
@@ -116,10 +119,13 @@ def bumpWall(subject, terrain):
       if subject.frog is True:
           subject.frog=False
           subject.y+=jumpHeight
+      if quaking == True:
+         subject.y += eQuake
   else:
     if whatT0 == 'w' and whatT1 != 'water':
       subject.y -= 9.8 * time.dt * 0.5
     else:
       # Gravity fall :<
       subject.y -= 9.8 * time.dt
+  
 
