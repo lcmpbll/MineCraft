@@ -7,11 +7,26 @@ hotBarModel=load_model('quad',use_deepcopy=True)
 hotbar = Entity(model=hotBarModel, parent=camera.ui)
 # set size and position
 hotbar.scale=Vec3(0.68,0.08,0)
-hotbar.position.y = -0.45 + (hotbar.scale_y * 0.5)
+
 # set appearance
-# ui_cols=hotbar.scale[0]/9
+
 hotbar.y=(-0.45 + (hotbar.scale_y*0.5))
 hotbar.color = color.dark_gray
+
+# Inventory main panel
+iPanModel=load_model('quad',use_deepcopy=True)
+iPan = Entity(model=iPanModel, parent=camera.ui)
+# set size and position
+iPan.rows = 3
+iPan.scale_x=hotbar.scale_x
+iPan.scale_y = hotbar.scale_y * iPan.rows
+iPan.basePosY = hotbar.y + hotbar.scale_y * 2
+iPan.gap = hotbar.scale_y
+iPan.y = iPan.basePosY + iPan.gap
+# set appearance
+# ui_cols=hotbar.scale[0]/9
+# iPan.y=hotbar.y + 
+iPan.color = color.light_gray
 
 class Hotspot(Entity):
   # Fix sides of hotspot to height of hot bar
@@ -27,7 +42,8 @@ class Hotspot(Entity):
     this.color=color.white
     this.texture='white_box'
     this.onHotbar = False
-    this.visible=False
+    this.onIPan = False
+    this.visible= False
     this.occupied = False
     #What item are we hosting 
     this.item = None
@@ -41,6 +57,7 @@ class Item(Draggable):
     this.scale_y =  this.scale_x
     this.visible=False
     this.onHotBar=False
+    this.onIpan = False
     this.texture ='texture_atlas_3'
     this.texture_scale *= 64/this.texture.width
     this.blockType = mins[rando.randint(0,len(mins) -1)]
@@ -62,7 +79,7 @@ class Item(Draggable):
     if len(minerals[this.blockType]) > 2:
       this.color = minerals[this.blockType][2]
   
-  def fixPos(this):
+  def fixPos(this, setUp = False):
     closest = -1
     closestHotty = None
     # Look through hotspots, 
@@ -108,13 +125,29 @@ items = []
 #Hotspots for the hot bar
 for i in range(Hotspot.rowFit):
   bud = Hotspot()
-  bud.onHotbar=True
+  bud.onIPan=True
   bud.visible = True
   padding = (hotbar.scale_x - bud.scale_x * Hotspot.rowFit) * 0.5
   bud.y = hotbar.y
-  bud.x = (hotbar.x - hotbar.scale_x * 0.5 + bud.scale_x * 0.5 + padding + bud.scale_x * i)
+  bud.x = (hotbar.x - hotbar.scale_x * 0.5 + Hotspot.scalar * 0.5 + padding + bud.scale_x * i)
   
   hotspots.append(bud)
+  # HotSpots for Main Inventory panel
+iPanSlots = []
+items = []
+#Hotspots for the hot bar, 
+for j in range(iPan.rows):
+  for i in range(Hotspot.rowFit):
+    bud = Hotspot()
+    bud.onHotBar=False
+    bud.visible = True
+    y_padding = (iPan.scale_x - Hotspot.scalar * iPan.rows) * 0.5 
+    x_padding = (iPan.scale_x - Hotspot.scalar * Hotspot.rowFit) * 0.5
+    # bud.y = iPan.y  +  (iPan.scale_y/iPan.rows * (j -1))  # is this because pos_y is not the bottom but the mid
+    bud.y = (iPan.y + iPan.scale_y * 0.5 + Hotspot.scalar * 0.5 - y_padding + Hotspot.scalar * j)
+    bud.x = (iPan.x - iPan.scale_x * 0.5 + Hotspot.scalar * 0.5 + x_padding + bud.scale_x * i)
+  
+  iPanSlots.append(bud)
 
 for i in range(8):
   bud = Item()
@@ -122,7 +155,8 @@ for i in range(8):
   bud.visible= True
   bud.x = rando.random() -0.5
   bud.y = rando.random() - 0.5
-  bud.fixPos()
+  setUp = True
+  bud.fixPos(setUp)
   items.append(bud)  
   
 def resetHotSpots(): 
