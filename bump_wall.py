@@ -21,7 +21,7 @@ def bumpWall(subject, terrain, quaking, eQuake):
   def checkBump(inF):
     for i in range(1, step + 1):
       whatT = terrain.terrainDic.get((round(inF.x), round(inF.y + 1), round(inF.z)))
-      if whatT != None and whatT != 'a' and whatT != 'g':
+      if whatT in minerals:
         return True
       return False
       #if whatT == 'w
