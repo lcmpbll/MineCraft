@@ -44,7 +44,7 @@ class Hotspot(Entity):
   rowFit = 9
   def __init__(this):
     super().__init__()
-    this.model='quad'
+    this.model=load_model('quad', use_deepcopy=True)
     this.parent=camera.ui
     this.scale_y=Hotspot.scalar
     this.scale_x = this.scale_y
@@ -117,7 +117,7 @@ class Item(Draggable):
     closestHotty = None
     # Look through hotspots, 
     for h in hotspots:
-    # Find unoccupied hotspot that is closest
+    # Find unoccupied hotspot that is closest and not on the iPan during setup
       if setUp == True and not h.onHotbar: continue
       if h.occupied: continue
       dist = h.position - this.position
@@ -196,6 +196,11 @@ for i in range(8):
   setUp = True
   bud.fixPos(setUp)
   items.append(bud)  
+  
+# make sure non hotbar items are invisible at the start
+# my module does not start with items on the iPan
+Hotspot.toggle()
+Hotspot.toggle()
   
 def resetHotSpots(): 
   for h in hotspots:
