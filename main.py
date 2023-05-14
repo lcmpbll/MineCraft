@@ -13,7 +13,7 @@ from save_load_system import saveMap, loadMap
 from inventory_system import *
 
 #Initial Variables / imports, creations
-window.color=color.rgb(0,200,255)
+window.color=color.rgb(0,200,225)
 indra = Sky()
 
 scene.fog_density= (0, 50)
