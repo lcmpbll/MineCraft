@@ -93,8 +93,8 @@ class MeshTerrain:
         model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
         
         # decide random tint for color of block
-        c = random() - 0.5
-        model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
+        # c = random() - 0.5
+        # model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
         
         if _y > 2 and mining == False and building == False:
             # if random() > 0.86:
@@ -107,25 +107,28 @@ class MeshTerrain:
                 blockType = 'snow'
         elif _y < -2 and building == False:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
-                
-                if this.checkForWater(_x, _y, _z, 'w') == True:
+                # We generated a gap when mining, decide what to fill it with, check for near by water
+                if this.checkForWater(_x, _y, _z, 'w'):
+                #or this.checkForWater(_x, _y, _z, 'water') == True:
                     blockType = 'water'
                     og_y = _y - 1
                     this.genWaterBlock(_x, _y + 1, _z, og_y)
+                    
                 else: 
                     blockType = 'soil'
             else:
                 blockType = 'water'
                 og_y = _y
                 this.genWaterBlock(_x, _y + 1, _z, og_y)
+                
       
         elif mining == False and building == False:
-            if random() > 0.86:
-                blockType = 'stone'
+            # if random() > 0.95:
+            #     blockType = 'ruby'
             # elif random() > 0.9: 
             #     blockType = 'emerald'
-            # elif random() > 0.95:
-            #     blockType = 'ruby'
+            if random() > 0.86:
+                blockType = 'stone'
             else:
                 blockType = 'grass'
     
@@ -137,12 +140,19 @@ class MeshTerrain:
        
         uu = minerals[blockType][0]
         uv = minerals[blockType][1]
-      
+        # random tint for blocks
+        c = random() -0.5
         # get Vec4 color data
         if len(minerals[blockType]) > 2:
             ce = minerals[blockType][2]
             # adjust each color channel separately to ensure hard-coded RGB combination is continued
             model.colors.extend((Vec4(ce[0] - c, ce[1]-c, ce[2] - c, ce[3]),) * this.numVertices)
+        elif blockType == 'water':
+            s = (abs(_y) /100) * 4
+            model.colors.extend((Vec4( s,  s,  s, 0.5),) * this.numVertices)   
+        else: 
+            
+            model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
   
          
         model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
@@ -187,7 +197,7 @@ class MeshTerrain:
                 break
         return isByWater
         
-    def genWaterBlock(this, _x, _y, _z, og_y, subset=-1, building = False):
+    def genWaterBlock(this, _x, _y, _z, og_y, subset=-1, mining = False):
         if subset == -1:
             subset = this.currentSubset
         if _y < -1:
@@ -206,7 +216,10 @@ class MeshTerrain:
             uu = 9 
             uv = 7
             # if it is still deep do it again!
-            if _y < -2 or this.checkForWater(_x, _y, _z, 'g') == True:
+            if _y < -2 and mining == False:
+                _y += 1
+                this.genWaterBlock(_x, _y, _z, og_y)
+            elif _y < -2 and mining == False and this.checkForWater(_x, _y, _z, 'g') == True: 
                 _y += 1
                 this.genWaterBlock(_x, _y, _z, og_y)
             model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
