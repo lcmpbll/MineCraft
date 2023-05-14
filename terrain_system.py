@@ -168,7 +168,7 @@ class MeshTerrain:
         #       if this.getDic(this.terrainDic, _x, _y + 1, _z) == None or this.getDic(this.terrainDic, _x, _y +1, _z) == 'g' :
         #         this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # record subet index and first vertext of the block. 
-        vob = (subset, len(model.vertices) - 37)
+        vob = (subset, len(model.vertices) - this.numVertices - 1)
         this.recDic(this.vertexDic, _x, _y, _z, vob)
     
     def checkForWater(this, _x, _y, _z, checkfor, subset=-1):
