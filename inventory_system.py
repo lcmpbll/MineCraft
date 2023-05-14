@@ -7,7 +7,7 @@ hotBarModel=load_model('quad',use_deepcopy=True)
 hotbar = Entity(model=hotBarModel, parent=camera.ui)
 # set size and position
 hotbar.scale=Vec3(0.68,0.08,0)
-# render me first
+# render me on the bottom
 hotbar.render_queue = 0
 # set appearance
 
@@ -44,14 +44,13 @@ class Hotspot(Entity):
   rowFit = 9
   def __init__(this):
     super().__init__()
-    this.model='quad'
+    this.model=load_model('quad', use_deepcopy=True)
     this.parent=camera.ui
     this.scale_y=Hotspot.scalar
     this.scale_x = this.scale_y
     this.color=color.white
     this.texture='white_box'
     this.onHotbar = False
-    # this.onIPan = False
     this.visible= False
     this.occupied = False
     # render me second
@@ -64,9 +63,11 @@ class Hotspot(Entity):
       iPan.visible = False
     else:
       iPan.visible = True
+
     for h in hotspots:
+  
       # game mode - not visisble, inventory - can see
-      if not h.visible and not h.onHotbar:
+      if h.visible == False and h.onHotbar == False:
         h.visible = True
         if h.item:
          h.item.visible = True
@@ -88,7 +89,7 @@ class Item(Draggable):
     this.render_queue = 2
     this.scale_y =  this.scale_x
     this.visible=False
-    this.onHotBar=False
+    this.onHotbar=False
     # this.onIpan = False
     this.texture ='texture_atlas_3'
     this.texture_scale *= 64/this.texture.width
@@ -116,7 +117,8 @@ class Item(Draggable):
     closestHotty = None
     # Look through hotspots, 
     for h in hotspots:
-    # Find unoccupied hotspot that is closest
+    # Find unoccupied hotspot that is closest and not on the iPan during setup
+      if setUp == True and not h.onHotbar: continue
       if h.occupied: continue
       dist = h.position - this.position
       # get magnitude of dist
@@ -137,7 +139,10 @@ class Item(Draggable):
         this.currentSpot.item = None
       # finally update current hotspot
       this.currentSpot = closestHotty
-      this.onHotBar = True
+      this.visible = closestHotty.visible
+      if closestHotty.onHotbar == True:
+        
+        this.onHotbar = True
       
       
     elif this.currentSpot:
@@ -167,14 +172,11 @@ for i in range(Hotspot.rowFit):
   # HotSpots for Main Inventory panel
 
 #Hotspots for the hot bar, 
-count = 0
+
 for j in range(iPan.rows):
   for i in range(Hotspot.rowFit):
-    count += 1
-    
-    
     bud = Hotspot()
-    bud.onHotBar = False
+    bud.onHotbar = False
     bud.visible = False
     y_padding = (iPan.scale_x - Hotspot.scalar * iPan.rows) * 0.5 
     x_padding = (iPan.scale_x - Hotspot.scalar * Hotspot.rowFit) * 0.5
@@ -182,18 +184,23 @@ for j in range(iPan.rows):
     bud.y = (iPan.y + iPan.scale_y * 0.5 + Hotspot.scalar * 0.5 - y_padding + Hotspot.scalar * j)
     bud.x = (iPan.x - iPan.scale_x * 0.5 + Hotspot.scalar * 0.5 + x_padding + bud.scale_x * i)
   
-  hotspots.append(bud)
-print(len(hotspots), 'len')
+    hotspots.append(bud)
+
 # main inventory Items
 for i in range(8):
   bud = Item()
-  # bud.onHotBar= True
+  # bud.onHotbar= True
   bud.visible= True
   bud.x = rando.random() -0.5
   bud.y = rando.random() - 0.5
   setUp = True
   bud.fixPos(setUp)
   items.append(bud)  
+  
+# make sure non hotbar items are invisible at the start
+# my module does not start with items on the iPan
+Hotspot.toggle()
+Hotspot.toggle()
   
 def resetHotSpots(): 
   for h in hotspots:
