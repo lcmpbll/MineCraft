@@ -34,7 +34,8 @@ class MeshTerrain:
             e.texture_scale*=64/e.texture.width
             this.subsets.append(e)
     def do_mining(this):
-        epi = mine(this.terrainDic, this.vertexDic, this.subsets, this.block, this.textureAtlas)
+        #pass in texture atlas for dropping collectable, see mine system
+        epi = mine(this.terrainDic, this.vertexDic, this.subsets, this.textureAtlas)
         if epi != None:
             this.genWalls(epi[0], epi[1])
             this.subsets[epi[1]].model.generate()
