@@ -1,5 +1,6 @@
 from ursina import Entity, color, floor, Vec3, load_model
 from dictionary_craft import DictionaryCraft
+from collectible_system import *
 
 # class MiningSystem:
 #     def __init__(this): not a class ?
@@ -31,7 +32,7 @@ def highlight( pos, camera, terrainDic):
       break
     else:
       bte.visible = False
-def mine( terrainDic, vertexDic, subsets):
+def mine( terrainDic, vertexDic, subsets, _texture):
   if not bte.visible: 
     return
   else: 
@@ -39,10 +40,15 @@ def mine( terrainDic, vertexDic, subsets):
     wv = parseDict.getDictionary(vertexDic, floor(bte.x), floor(bte.y ), floor(bte.z))
     # have we got a block highlighted? if not return 
     if wv == None: return
+    # mining is happening
+    
     #(25, 215) wv - subset, subcube?
     for v in range(wv[1] +1, wv[1] + 37):
       # for the spot in this subset for each of the verticies ++ 999 to pos y
       subsets[wv[0]].model.vertices[v][1] += 999
+    # Drop Collectable
+    blockType = terrainDic.get((floor(bte.x), floor(bte.y), floor(bte.z)))
+    drop_collectible(blockType, bte.position, _texture )
     subsets[wv[0]].model.generate()
     #Fall through floor
     # -0.5 on y
