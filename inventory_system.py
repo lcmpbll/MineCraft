@@ -218,7 +218,8 @@ def inv_input(key, subject, mouse):
       hotspots[wnum].color = color.black
       if hotspots[wnum].occupied:
         subject.blockType = hotspots[wnum].item.blockType
-        print(subject.blockType)
+      else:
+        subject.blockType = None
       
   except:
     pass
