@@ -21,7 +21,7 @@ def checkBuild(_bsite, _terrainDic, _camF, _pos):
   # Oh, but what if we're trying to build inside bte?
   # Build 1 above current block! _ do we still need to do this?
   if _bsite == Vec3(x,y,z):
-      y +=1
+    y +=1
     
 
   #first check there isn't already terrain there y + 1 because y is one below the site
