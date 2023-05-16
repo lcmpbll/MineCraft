@@ -26,7 +26,8 @@ subject.cursor.visible = False
 subject.step = 2
 subject.runSpeed = 12
 subject.walkSpeed = 4
-# subject.height=1.62 # minecraft eyelevel ?
+subject.height=1.62 # minecraft eyelevel ?
+subject.camera_pivot.y = subject.height
 subject.blockType = None # Current building mineral
 
 # property allowing us to jump
