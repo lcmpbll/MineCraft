@@ -14,13 +14,12 @@ from math import sin
 # WIP change to class
 class Collectible(Entity):
   collectablesDic = {}
-  collectables = []
+
   def __init__(this, _blockType, _pos, _tex ):
     super().__init__()
     this.model = load_model('block.obj', use_deepcopy=True)
     this.texture = _tex
     this.position = _pos
-    this.original_y = this.position.y
     this.numVerticies = len(this.model.vertices)
     this.blockType = _blockType
     this.collectables = []
@@ -31,21 +30,25 @@ class Collectible(Entity):
     # record before adjusting position
     Collectible.collectablesDic[this.position] = this
     this.y += 0.5 - (this.scale_y * 0.5)
+    # put in after adjusting position
+    this.original_y = this.position.y
     this.drop_collectible()
   def drop_collectible(this):
     uu = minerals[this.blockType][0]
     uv = minerals[this.blockType][1]
-    c = random() - 0.5
+    
     if len(minerals[this.blockType]) > 2: 
+      c = random() - 0.5
       ce = minerals[this.blockType][2]
       this.shade = ce[3]
-      this.model.colors.extend((Vec4(ce[0] - c, ce[1] -c, ce[2] - c, this.shade),)* this.numVerticies)
+      this.model.colors = (   (Vec4(ce[0]-c,ce[1]-c,ce[2]-c,ce[3]),)* this.numVerticies)
+
     else: 
-      this.model.colors.extend((Vec4(1 - c, 1 -c, 1- c, this.shade),)* this.numVerticies)
+      c = random() - 0.5
+      this.model.colors = ((Vec4(1 - c, 1 -c, 1- c, this.shade),)* this.numVerticies)
     
     this.model.uvs = ([Vec2(uu, uv) + u for u in this.model.uvs])
     this.model.generate()
-    this.collectables.append(this)
   def update(this):
     this.bounce()
     this.degrade_collectables()
