@@ -1,63 +1,74 @@
 """
 System for mined blocks dropping collectable materials.
 """
-from ursina import Entity, Vec2, load_model, math
+from ursina import Entity, Vec2, Vec4, load_model, math, time
 from config import minerals
+from random import random
+from math import sin
 
 
 
 
 #collectable dictionary, store present block position
 
-
-collectables = []
-# Dictionary to record where subject can pick up items
-collectablesDic = {} 
-
-def drop_collectible(_blockType, _pos, _texture):
-  c = Entity(model=load_model('block.obj', use_deepcopy=True), texture=_texture )
-  c.position = _pos
-  collectablesDic[c.position]=_blockType
-  print(collectablesDic.get((c.position)))
-  c.scale = 0.33
-  c.y += 0.5 - (c.scale_y * 0.5)
-  #wrap texture from texture atlas
-  c.texture_scale *= 64/c.texture.width
-  # save og y for bouncing
-  c.original_y = c.y
-  # uv info for texture wrap # list comprehension
-  uu = minerals[_blockType][0]
-  uv = minerals[_blockType][1]
-  if len(minerals[_blockType]) > 2: 
-    c.color = minerals[_blockType][2]
-  c.model.uvs = ([Vec2(uu, uv) + u for u in c.model.uvs])
-  c.model.generate()
-  collectables.append(c)
-  
-def collectible_bounce():
-  for c in collectables: 
-    c.rotation_y += 2
-    c.y = (c.original_y + math.sin(c.rotation_y/50)* c.scale_y) 
-
-
-
-#WIP change to class
-# class Collectible:
-#   def __init__(this):
-#     this.collectables = []
-#     this.model = load_model('block.obj', use_deepcopy=True)
+# WIP change to class
+class Collectible(Entity):
+  collectablesDic = {}
+  collectables = []
+  def __init__(this, _blockType, _pos, _tex ):
+    super().__init__()
+    this.model = load_model('block.obj', use_deepcopy=True)
+    this.texture = _tex
+    this.position = _pos
+    this.original_y = this.position.y
+    this.numVerticies = len(this.model.vertices)
+    this.blockType = _blockType
+    this.collectables = []
+    this.texture_scale *= 64/this.texture.width
+    this.scale = 0.33
+    this.shade = 1
+    this.timeStamp = time.time()
+    # record before adjusting position
+    Collectible.collectablesDic[this.position] = this
+    this.y += 0.5 - (this.scale_y * 0.5)
+    this.drop_collectible()
+  def drop_collectible(this):
+    uu = minerals[this.blockType][0]
+    uv = minerals[this.blockType][1]
+    c = random() - 0.5
+    if len(minerals[this.blockType]) > 2: 
+      ce = minerals[this.blockType][2]
+      this.shade = ce[3]
+      this.model.colors.extend((Vec4(ce[0] - c, ce[1] -c, ce[2] - c, this.shade),)* this.numVerticies)
+    else: 
+      this.model.colors.extend((Vec4(1 - c, 1 -c, 1- c, this.shade),)* this.numVerticies)
     
-#     this.c = Entity(model=this.model)
-#   def drop_collectible(this, _blockType, _pos, _texture):
-#     print(_blockType)
-#     this.c.texture = _texture
-#     this.c.position = _pos
-#     this.c.texture_scale *= 64/this.c.texture.width
-#     this.c.scale = 0.33
-#     uu = minerals[_blockType][0]
-#     uv = minerals[_blockType][1]
-#     this.c.model.uvs = ([Vec2(uu, uv) + u for u in this.c.model.uvs])
-#     this.c.model.generate()
-#     this.collectables.append(this.c)
+    this.model.uvs = ([Vec2(uu, uv) + u for u in this.model.uvs])
+    this.model.generate()
+    this.collectables.append(this)
+  def update(this):
+    this.bounce()
+    this.degrade_collectables()
+    
+     
+  def degrade_collectables(this):
+    this.shade -= 0.05
+    if this.shade == 0:
+      Collectible.collectablesDic[this] = None
+      this.destroy()
+      
+  def bounce(this):
+    # adds a small bounce
+    this.rotation_y += 2
+    this.y = (this.original_y + sin(this.rotation_y * 0.05)* this.scale_y)
+  
+      
+
+
+
+
+
+
+
     
     
