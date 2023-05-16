@@ -3,6 +3,7 @@ import random as rando
 from config import *
 import numpy as np
 
+
 hotBarModel=load_model('quad',use_deepcopy=True)
 hotbar = Entity(model=hotBarModel, parent=camera.ui)
 # set size and position
@@ -57,6 +58,9 @@ class Hotspot(Entity):
     this.render_queue = 1
     #What item are we hosting 
     this.item = None
+    # new stack system
+    # start with no items as default
+    this.stack = 0
   @staticmethod
   def toggle(): #not a member function, doesn't apply to each item
     if iPan.visible:
@@ -80,7 +84,7 @@ class Hotspot(Entity):
        
 
 class Item(Draggable):
-  def __init__(this):
+  def __init__(this, blockType=mins[rando.randint(0,len(mins) -1)]):
     super().__init__()
     this.model=load_model('quad',use_deepcopy=True)
     this.color=color.white
@@ -93,10 +97,11 @@ class Item(Draggable):
     # this.onIpan = False
     this.texture ='texture_atlas_3'
     this.texture_scale *= 64/this.texture.width
-    this.blockType = mins[rando.randint(0,len(mins) -1)]
+    this.blockType = blockType
     this.currentSpot = None
     this.setTexture()
     this.setColor()
+    
   def setTexture(this):
     uu = minerals[this.blockType][0]
     uv = minerals[this.blockType][1]
@@ -107,6 +112,7 @@ class Item(Draggable):
     this.model.uvs = [Vec2(uu, uv) + u for u in cb]
     this.model.generate()
     this.rotation_z = 180
+  
   
   def setColor(this):
     if len(minerals[this.blockType]) > 2:
@@ -158,6 +164,11 @@ class Item(Draggable):
   def drop(this):
     this.fixPos()
   
+  @staticmethod
+  def new_item(_blockType):
+    newI = Item(_blockType)
+    setUp = True
+    Item.fixPos(newI, setUp)
 
 #Hotspots for the hot bar
 for i in range(Hotspot.rowFit):
@@ -187,15 +198,15 @@ for j in range(iPan.rows):
     hotspots.append(bud)
 
 # main inventory Items
-for i in range(8):
-  bud = Item()
-  # bud.onHotbar= True
-  bud.visible= True
-  bud.x = rando.random() -0.5
-  bud.y = rando.random() - 0.5
-  setUp = True
-  bud.fixPos(setUp)
-  items.append(bud)  
+# for i in range(8):
+#   bud = Item()
+#   # bud.onHotbar= True
+#   bud.visible= True
+#   bud.x = rando.random() -0.5
+#   bud.y = rando.random() - 0.5
+#   setUp = True
+#   bud.fixPos(setUp)
+#   items.append(bud)  
   
 # make sure non hotbar items are invisible at the start
 # my module does not start with items on the iPan

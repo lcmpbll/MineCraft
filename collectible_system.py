@@ -5,6 +5,7 @@ from ursina import Entity, Vec2, Vec3, Vec4, load_model, time, destroy, Audio
 from config import minerals
 from random import random
 from math import sin, floor
+from inventory_system import Item
 
 
 
@@ -70,6 +71,7 @@ class Collectible(Entity):
     #if Collectible.collectablesDic.get((x, y, z)) != None:
     if Vec3(x, y, z) == this.original_position:
       pick_up_audio.play()
+      Item.new_item(this.blockType)
       destroy(this)
      
   def degrade_collectables(this):
