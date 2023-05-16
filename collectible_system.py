@@ -1,7 +1,7 @@
 """
 System for mined blocks dropping collectable materials.
 """
-from ursina import Entity, Vec2, Vec3, Vec4, load_model, math, time, destroy
+from ursina import Entity, Vec2, Vec3, Vec4, load_model, time, destroy, Audio
 from config import minerals
 from random import random
 from math import sin, floor
@@ -10,7 +10,8 @@ from math import sin, floor
 
 
 #collectable dictionary, store present block position
-
+pop_audio = Audio('pop.mp3', autoplay=False, loop=False)
+pick_up_audio =  Audio('pickup.mp3', autoplay=False, loop=False)
 # WIP change to class
 class Collectible(Entity):
   #collectablesDic = {}
@@ -52,6 +53,8 @@ class Collectible(Entity):
       this.model.colors = ((Vec4(1 - c, 1 -c, 1- c, this.shade),)* this.numVerticies)
     
     this.model.uvs = ([Vec2(uu, uv) + u for u in this.model.uvs])
+    # make sound
+    pop_audio.play()
     this.model.generate()
   def update(this):
     this.bounce()
@@ -65,6 +68,7 @@ class Collectible(Entity):
     z = round(this.subject.position.z)
     #if Collectible.collectablesDic.get((x, y, z)) != None:
     if Vec3(x, y, z) == this.original_position:
+      pick_up_audio.play()
       destroy(this)
      
   def degrade_collectables(this):
