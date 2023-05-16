@@ -43,6 +43,8 @@ class MeshTerrain:
         if key == 'left mouse up' and bte.visible == True and mouse.locked == True:
            this.do_mining()
         if key=='right mouse up' and bte.visible==True and mouse.locked == True:
+            # do not build if empty handed.
+            if this.sub.blockType is None: return
             buildSite = checkBuild( bte.position,
                                     this.terrainDic,
                                     this.cam.forward,
