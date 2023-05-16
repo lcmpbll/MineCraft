@@ -35,7 +35,7 @@ class MeshTerrain:
             this.subsets.append(e)
     def do_mining(this):
         #pass in texture atlas for dropping collectable, see mine system
-        epi = mine(this.terrainDic, this.vertexDic, this.subsets, this.textureAtlas)
+        epi = mine(this.terrainDic, this.vertexDic, this.subsets, this.textureAtlas, this.sub)
         if epi != None:
             this.genWalls(epi[0], epi[1])
             this.subsets[epi[1]].model.generate()
