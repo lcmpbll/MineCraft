@@ -12,13 +12,13 @@ bte.scale = 1.02
 bte.origin_y += 0.01
 parseDict = DictionaryCraft()
 
-def highlight( pos, camera, terrainDic):
+def highlight( pos, subHeight, camera, terrainDic):
   # some times I fall through the terrain after building
   # we should look after this behaviour in a dedicated collectable class
   collectible_bounce()
   for i in range(1, 32):
     #adjust for player's height
-    wp = pos + Vec3(0, 1.86, 0) + camera.forward * (i * 0.5)
+    wp = pos + Vec3(0, subHeight, 0) + camera.forward * (i * 0.5)
     #round to improve accuracy,  can still be improved
     x = round(wp.x)
     y = floor(wp.y)
