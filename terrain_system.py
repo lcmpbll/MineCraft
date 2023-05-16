@@ -51,8 +51,8 @@ class MeshTerrain:
                 this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0, building=True, blockType=this.sub.blockType)
                 this.subsets[0].model.generate()
                 gapShell(buildSite, this.terrainDic)
-    def update(this, pos, cam):
-        highlight(pos, cam, this.terrainDic)
+    def update(this):
+        highlight(this.sub.position, this.sub.height, this.cam, this.terrainDic)
         #Blister mining == True
         if bte.visible and mouse.locked == True:
             #this is a for loop iterating over two variables
@@ -160,7 +160,13 @@ class MeshTerrain:
         # record terrain in dictionary
         this.recDic(this.terrainDic, _x, _y, _z, blockType)
         # also record gap 
-        if mining == False and building == False:
+        if building == True:
+            for i in range(0,6):
+                checkPos = Vec3(_x, _y, _z) + six_cube_dir[i]
+                if this.terrainDic.get((checkPos.x, checkPos.y, checkPos.z)) == None:
+                    this.recDic(this.terrainDic, checkPos.x, checkPos.y, checkPos.z, 'a')
+            
+        if mining == False:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
                 this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # if building == True:
