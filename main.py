@@ -84,7 +84,7 @@ def input(key):
 def update():
     global count, prev_x, prev_z, earthCounter
     count += 1 
-    terrain.update(subject.position, camera)
+    terrain.update()
     # handle mob ai
     mob_movement(grey, subject.position, terrain.terrainDic)
   
