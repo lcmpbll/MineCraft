@@ -32,7 +32,7 @@ def highlight( pos, subHeight, camera, terrainDic):
       break
     else:
       bte.visible = False
-def mine( terrainDic, vertexDic, subsets, _texture):
+def mine( terrainDic, vertexDic, subsets, _texture, _subject):
   if not bte.visible: 
     return
   else: 
@@ -48,7 +48,7 @@ def mine( terrainDic, vertexDic, subsets, _texture):
       subsets[wv[0]].model.vertices[v][1] += 999
     # Drop Collectable
     blockType = terrainDic.get((floor(bte.x), floor(bte.y), floor(bte.z)))
-    Collectible(blockType, bte.position, _texture)
+    Collectible(blockType, bte.position, _texture, _subject)
     
     subsets[wv[0]].model.generate()
     #Fall through floor
