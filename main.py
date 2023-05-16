@@ -26,8 +26,8 @@ subject.cursor.visible = False
 subject.step = 2
 subject.runSpeed = 12
 subject.walkSpeed = 4
-subject.height=1.62 
-subject.blockType = 'stone'
+# subject.height=1.62 # minecraft eyelevel ?
+subject.blockType = None # Current building mineral
 
 # property allowing us to jump
 subject.frog = False
