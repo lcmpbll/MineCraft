@@ -34,7 +34,8 @@ class MeshTerrain:
             e.texture_scale*=64/e.texture.width
             this.subsets.append(e)
     def do_mining(this):
-        epi = mine(this.terrainDic, this.vertexDic, this.subsets)
+        #pass in texture atlas for dropping collectable, see mine system
+        epi = mine(this.terrainDic, this.vertexDic, this.subsets, this.textureAtlas, this.sub)
         if epi != None:
             this.genWalls(epi[0], epi[1])
             this.subsets[epi[1]].model.generate()
@@ -42,6 +43,8 @@ class MeshTerrain:
         if key == 'left mouse up' and bte.visible == True and mouse.locked == True:
            this.do_mining()
         if key=='right mouse up' and bte.visible==True and mouse.locked == True:
+            # do not build if empty handed.
+            if this.sub.blockType is None: return
             buildSite = checkBuild( bte.position,
                                     this.terrainDic,
                                     this.cam.forward,
@@ -50,8 +53,8 @@ class MeshTerrain:
                 this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0, building=True, blockType=this.sub.blockType)
                 this.subsets[0].model.generate()
                 gapShell(buildSite, this.terrainDic)
-    def update(this, pos, cam):
-        highlight(pos, cam, this.terrainDic)
+    def update(this):
+        highlight(this.sub.position, this.sub.height, this.cam, this.terrainDic)
         #Blister mining == True
         if bte.visible and mouse.locked == True:
             #this is a for loop iterating over two variables
@@ -159,7 +162,13 @@ class MeshTerrain:
         # record terrain in dictionary
         this.recDic(this.terrainDic, _x, _y, _z, blockType)
         # also record gap 
-        if mining == False and building == False:
+        if building == True:
+            for i in range(0,6):
+                checkPos = Vec3(_x, _y, _z) + six_cube_dir[i]
+                if this.terrainDic.get((checkPos.x, checkPos.y, checkPos.z)) == None:
+                    this.recDic(this.terrainDic, checkPos.x, checkPos.y, checkPos.z, 'a')
+            
+        if mining == False:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
                 this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
         # if building == True:

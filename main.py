@@ -26,8 +26,9 @@ subject.cursor.visible = False
 subject.step = 2
 subject.runSpeed = 12
 subject.walkSpeed = 4
-subject.height=1.62 
-subject.blockType = 'stone'
+subject.height=1.62 # minecraft eyelevel ?
+subject.camera_pivot.y = subject.height
+subject.blockType = None # Current building mineral
 
 # property allowing us to jump
 subject.frog = False
@@ -84,7 +85,7 @@ def input(key):
 def update():
     global count, prev_x, prev_z, earthCounter
     count += 1 
-    terrain.update(subject.position, camera)
+    terrain.update()
     # handle mob ai
     mob_movement(grey, subject.position, terrain.terrainDic)
   
