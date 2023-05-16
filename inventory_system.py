@@ -125,7 +125,13 @@ class Item(Draggable):
     for h in hotspots:
     # Find unoccupied hotspot that is closest and not on the iPan during setup
       if setUp == True and not h.onHotbar: continue
-      if h.occupied: continue
+      if h.occupied: 
+        if h.item.blockType == this.blockType:
+          closestHotty = h
+          # update at the end
+          # h.stack += 1
+          break
+        else: continue
       dist = h.position - this.position
       # get magnitude of dist
       dist = np.linalg.norm(dist)
@@ -139,7 +145,9 @@ class Item(Draggable):
       closestHotty.occupied = True
       this.position = closestHotty.position
       closestHotty.item = this
-      # update previous hotspot's status
+      closestHotty.stack += 1
+      print(closestHotty.stack)
+      # update previous hotspot's status, if switching spots
       if this.currentSpot:
         this.currentSpot.occupied = False
         this.currentSpot.item = None
@@ -147,7 +155,6 @@ class Item(Draggable):
       this.currentSpot = closestHotty
       this.visible = closestHotty.visible
       if closestHotty.onHotbar == True:
-        
         this.onHotbar = True
       
       
