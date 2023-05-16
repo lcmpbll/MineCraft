@@ -46,6 +46,7 @@ class Collectible(Entity):
       c = random() - 0.5
       ce = minerals[this.blockType][2]
       this.shade = ce[3]
+      # replace colors instead of extending.
       this.model.colors = (   (Vec4(ce[0]-c,ce[1]-c,ce[2]-c,ce[3]),)* this.numVerticies)
 
     else: 
