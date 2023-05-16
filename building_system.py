@@ -8,7 +8,7 @@ def checkBuild(_bsite, _terrainDic, _camF, _pos):
   #subPos is players position
   #adjust bsite for build tool entity offset. No longer have to do this because using the same model
   # create some sort of vector from the players eyes to the highlighted block.
-  dist = _bsite - _pos + Vec3(0, 1.62, 0)
+  dist = _bsite - _pos
  
   
   mouseInWorld = _pos + _camF * dist.length()
