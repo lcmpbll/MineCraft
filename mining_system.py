@@ -14,8 +14,6 @@ parseDict = DictionaryCraft()
 
 def highlight( pos, subHeight, camera, terrainDic):
   # some times I fall through the terrain after building
-  # we should look after this behaviour in a dedicated collectable class
-  collectible_bounce()
   for i in range(1, 32):
     #adjust for player's height
     wp = pos + Vec3(0, subHeight, 0) + camera.forward * (i * 0.5)
@@ -50,7 +48,7 @@ def mine( terrainDic, vertexDic, subsets, _texture):
       subsets[wv[0]].model.vertices[v][1] += 999
     # Drop Collectable
     blockType = terrainDic.get((floor(bte.x), floor(bte.y), floor(bte.z)))
-    drop_collectible(blockType, bte.position, _texture )
+    Collectible(blockType, bte.position, _texture)
     
     subsets[wv[0]].model.generate()
     #Fall through floor
