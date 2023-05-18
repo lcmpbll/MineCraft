@@ -70,9 +70,10 @@ class Collectible(Entity):
     z = round(this.subject.position.z)
     #if Collectible.collectablesDic.get((x, y, z)) != None:
     if Vec3(x, y, z) == this.original_position:
-      pick_up_audio.play()
-      Item.new_item(this.blockType)
-      destroy(this)
+      if Item.new_item(this.blockType) == True:
+        pick_up_audio.play()
+        destroy(this)
+      
      
   def degrade_collectables(this):
     this.shade -= 0.0005
