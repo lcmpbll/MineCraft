@@ -196,7 +196,7 @@ class Item(Draggable):
       
       if not h.onHotbar: continue
       elif h.occupied:
-        if h.item.blockType == _blockType:
+        if h.item.blockType == _blockType and h.stack < h.fullStack:
           h.stack += 1
           foundSpot = True 
           break
