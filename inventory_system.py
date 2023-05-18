@@ -61,6 +61,12 @@ class Hotspot(Entity):
     # new stack system
     # start with no items as default
     this.stack = 0
+    this.fullStack = 64
+  @ staticmethod 
+  def check_hotBar(hotspot):
+    if hotspot.onHotbar:
+      return True
+    return False
   @staticmethod
   def toggle(): #not a member function, doesn't apply to each item
     if iPan.visible:
@@ -125,13 +131,16 @@ class Item(Draggable):
     for h in hotspots:
     # Find unoccupied hotspot that is closest and not on the iPan during setup
       if setUp == True and not h.onHotbar: continue
-      if h.occupied: 
-        if h.item.blockType == this.blockType:
-          closestHotty = h
-          # update at the end
-          # h.stack += 1
-          break
-        else: continue
+        
+      if h.occupied == True:
+        if this.blockType != h.item.blockType: continue
+        elif h.item.blockType == this.blockType and h.stack < h.fullStack:
+            closestHotty = h
+            # update at the end
+            # h.stack += 1
+            break
+
+      
       dist = h.position - this.position
       # get magnitude of dist
       dist = np.linalg.norm(dist)
@@ -145,17 +154,25 @@ class Item(Draggable):
       closestHotty.occupied = True
       this.position = closestHotty.position
       closestHotty.item = this
-      closestHotty.stack += 1
-      print(closestHotty.stack)
+      
       # update previous hotspot's status, if switching spots
+      transferStack = 0
       if this.currentSpot:
         this.currentSpot.occupied = False
         this.currentSpot.item = None
+        transferStack = this.currentSpot.stack
+        this.currentSpot.stack = 0
       # finally update current hotspot
       this.currentSpot = closestHotty
       this.visible = closestHotty.visible
+      if transferStack == 0:
+        this.currentSpot.stack += 1
+      else:
+        this.currentSpot.stack += transferStack
       if closestHotty.onHotbar == True:
         this.onHotbar = True
+      else: 
+        this.onHotbar = False
       
       
     elif this.currentSpot:
@@ -172,10 +189,43 @@ class Item(Draggable):
     this.fixPos()
   
   @staticmethod
+  def stack_check(_blockType):
+    
+    foundSpot = False
+    for h in hotspots:
+      
+      if not h.onHotbar: continue
+      elif h.occupied:
+        if h.item.blockType == _blockType:
+          h.stack += 1
+          foundSpot = True 
+          break
+      else: continue
+    if foundSpot == False:
+      for h in hotspots:
+        if not h.onHotbar: continue
+        elif not h.occupied:
+          item = Item(_blockType)
+          item.fixPos(setUp=True)
+          foundSpot = True
+    return foundSpot
+  
+  @staticmethod
   def new_item(_blockType):
-    newI = Item(_blockType)
-    setUp = True
-    Item.fixPos(newI, setUp)
+    #First check if there is already this stack on the hot bar?
+    # if ys increment hotbar stack, this would prevent stacks from being physical
+    # if no and space available increment that stack
+    
+    
+    aStack = Item.stack_check(_blockType)
+    if aStack == True:
+      return True
+    else: return False
+      
+    # 
+    # newI = Item(_blockType)
+    # setUp = True
+    # Item.fixPos(newI, setUp)
 
 #Hotspots for the hot bar
 for i in range(Hotspot.rowFit):
