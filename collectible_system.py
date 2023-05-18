@@ -5,6 +5,7 @@ from ursina import Entity, Vec2, Vec3, Vec4, load_model, time, destroy, Audio
 from config import minerals
 from random import random
 from math import sin, floor
+from inventory_system import Item
 
 
 
@@ -46,6 +47,7 @@ class Collectible(Entity):
       c = random() - 0.5
       ce = minerals[this.blockType][2]
       this.shade = ce[3]
+      # replace colors instead of extending.
       this.model.colors = (   (Vec4(ce[0]-c,ce[1]-c,ce[2]-c,ce[3]),)* this.numVerticies)
 
     else: 
@@ -68,8 +70,10 @@ class Collectible(Entity):
     z = round(this.subject.position.z)
     #if Collectible.collectablesDic.get((x, y, z)) != None:
     if Vec3(x, y, z) == this.original_position:
-      pick_up_audio.play()
-      destroy(this)
+      if Item.new_item(this.blockType) == True:
+        pick_up_audio.play()
+        destroy(this)
+      
      
   def degrade_collectables(this):
     this.shade -= 0.0005
