@@ -9,7 +9,8 @@ hotbar = Entity(model=hotBarModel, parent=camera.ui)
 # set size and position
 hotbar.scale=Vec3(0.68,0.08,0)
 # render me on the bottom
-hotbar.render_queue = 0
+# hotbar.render_queue = 0
+hotbar.z = 0
 # set appearance
 
 hotbar.y=(-0.45 + (hotbar.scale_y*0.5))
@@ -26,7 +27,8 @@ iPan.basePosY = hotbar.y + hotbar.scale_y * 2
 iPan.gap = hotbar.scale_y
 iPan.y = iPan.basePosY + iPan.gap
 # render me on bottom
-iPan.render_queue = 0
+# iPan.render_queue = 0
+iPan.z = 0
 # set appearance
 # ui_cols=hotbar.scale[0]/9
 # iPan.y=hotbar.y + 
@@ -54,14 +56,24 @@ class Hotspot(Entity):
     this.onHotbar = False
     this.visible= False
     this.occupied = False
+  
     # render me second
-    this.render_queue = 1
+    # this.render_queue = 1
+    this.z = -1
     #What item are we hosting 
     this.item = None
     # new stack system
     # start with no items as default
     this.stack = 0
     this.fullStack = 64
+    # text 
+    this.t = Text("", scale=1)
+  def checkStackNum(this):
+    if this.stack == 0:
+      this.t. text = ''
+    else:
+      this.t.text = this.stack
+    # this.t = Text(this.myText, scale=1.2)
   @ staticmethod 
   def check_hotBar(hotspot):
     if hotspot.onHotbar:
@@ -81,11 +93,13 @@ class Hotspot(Entity):
         h.visible = True
         if h.item:
          h.item.visible = True
+         h.t.visible = True
       elif not h.onHotbar: 
         # game mode
         h.visible = False
         if h.item:
           h.item.visible = False
+          h.t.visible = False
           # disable item ?
        
 
@@ -96,7 +110,8 @@ class Item(Draggable):
     this.color=color.white
     this.scale_x = Hotspot.scalar*0.9
     # do me third
-    this.render_queue = 2
+    # this.render_queue = 2
+    this.z = -2
     this.scale_y =  this.scale_x
     this.visible=False
     this.onHotbar=False
@@ -164,11 +179,12 @@ class Item(Draggable):
       # update previous hotspot's status, if switching spots
       transferStack = 0
       if setUp == False and this.currentSpot.stack != 0:
-        # if this.currentSpot.occupied == True:
+        # remove item data from prev hotspot
         this.currentSpot.occupied = False
         this.currentSpot.item = None
         transferStack = this.currentSpot.stack
         this.currentSpot.stack = 0
+        this.currentSpot.myText = "<white><bold>"+ str(this.currentSpot.stack)
       # finally update current hotspot
       this.currentSpot = closestHotty
       this.visible = closestHotty.visible
@@ -197,7 +213,13 @@ class Item(Draggable):
       
        
   def drop(this):
+    if this.visible == False:
+      return
     this.fixPos()
+    
+    # display blocks in this hotspots stack 
+    # Hotspot.checkStackNum(this.currentSpot)
+    
   
   @staticmethod
   def spot_check(_blockType):
@@ -208,7 +230,7 @@ class Item(Draggable):
       if h.occupied:
         if h.item.blockType == _blockType and h.stack < h.fullStack:
           h.stack += 1
-     
+          
           foundSpot = True 
           break
       else: continue
@@ -228,9 +250,10 @@ class Item(Draggable):
     #First check if there is already this stack on the hot bar?
     # if yes increment hotbar stack, this would prevent stacks from being physical
     # if no and space available increment that stack
-    
+    # we are not currently using the items list
     aStack = Item.spot_check(_blockType)
     if aStack == True:
+      
       return True
     else: return False
       
@@ -247,6 +270,10 @@ for i in range(Hotspot.rowFit):
   padding = (hotbar.scale_x - bud.scale_x * Hotspot.rowFit) * 0.5
   bud.y = hotbar.y
   bud.x = (hotbar.x - hotbar.scale_x * 0.5 + Hotspot.scalar * 0.5 + padding + bud.scale_x * i)
+  bud.t.origin = (-0.75,-0.55)
+  bud.t.z = -3
+  bud.t.x = bud.x
+  bud.t.y = bud.y
   
   hotspots.append(bud)
   # HotSpots for Main Inventory panel
@@ -263,7 +290,11 @@ for j in range(iPan.rows):
     # bud.y = iPan.y  +  (iPan.scale_y/iPan.rows * (j -1))  # is this because pos_y is not the bottom but the mid
     bud.y = (iPan.y + iPan.scale_y * 0.5 + Hotspot.scalar * 0.5 - y_padding + Hotspot.scalar * j)
     bud.x = (iPan.x - iPan.scale_x * 0.5 + Hotspot.scalar * 0.5 + x_padding + bud.scale_x * i)
-  
+    bud.t.origin = (-0.75,-0.55)
+    bud.t.z = -3
+    bud.t.x = bud.x
+    bud.t.y = bud.y
+    bud.t.visible = bud.visible
     hotspots.append(bud)
 
 # main inventory Items
