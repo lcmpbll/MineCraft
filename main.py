@@ -72,8 +72,10 @@ def input(key):
         subject.rotation_y -= 10
         # maybe lerp
     elif key == 'm':
+        
         saveMap(subject.position, terrain.terrainDic)
     elif key == 'l':
+        
         loadMap(subject, terrain)
     elif key == 'k':
         quaking = not quaking

@@ -1,5 +1,6 @@
 """
 Saving and loading terrain map
+currently not working, could have to do with checkwater?
 """
 from config import minerals
 

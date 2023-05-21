@@ -68,12 +68,7 @@ class Hotspot(Entity):
     this.fullStack = 64
     # text 
     this.t = Text("", scale=1)
-  def checkStackNum(this):
-    if this.stack == 0:
-      this.t. text = ''
-    else:
-      this.t.text = this.stack
-    # this.t = Text(this.myText, scale=1.2)
+    
   @ staticmethod 
   def check_hotBar(hotspot):
     if hotspot.onHotbar:
@@ -93,6 +88,7 @@ class Hotspot(Entity):
         h.visible = True
         if h.item:
          h.item.visible = True
+         h.visible = True
          h.t.visible = True
       elif not h.onHotbar: 
         # game mode
@@ -201,7 +197,7 @@ class Item(Draggable):
         this.currentSpot.stack += transferStack
         destroy(this)
         
-      this.currentSpot.t.text = "<white><bold>"+ str(this.currentSpot.stack)
+      # this.currentSpot.t.text = "<white><bold>"+ str(this.currentSpot.stack)
       
       
     elif this.currentSpot:
@@ -213,11 +209,20 @@ class Item(Draggable):
     # download items block type ect into host hot spot -- maybe just id
     # no unoccupied hotspot? ? return to current host position
       
-       
+  def update_stack_text(this):
+    stackNum = this.currentSpot.stack
+    myText = "<white><bold>" + str(stackNum)
+    this.currentSpot.t.text = myText 
+    # not sure why, but displaces hotspots when active. 
+    # this.currentSpot.origin = (-0.75,-0.55)
+    # this.currentSpot.t.z = -3
+    # this.currentSpot.t.x = this.currentSpot.x
+    # this.currentSpot.t.y = this.currentSpot.y    
   def drop(this):
     if this.visible == False:
       return
     this.fixPos()
+    this.update_stack_text()
     
     # display blocks in this hotspots stack 
     # Hotspot.checkStackNum(this.currentSpot)
@@ -232,7 +237,7 @@ class Item(Draggable):
       if h.occupied:
         if h.item.blockType == _blockType and h.stack < h.fullStack:
           h.stack += 1
-          h.t.text = "<white><bold>"+ str(h.stack)
+          h.item.update_stack_text()
           foundSpot = True 
           break
       else: continue
@@ -243,6 +248,7 @@ class Item(Draggable):
           item = Item(_blockType)
           setUp = True
           item.fixPos(setUp)
+          item.update_stack_text()
           foundSpot = True
           break
     return foundSpot
