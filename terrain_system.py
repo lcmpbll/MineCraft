@@ -120,57 +120,57 @@ class MeshTerrain:
         # decide random tint for color of block
         # c = random() - 0.5
         # model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
-        
-        if _y > 2 and mining == False and building == False:
-            # if random() > 0.86:
-            #     blockType = 'stone'
-            # elif random() > 0.9: 
-            #     blockType = 'emerald'
-            # elif random() > 0.95:
-            #     blockType = 'ruby'
-            # else:
-                blockType = 'snow'
-        elif _y < -2 and building == False:
-            if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
-                # We generated a gap when mining, decide what to fill it with, check for near by water
-                if this.checkForWater(_x, _y, _z, 'w'):
-                #or this.checkForWater(_x, _y, _z, 'water') == True:
+        if blockType == 'soil':
+            if _y > 2 and mining == False and building == False:
+                # if random() > 0.86:
+                #     blockType = 'stone'
+                # elif random() > 0.9: 
+                #     blockType = 'emerald'
+                # elif random() > 0.95:
+                #     blockType = 'ruby'
+                # else:
+                    blockType = 'snow'
+            elif _y < -2 and building == False:
+                if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
+                    # We generated a gap when mining, decide what to fill it with, check for near by water
+                    if this.checkForWater(_x, _y, _z, 'w'):
+                    #or this.checkForWater(_x, _y, _z, 'water') == True:
+                        blockType = 'water'
+                        og_y = _y - 1
+                        this.genWaterBlock(_x, _y + 1, _z, og_y)
+                        
+                    else: 
+                        blockType = 'soil'
+                else:
                     blockType = 'water'
-                    og_y = _y - 1
+                    og_y = _y
                     this.genWaterBlock(_x, _y + 1, _z, og_y)
                     
-                else: 
+        
+            elif mining == False and building == False:
+                chance = random()
+                if chance > 0.95:
+                    blockType = 'ruby'
+                elif chance > 0.9: 
+                    blockType = 'emerald'
+                elif chance > 0.85:
+                    blockType = 'stone'
+                else:
+                    blockType = 'grass'
+        
+            elif mining == True: 
+                chance = random()
+                if chance > 0.95:
+                    blockType = 'ruby'
+                elif chance > 0.9: 
+                    blockType = 'emerald'
+                elif chance > 0.85:
+                    blockType = 'stone'
+                else:
+                #soil
                     blockType = 'soil'
-            else:
-                blockType = 'water'
-                og_y = _y
-                this.genWaterBlock(_x, _y + 1, _z, og_y)
-                
-      
-        elif mining == False and building == False:
-            chance = random()
-            if chance > 0.95:
-                blockType = 'ruby'
-            elif chance > 0.9: 
-                blockType = 'emerald'
-            elif chance > 0.85:
-                blockType = 'stone'
-            else:
-                blockType = 'grass'
-    
-        elif mining == True: 
-            chance = random()
-            if chance > 0.95:
-                blockType = 'ruby'
-            elif chance > 0.9: 
-                blockType = 'emerald'
-            elif chance > 0.85:
-                blockType = 'stone'
-            else:
-            #soil
-                blockType = 'soil'
-            # uu = 10
-            # uv = 7
+                # uu = 10
+                # uv = 7
        
         uu = minerals[blockType][0]
         uv = minerals[blockType][1]
