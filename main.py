@@ -72,8 +72,10 @@ def input(key):
         subject.rotation_y -= 10
         # maybe lerp
     elif key == 'm':
+        
         saveMap(subject.position, terrain.terrainDic)
     elif key == 'l':
+        
         loadMap(subject, terrain)
     elif key == 'k':
         quaking = not quaking
@@ -89,7 +91,7 @@ def update():
     # handle mob ai
     mob_movement(grey, subject.position, terrain.terrainDic)
   
-    if count == 5:
+    if count >= 3:
         count = 0
         #Generate terrain at current swirl position
         # genrate a certain number of terrain chunks
