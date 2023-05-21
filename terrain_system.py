@@ -7,16 +7,16 @@ from mining_system import *
 from building_system import checkBuild, gapShell
 from config import six_cube_dir, minerals, mins
 ## WIP water flow
-# wip buildd on top of blocks
+# check what happens to the block beneath when building
 class MeshTerrain:
     def __init__(this, subject, cam):
         this.subsets = []
-        this.numSubsets = 512
+        this.numSubsets = 1024
         # passed in from main 
         this.sub = subject
         this.cam = cam
         # must be even see gen terrain
-        this.subWidth = 10
+        this.subWidth = 6
         this.currentSubset = 0
         this.swirlEngine = SwirlEngine(this.subWidth)
         this.block = load_model('block.obj', use_deepcopy=True)
@@ -126,18 +126,27 @@ class MeshTerrain:
                 
       
         elif mining == False and building == False:
-            # if random() > 0.95:
-            #     blockType = 'ruby'
-            # elif random() > 0.9: 
-            #     blockType = 'emerald'
-            if random() > 0.86:
+            chance = random()
+            if chance > 0.95:
+                blockType = 'ruby'
+            elif chance > 0.9: 
+                blockType = 'emerald'
+            elif chance > 0.85:
                 blockType = 'stone'
             else:
                 blockType = 'grass'
     
-        elif building == False: 
+        elif mining == True: 
+            chance = random()
+            if chance > 0.95:
+                blockType = 'ruby'
+            elif chance > 0.9: 
+                blockType = 'emerald'
+            elif chance > 0.85:
+                blockType = 'stone'
+            else:
             #soil
-            blockType = 'soil'
+                blockType = 'soil'
             # uu = 10
             # uv = 7
        
