@@ -60,6 +60,21 @@ class MeshTerrain:
             for ttt in range(-2, 3):
             #crown
               this.genBlock(_x +  t, _y + treeH + tt, _z + ttt, blockType='emerald')
+              if tt == 4:
+                # add air to tops of trees
+                this.recDic(this.terrainDic, _x +  t, _y + treeH + 1 + tt, _z + ttt, 'a')
+              if tt == 0: 
+                if this.terrainDic.get(( _x +  t, _y + treeH -1 + tt, _z + ttt)) == None:
+                  this.recDic(this.terrainDic, _x +  t, _y + treeH -1 + tt, _z + ttt, 'a')
+              if t == -2:
+                this.recDic(this.terrainDic, _x -1 +  t, _y + treeH  + tt, _z + ttt, 'a')
+              elif t == 3:
+                this.recDic(this.terrainDic,  _x + 1 +  t, _y + treeH  + tt, _z + ttt, 'a' )
+              if ttt == -2:
+                this.recDic(this.terrainDic, _x +  t, _y + treeH  + tt, _z + ttt -1, 'a')
+              elif ttt == 3:
+                this.recDic(this.terrainDic,  _x  +  t, _y + treeH  + tt, _z + ttt + 1, 'a' )
+               
         
     def setup_subsets(this):
       # instanciate subset entities
