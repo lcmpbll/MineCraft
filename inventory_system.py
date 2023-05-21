@@ -175,7 +175,6 @@ class Item(Draggable):
       closestHotty.occupied = True
       this.position = closestHotty.position
       closestHotty.item = this
-      
       # update previous hotspot's status, if switching spots
       transferStack = 0
       if setUp == False and this.currentSpot.stack != 0:
@@ -184,7 +183,7 @@ class Item(Draggable):
         this.currentSpot.item = None
         transferStack = this.currentSpot.stack
         this.currentSpot.stack = 0
-        this.currentSpot.myText = "<white><bold>"+ str(this.currentSpot.stack)
+        this.currentSpot.t.text = "  "
       # finally update current hotspot
       this.currentSpot = closestHotty
       this.visible = closestHotty.visible
@@ -197,9 +196,12 @@ class Item(Draggable):
         this.currentSpot.stack += 1
       elif this.currentSpot.stack == 0:
         this.currentSpot.stack += transferStack
+        
       else:
         this.currentSpot.stack += transferStack
         destroy(this)
+        
+      this.currentSpot.t.text = "<white><bold>"+ str(this.currentSpot.stack)
       
       
     elif this.currentSpot:
@@ -230,7 +232,7 @@ class Item(Draggable):
       if h.occupied:
         if h.item.blockType == _blockType and h.stack < h.fullStack:
           h.stack += 1
-          
+          h.t.text = "<white><bold>"+ str(h.stack)
           foundSpot = True 
           break
       else: continue
