@@ -6,6 +6,8 @@ from swirl_engine import SwirlEngine
 from mining_system import *
 from building_system import checkBuild, gapShell
 from config import six_cube_dir, minerals, mins
+from tree_system import *
+
 ## WIP water flow
 # check what happens to the block beneath when building
 class MeshTerrain:
@@ -27,6 +29,24 @@ class MeshTerrain:
         this.vertexDic = {}
         this.perlin = Perlin()
         this.setup_subsets()
+        
+    
+    def plantTree(this, _x, _y, _z):
+        
+        ent = TreeSystem.genTree(_x, _y, _z)
+        treeH =  round(ent * 10)
+        if ent == 0: 
+            return 
+        else:
+            for i in range(treeH):
+               # Trunk
+               this.genBlock(_x, _y + i, _z, blockType='concrete')
+            for t in range(-2, 3):
+               for tt in range(4):
+                   for ttt in range(-2, 3):
+               #crown
+                        this.genBlock(_x +  t, _y + treeH + tt, _z + ttt, blockType='emerald')
+        
     def setup_subsets(this):
        # instanciate subset entities
         for i in range(0, this.numSubsets):
@@ -79,6 +99,8 @@ class MeshTerrain:
                 y = floor(this.perlin.getHeight(x+k, z+j))
                 if this.getDic(this.terrainDic, x+k, y, z+j) == None:
                     this.genBlock(x+k, y, z+j)
+                    this.plantTree(x+k, y+1, z+j)
+                    
         this.subsets[this.currentSubset].model.generate() 
         if this.currentSubset < this.numSubsets -1:
             this.currentSubset += 1 
