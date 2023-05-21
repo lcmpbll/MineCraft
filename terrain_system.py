@@ -1,12 +1,13 @@
 
 from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model, held_keys, mouse
-from random import random, randrange
+import random as rando
 from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
 from building_system import checkBuild, gapShell
 from config import six_cube_dir, minerals, mins
 from tree_system import *
+from inventory_system import *
 
 ## WIP water flow
 # check what happens to the block beneath when building
@@ -35,7 +36,7 @@ class MeshTerrain:
     def plantTree(this, _x, _y, _z):
         
       ent = TreeSystem.genTree(_x, _y, _z)
-      sunlight = randrange(1,10)
+      sunlight = rando.randrange(1,10)
       treeH =  round(ent * sunlight)
       if ent == 0: 
         return 
@@ -102,6 +103,18 @@ class MeshTerrain:
           this.genBlock(floor(buildSite.x), floor(buildSite.y), floor(buildSite.z), subset=0, building=True, blockType=this.sub.blockType)
           this.subsets[0].model.generate()
           gapShell(buildSite, this.terrainDic)
+          for h in hotspots:
+            if h.onHotbar == False: continue
+            # if h.item.blockType == this.sub.blockType:
+            if h.selected == True:
+              h.stack -= 1 
+              h.item.update_stack_text()
+              if h.stack < 1:
+                destroy(h.item)
+                h.occupied = False
+                h.t.text = ''
+                this.sub.blockType = None
+              break
     def update(this):
       highlight(this.sub.position, this.sub.height, this.cam, this.terrainDic)
       #Blister mining == True
@@ -157,7 +170,7 @@ class MeshTerrain:
               # elif random() > 0.95:
               #     blockType = 'ruby'
               # else:
-                  blockType = 'snow'
+              blockType = 'snow'
           elif _y < -2 and building == False:
               if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
                   # We generated a gap when mining, decide what to fill it with, check for near by water
@@ -170,9 +183,9 @@ class MeshTerrain:
                   else: 
                       blockType = 'soil'
               else:
-                  blockType = 'water'
-                  og_y = _y
-                  this.genWaterBlock(_x, _y + 1, _z, og_y)
+                blockType = 'water'
+                og_y = _y
+                this.genWaterBlock(_x, _y + 1, _z, og_y)
                   
         
           elif mining == False and building == False:
@@ -180,10 +193,10 @@ class MeshTerrain:
               #     blockType = 'ruby'
               # elif random() > 0.9: 
               #     blockType = 'emerald'
-              if random() > 0.86:
-                  blockType = 'stone'
-              else:
-                  blockType = 'grass'
+            if rando.random() > 0.86:
+              blockType = 'stone'
+            else:
+              blockType = 'grass'
       
           elif building == False: 
               #soil
@@ -194,7 +207,7 @@ class MeshTerrain:
         uu = minerals[blockType][0]
         uv = minerals[blockType][1]
         # random tint for blocks
-        c = random() -0.5
+        c = rando.random() -0.5
         # get Vec4 color data
         if len(minerals[blockType]) > 2:
             ce = minerals[blockType][2]
