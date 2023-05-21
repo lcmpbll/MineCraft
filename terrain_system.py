@@ -1,6 +1,6 @@
 
 from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model, held_keys, mouse
-from random import random
+from random import random, randrange
 from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
@@ -10,6 +10,7 @@ from tree_system import *
 
 ## WIP water flow
 # check what happens to the block beneath when building
+# make better system for block selection
 class MeshTerrain:
     def __init__(this, subject, cam):
       this.subsets = []
@@ -34,13 +35,26 @@ class MeshTerrain:
     def plantTree(this, _x, _y, _z):
         
       ent = TreeSystem.genTree(_x, _y, _z)
-      treeH =  round(ent * 10)
+      sunlight = randrange(1,10)
+      treeH =  round(ent * sunlight)
       if ent == 0: 
         return 
       else:
         for i in range(treeH):
           # Trunk
           this.genBlock(_x, _y + i, _z, blockType='concrete')
+          if i < treeH:
+            currentp = Vec3(_x, _y+i, _z )
+            dir=[
+               Vec3(1, 0, 0),
+               Vec3(-1, 0, 0),
+               Vec3(0, 0, 1), 
+               Vec3(0, 0, -1)
+            ]
+            for j in range(0,4):
+              rt = currentp + dir[j]
+              if this.terrainDic.get((rt.x, rt.y, rt.z)) == None:
+                this.recDic(this.terrainDic, rt.x, rt.y, rt.z, 'a')
         for t in range(-2, 3):
           for tt in range(4):
             for ttt in range(-2, 3):
@@ -108,7 +122,6 @@ class MeshTerrain:
         this.currentSubset = 0 
       this.swirlEngine.move() 
     
-   
     def genBlock(this, _x, _y, _z, subset=-1, mining=False, building=False, blockType='soil'):
     
         if subset == -1:
@@ -121,56 +134,47 @@ class MeshTerrain:
         # c = random() - 0.5
         # model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
         if blockType == 'soil':
-            if _y > 2 and mining == False and building == False:
-                # if random() > 0.86:
-                #     blockType = 'stone'
-                # elif random() > 0.9: 
-                #     blockType = 'emerald'
-                # elif random() > 0.95:
-                #     blockType = 'ruby'
-                # else:
-                    blockType = 'snow'
-            elif _y < -2 and building == False:
-                if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
-                    # We generated a gap when mining, decide what to fill it with, check for near by water
-                    if this.checkForWater(_x, _y, _z, 'w'):
-                    #or this.checkForWater(_x, _y, _z, 'water') == True:
-                        blockType = 'water'
-                        og_y = _y - 1
-                        this.genWaterBlock(_x, _y + 1, _z, og_y)
-                        
-                    else: 
-                        blockType = 'soil'
-                else:
-                    blockType = 'water'
-                    og_y = _y
-                    this.genWaterBlock(_x, _y + 1, _z, og_y)
-                    
+          if _y > 2 and mining == False and building == False:
+              # if random() > 0.86:
+              #     blockType = 'stone'
+              # elif random() > 0.9: 
+              #     blockType = 'emerald'
+              # elif random() > 0.95:
+              #     blockType = 'ruby'
+              # else:
+                  blockType = 'snow'
+          elif _y < -2 and building == False:
+              if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
+                  # We generated a gap when mining, decide what to fill it with, check for near by water
+                  if this.checkForWater(_x, _y, _z, 'w'):
+                  #or this.checkForWater(_x, _y, _z, 'water') == True:
+                      blockType = 'water'
+                      og_y = _y - 1
+                      this.genWaterBlock(_x, _y + 1, _z, og_y)
+                      
+                  else: 
+                      blockType = 'soil'
+              else:
+                  blockType = 'water'
+                  og_y = _y
+                  this.genWaterBlock(_x, _y + 1, _z, og_y)
+                  
         
-            elif mining == False and building == False:
-                chance = random()
-                if chance > 0.95:
-                    blockType = 'ruby'
-                elif chance > 0.9: 
-                    blockType = 'emerald'
-                elif chance > 0.85:
-                    blockType = 'stone'
-                else:
-                    blockType = 'grass'
-        
-            elif mining == True: 
-                chance = random()
-                if chance > 0.95:
-                    blockType = 'ruby'
-                elif chance > 0.9: 
-                    blockType = 'emerald'
-                elif chance > 0.85:
-                    blockType = 'stone'
-                else:
-                #soil
-                    blockType = 'soil'
-                # uu = 10
-                # uv = 7
+          elif mining == False and building == False:
+              # if random() > 0.95:
+              #     blockType = 'ruby'
+              # elif random() > 0.9: 
+              #     blockType = 'emerald'
+              if random() > 0.86:
+                  blockType = 'stone'
+              else:
+                  blockType = 'grass'
+      
+          elif building == False: 
+              #soil
+              blockType = 'soil'
+              # uu = 10
+              # uv = 7
        
         uu = minerals[blockType][0]
         uv = minerals[blockType][1]
@@ -210,32 +214,33 @@ class MeshTerrain:
         # record subet index and first vertext of the block. 
         vob = (subset, len(model.vertices) - this.numVertices - 1)
         this.recDic(this.vertexDic, _x, _y, _z, vob)
-    
+   
+  
     def checkForWater(this, _x, _y, _z, checkfor, subset=-1):
         
-        #can pass through water or air depending on initial generation or
-        # Make ice?  
-        cp = Vec3(_x, _y, _z)
-        isByWater = False
-        if subset == -1:
-            subset = this.currentSubset
-        #figure out this posititioning
-        wp = [
-            Vec3(0, -1, 0),
-            Vec3(1, 1 , 0),
-            Vec3(-1, 1, 0),
-            Vec3(0, 1, 1),
-            Vec3(0, 1, -1),
-            Vec3(1, -1, 0),
-            Vec3(-1, -1, 0),
-            Vec3(0, -1, -1)
-        ]
-        for i in range(0, 6):
-            np  = cp + wp[i]
-            if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
-                isByWater = True
-                break
-        return isByWater
+      #can pass through water or air depending on initial generation or
+      # Make ice?  
+      cp = Vec3(_x, _y, _z)
+      isByWater = False
+      if subset == -1:
+        subset = this.currentSubset
+      #figure out this posititioning
+      wp = [
+        Vec3(0, -1, 0),
+        Vec3(1, 1 , 0),
+        Vec3(-1, 1, 0),
+        Vec3(0, 1, 1),
+        Vec3(0, 1, -1),
+        Vec3(1, -1, 0),
+        Vec3(-1, -1, 0),
+        Vec3(0, -1, -1)
+      ]
+      for i in range(0, 6):
+        np  = cp + wp[i]
+        if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
+          isByWater = True
+          break
+      return isByWater
         
     def genWaterBlock(this, _x, _y, _z, og_y, subset=-1, mining = False):
         if subset == -1:
