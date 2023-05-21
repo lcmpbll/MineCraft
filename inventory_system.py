@@ -56,7 +56,7 @@ class Hotspot(Entity):
     this.onHotbar = False
     this.visible= False
     this.occupied = False
-  
+    this.selected = False
     # render me second
     # this.render_queue = 1
     this.z = -1
@@ -324,6 +324,7 @@ Hotspot.toggle()
 def resetHotSpots(): 
   for h in hotspots:
     h.color = color.white
+    h.selected = False
     
 def inv_input(key, subject, mouse):
   try:
@@ -335,6 +336,7 @@ def inv_input(key, subject, mouse):
         h.color = color.white
       resetHotSpots()
       hotspots[wnum].color = color.black
+      hotspots[wnum].selected = True
       if hotspots[wnum].occupied:
         subject.blockType = hotspots[wnum].item.blockType
       else:
