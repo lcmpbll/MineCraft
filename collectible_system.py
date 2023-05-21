@@ -1,11 +1,11 @@
 """
 System for mined blocks dropping collectable materials.
 """
-from ursina import Entity, Vec2, Vec3, Vec4, load_model, time, destroy, Audio
+from ursina import Entity, Vec2, Vec3, Vec4, load_model, time, destroy, Audio, Sequence, Func
 from config import minerals
 from random import random
 from math import sin, floor
-from inventory_system import Item
+from inventory_system import Item, hotspots
 
 
 
@@ -33,7 +33,8 @@ class Collectible(Entity):
     this.scale = 0.33
     this.shade = 1
     this.rotation_speed = 2
-    this.timeStamp = time.time()
+    # this.s = Sequence(120, Func(this.fade_out, duration=2), 2, Func(this.fade_in, duration=2), loop=True)
+    # this.s.start()
     # record before adjusting position
     #Collectible.collectablesDic[this.position] = this
     this.y += 0.5 - (this.scale_y * 0.5)
@@ -41,6 +42,7 @@ class Collectible(Entity):
     this.original_y = this.position.y
     this.is_bouncing = True
     this.drop_collectible()
+    
   def drop_collectible(this):
     uu = minerals[this.blockType][0]
     uv = minerals[this.blockType][1]
@@ -61,9 +63,11 @@ class Collectible(Entity):
     pop_audio.play()
     this.model.generate()
     # destroy after some amount of time
-    destroy(this, 10)
+    
+    destroy(this, 120)
   def update(this):
     this.bounce()
+    
     this.checkPickUp()
     this.degrade_collectables()
   
@@ -76,6 +80,11 @@ class Collectible(Entity):
     if Vec3(x, y, z) == this.original_position:
       if Item.new_item(this.blockType) == True:
         pick_up_audio.play()
+        if this.subject.blockType == None:
+          for h in hotspots:
+            if h.onHotbar == False: continue
+            if h.selected and h.item.blockType == this.blockType:
+              this.subject.blockType = this.blockType
         destroy(this)
       
      

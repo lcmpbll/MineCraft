@@ -94,7 +94,14 @@ class MeshTerrain:
         this.do_mining()
       if key=='right mouse up' and bte.visible==True and mouse.locked == True:
         # do not build if empty handed.
-        if this.sub.blockType is None: return
+        if this.sub.blockType == None: return
+        #     for h in hotspots:
+        #       if h.onHotbar == False: continue
+        #       if h.selected == True and h.occupied == True:
+        #         this.subject.blockType = h.item.blockType
+        #         break
+        # else: return
+        
         buildSite = checkBuild( bte.position,
                                 this.terrainDic,
                                 this.cam.forward,
@@ -189,11 +196,12 @@ class MeshTerrain:
                   
         
           elif mining == False and building == False:
-              # if random() > 0.95:
-              #     blockType = 'ruby'
-              # elif random() > 0.9: 
-              #     blockType = 'emerald'
-            if rando.random() > 0.86:
+            chance = rando.random()
+            if chance > 0.95:
+                blockType = 'ruby'
+            elif chance > 0.9: 
+              blockType = 'emerald'
+            elif chance > 0.86:
               blockType = 'stone'
             else:
               blockType = 'grass'
