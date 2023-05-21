@@ -91,7 +91,7 @@ def update():
     # handle mob ai
     mob_movement(grey, subject.position, terrain.terrainDic)
   
-    if count == 5:
+    if count >= 3:
         count = 0
         #Generate terrain at current swirl position
         # genrate a certain number of terrain chunks
