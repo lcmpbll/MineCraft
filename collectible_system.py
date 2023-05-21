@@ -9,6 +9,8 @@ from inventory_system import Item
 
 
 
+# make collectible more translucent as it gets closer to being destroyed. 
+
 
 #collectable dictionary, store present block position
 pop_audio = Audio('pop.mp3', autoplay=False, loop=False)
@@ -59,7 +61,7 @@ class Collectible(Entity):
     pop_audio.play()
     this.model.generate()
     # destroy after some amount of time
-    destroy(this)
+    destroy(this, 10)
   def update(this):
     this.bounce()
     this.checkPickUp()
@@ -74,7 +76,7 @@ class Collectible(Entity):
     if Vec3(x, y, z) == this.original_position:
       if Item.new_item(this.blockType) == True:
         pick_up_audio.play()
-        destroy(this, 10)
+        destroy(this)
       
      
   def degrade_collectables(this):
