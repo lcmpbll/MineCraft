@@ -58,6 +58,8 @@ class Collectible(Entity):
     # make sound
     pop_audio.play()
     this.model.generate()
+    # destroy after some amount of time
+    destroy(this)
   def update(this):
     this.bounce()
     this.checkPickUp()
@@ -72,7 +74,7 @@ class Collectible(Entity):
     if Vec3(x, y, z) == this.original_position:
       if Item.new_item(this.blockType) == True:
         pick_up_audio.play()
-        destroy(this)
+        destroy(this, 10)
       
      
   def degrade_collectables(this):
