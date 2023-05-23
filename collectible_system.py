@@ -77,7 +77,7 @@ class Collectible(Entity):
     y = floor(this.subject.position.y)
     z = round(this.subject.position.z)
     #if Collectible.collectablesDic.get((x, y, z)) != None:
-    if Vec3(x, y, z) == this.original_position:
+    if Vec3(x, y, z) == this.original_position or Vec3(x, y + 1, z) == this.original_position:
       if Item.new_item(this.blockType) == True:
         pick_up_audio.play()
         if this.subject.blockType == None:
