@@ -58,7 +58,7 @@ def mine( terrainDic, vertexDic, subsets, _texture, _subject):
     parseDict.recDictionary(vertexDic, floor(bte.x), floor(bte.y), floor(bte.z), None)
     # model is .5 off of the ursina model, the subset
     # + Vec3(0, -0.5, 0)
-    return (bte.position , wv[0])
+    return (bte.position , wv[0], blockType)
     
     
   
