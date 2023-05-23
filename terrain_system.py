@@ -1,6 +1,6 @@
 
 from ursina import Entity, floor, Mesh, Vec3, Vec2, Vec4, load_model, held_keys, mouse
-import random as rando
+# import random as rando
 from perlin import Perlin
 from swirl_engine import SwirlEngine
 from mining_system import *
@@ -43,7 +43,7 @@ class MeshTerrain:
       else:
         for i in range(treeH):
           # Trunk
-          this.genBlock(_x, _y + i, _z, blockType='concrete')
+          this.genBlock(_x, _y + i, _z, blockType='wood')
           if i < treeH:
             currentp = Vec3(_x, _y+i, _z )
             dir=[
@@ -60,21 +60,21 @@ class MeshTerrain:
           for tt in range(4):
             for ttt in range(-2, 3):
             #crown
-              this.genBlock(_x +  t, _y + treeH + tt, _z + ttt, blockType='emerald')
-              if tt == 4:
-                # add air to tops of trees
-                this.recDic(this.terrainDic, _x +  t, _y + treeH + 1 + tt, _z + ttt, 'a')
-              if tt == 0: 
-                if this.terrainDic.get(( _x +  t, _y + treeH -1 + tt, _z + ttt)) == None:
-                  this.recDic(this.terrainDic, _x +  t, _y + treeH -1 + tt, _z + ttt, 'a')
-              if t == -2:
-                this.recDic(this.terrainDic, _x -1 +  t, _y + treeH  + tt, _z + ttt, 'a')
-              elif t == 3:
-                this.recDic(this.terrainDic,  _x + 1 +  t, _y + treeH  + tt, _z + ttt, 'a' )
-              if ttt == -2:
-                this.recDic(this.terrainDic, _x +  t, _y + treeH  + tt, _z + ttt -1, 'a')
-              elif ttt == 3:
-                this.recDic(this.terrainDic,  _x  +  t, _y + treeH  + tt, _z + ttt + 1, 'a' )
+              this.genBlock(_x +  t, _y + treeH + tt, _z + ttt, blockType='leaves')
+              # if tt == 4:
+              #   # add air to tops of trees
+              #   this.recDic(this.terrainDic, _x +  t, _y + treeH + 1 + tt, _z + ttt, 'a')
+              # if tt == 0: 
+              #   if this.terrainDic.get(( _x +  t, _y + treeH -1 + tt, _z + ttt)) == None:
+              #     this.recDic(this.terrainDic, _x +  t, _y + treeH -1 + tt, _z + ttt, 'a')
+              # if t == -2:
+              #   this.recDic(this.terrainDic, _x -1 +  t, _y + treeH  + tt, _z + ttt, 'a')
+              # elif t == 3:
+              #   this.recDic(this.terrainDic,  _x + 1 +  t, _y + treeH  + tt, _z + ttt, 'a' )
+              # if ttt == -2:
+              #   this.recDic(this.terrainDic, _x +  t, _y + treeH  + tt, _z + ttt -1, 'a')
+              # elif ttt == 3:
+              #   this.recDic(this.terrainDic,  _x  +  t, _y + treeH  + tt, _z + ttt + 1, 'a' )
                
         
     def setup_subsets(this):
@@ -86,8 +86,10 @@ class MeshTerrain:
     def do_mining(this):
       #pass in texture atlas for dropping collectable, see mine system
       epi = mine(this.terrainDic, this.vertexDic, this.subsets, this.textureAtlas, this.sub)
-      if epi != None:
+      # return bte position and subset we are mining from.
+      if epi != None and epi[2] != 'wood' and epi[2] != 'leaves':
         this.genWalls(epi[0], epi[1])
+        
         this.subsets[epi[1]].model.generate()
     def input(this, key):
       if key == 'left mouse up' and bte.visible == True and mouse.locked == True:
