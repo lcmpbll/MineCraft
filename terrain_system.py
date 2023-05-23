@@ -60,7 +60,7 @@ class MeshTerrain:
           for tt in range(4):
             for ttt in range(-2, 3):
             #crown
-              this.genBlock(_x +  t, _y + treeH + tt, _z + ttt, blockType='leaves')
+              this.genBlock(_x +  t, _y + treeH + tt, _z + ttt, blockType='foilage')
               # if tt == 4:
               #   # add air to tops of trees
               #   this.recDic(this.terrainDic, _x +  t, _y + treeH + 1 + tt, _z + ttt, 'a')
@@ -87,7 +87,7 @@ class MeshTerrain:
       #pass in texture atlas for dropping collectable, see mine system
       epi = mine(this.terrainDic, this.vertexDic, this.subsets, this.textureAtlas, this.sub)
       # return bte position and subset we are mining from.
-      if epi != None and epi[2] != 'wood' and epi[2] != 'leaves':
+      if epi != None and epi[2] != 'wood' and epi[2] != 'foilage':
         this.genWalls(epi[0], epi[1])
         
         this.subsets[epi[1]].model.generate()
