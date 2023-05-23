@@ -12,12 +12,13 @@ class TreeSystem():
       
       
   
-  @staticmethod
+  @staticmethod # not calling lots of instances, just this one method
   def setup():
-      Toctaves = 32
+      Toctaves = 8
       treeSeed = 2022
+      TreeSystem.amp = 10
       # how frequently the trees peter out. 
-      TreeSystem.treeFreq = 64
+      TreeSystem.treeFreq = 256
       
       TreeSystem.noisyEnt = PerlinNoise(octaves=Toctaves, seed=treeSeed )
       # TreeSystem.genTree(_x, _y, _z)
@@ -25,10 +26,27 @@ class TreeSystem():
     
   def genTree(_x, _y, _z):
   # check wether to generate a tree here
-    if _y < -1: return 0
-    ent = 1 + TreeSystem.noisyEnt([_x/TreeSystem.treeFreq, _z/TreeSystem.treeFreq])
+    if _x % 3 == 0: return 0
+    if _x % 5 == 0: return 0
+    if _x % 7 == 0: return 0
+   
+  
+  
+    if _z % 3 == 0: return 0
+    if _z % 5 == 0: return 0
+    if _z % 11 == 0: return 0
+  
+    if _y < -1: 
+      environment = 50
+    elif _y > 2:
+      environment = 40
+    else:
+      environment = 10
+      
+    ent = TreeSystem.noisyEnt([_x/TreeSystem.treeFreq, _z/TreeSystem.treeFreq])
+    ent *= TreeSystem.amp
     
-    if ent > 1.435:
+    if ent > environment:
       return ent
     else:
       return 0
