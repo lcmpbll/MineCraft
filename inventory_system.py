@@ -37,7 +37,6 @@ iPan.visible = False
 
 # moved up so they can be referred to in the static method
 hotspots = []
-#iPanSlots = []
 items = []
 
 class Hotspot(Entity):
