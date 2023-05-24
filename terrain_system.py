@@ -9,6 +9,7 @@ from config import six_cube_dir, minerals, mins
 from tree_system import *
 from inventory_system import *
 from temperature_system import *
+from humidity_system import *
 
 ## WIP water flow
 # check what happens to the block beneath when building
@@ -35,19 +36,24 @@ class MeshTerrain:
       
   def findTemp(this, _x, _y, _z):
     deg = TemperatureSystem.genGlobalTemps(_x, _y, _z)
-    print(deg)
+    # print(deg)
     return deg
-        
+  
+  def douseForWater(this, _x, _y, _z):
+    aridity = HumiditySystem.genGolbalWater(_x, _y, _z)
+    print(aridity, 'aridity')
+    return aridity
     
-  def plantTree(this, _x, _y, _z):
+  def plantTree(this, _x, _y, _z, temp, water):
       
     ent = TreeSystem.genTree(_x, _y, _z)
-    habitability = 0
+    habitability = floor((temp * water)/100 * abs(_y))
+    print(habitability, 'h')
     tType = this.terrainDic.get((_x, _y,_z))
     if tType == 'soil' or tType == 'grass':
       growthFactor = rando.randint(2, 10)
     else: 
-      growthFactor = rando.randint(1, 4)
+      growthFactor = rando.randint(1, 8)
     treeH =  round(ent * growthFactor)
     # treeH = int(3 * ent)
     if ent == 0: 
@@ -156,9 +162,11 @@ class MeshTerrain:
       for j in range(-d, d):
         y = floor(this.perlin.getHeight(x+k, z+j))
         if this.getDic(this.terrainDic, x+k, y, z+j) == None:
+          water = this.douseForWater(x, y, z)
           temp = this.findTemp(x, y, z)
-          this.genBlock(x+k, y, z+j, temp=temp)
-          this.plantTree(x+k, y+1, z+j)
+          blockType = this.tempBlock(temp, water)
+          this.genBlock(x+k, y, z+j, blockType = blockType)
+          this.plantTree(x+k, y+1, z+j, temp, water)
                 
     this.subsets[this.currentSubset].model.generate() 
     if this.currentSubset < this.numSubsets -1:
@@ -168,7 +176,7 @@ class MeshTerrain:
     this.swirlEngine.move() 
   
   def genBlock(this, _x, _y, _z, subset=-1, mining=False, building=False, blockType='concrete', temp = None):
-      print(temp, _y)
+      
       if subset == -1:
         subset = this.currentSubset
       # Extend to the vertices of our model, or first subset
@@ -187,7 +195,8 @@ class MeshTerrain:
             # elif random() > 0.95:
             #     blockType = 'ruby'
             # else:
-            blockType = this.tempBlock(temp)
+            # blockType = this.tempBlock(temp)
+            blockType = 'snow'
         elif _y < -2 and building == False:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
                 # We generated a gap when mining, decide what to fill it with, check for near by water
@@ -200,7 +209,7 @@ class MeshTerrain:
                 else: 
                     blockType = 'soil'
             else:
-              if temp != None and temp > 32:
+              if temp != None and temp > 50:
                 blockType = 'water'
                 og_y = _y
                 this.genWaterBlock(_x, _y + 1, _z, og_y)
@@ -216,7 +225,8 @@ class MeshTerrain:
           elif chance > 0.86:
             blockType = 'stone'
           else:
-            blockType = this.tempBlock(temp)
+            # blockType = this.tempBlock(temp)
+            blockType = 'grass'
     
         elif building == False: 
             #soil
@@ -329,10 +339,14 @@ class MeshTerrain:
         this.genBlock(np.x, np.y, np.z, subset, mining=True)
 
 
-  def tempBlock(this, temp = None):
-    if temp < 30:
+  def tempBlock(this, temp = 1, water = 1):
+    if water > 5 and temp > 32:
+      blockType = 'water'
+    elif water > 5 and temp < 32:
+      blockType = 'ice'
+    elif temp < 30 and water > 3:
       blockType = 'snow'
-    elif temp < 60:
+    elif temp < 60 and water > 3:
       blockType = 'grass'
     else:
       blockType = 'sand'
