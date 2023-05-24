@@ -277,7 +277,7 @@ for i in range(Hotspot.rowFit):
   bud.visible = True
   padding = (hotbar.scale_x - bud.scale_x * Hotspot.rowFit) * 0.5
   bud.y = hotbar.y
-  bud.x = (hotbar.x - hotbar.scale_x * 0.5 + Hotspot.scalar * 0.5 + padding + bud.scale_x * i)
+  bud.x = (hotbar.x - hotbar.scale_x * 0.5 + Hotspot.scalar * 0.5 * 1.1 + bud.scale_x * i * 1.07)
   bud.t.origin = (-0.75,-0.55)
   bud.t.z = -3
   bud.t.x = bud.x
@@ -296,8 +296,8 @@ for j in range(iPan.rows):
     y_padding = (iPan.scale_x - Hotspot.scalar * iPan.rows) * 0.5 
     x_padding = (iPan.scale_x - Hotspot.scalar * Hotspot.rowFit) * 0.5
     # bud.y = iPan.y  +  (iPan.scale_y/iPan.rows * (j -1))  # is this because pos_y is not the bottom but the mid
-    bud.y = (iPan.y + iPan.scale_y * 0.5 + Hotspot.scalar * 0.5 - y_padding + Hotspot.scalar * j)
-    bud.x = (iPan.x - iPan.scale_x * 0.5 + Hotspot.scalar * 0.5 + x_padding + bud.scale_x * i)
+    bud.y = (iPan.y - iPan.scale_y * 0.5 + Hotspot.scalar * 0.5 * 1.1 + Hotspot.scalar * j * 1.11)
+    bud.x = (iPan.x - iPan.scale_x * 0.5 + Hotspot.scalar * 0.5 * 1.05 + bud.scale_x * i * 1.05)
     bud.t.origin = (-0.75,-0.55)
     bud.t.z = -3
     bud.t.x = bud.x
