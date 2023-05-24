@@ -329,7 +329,7 @@ def resetHotSpots():
 wai = Text("<bold><pink>" + 'Nowhere', scale = 1.4, position=(-.75, 0.5))
    
 def inv_input(key, subject, mouse):
-  wai.text  = f'<bold><pink> East:{floor(subject.x)}, North:{floor(subject.z)}, Elevation: {subject.y}'
+  wai.text  = f'<bold><pink> East:{floor(subject.x)}, North:{floor(subject.z)}, Elevation: {floor(subject.y)}'
   try:
     wnum = int(key) -1
     

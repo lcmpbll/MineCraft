@@ -22,7 +22,8 @@ minerals = {
     'ruby': (9,6, Vec4(1,0,0,1)),
     'emerald': (9,6, Vec4(0,0.8,0, 0.8)), 
     'wood': (11,7),
-    'foilage': (11,6)
+    'foilage': (11,6),
+    'sand': (9, 6, Vec4(.55, .45, 0.05, 0.9))
 }
 
 mins = list(minerals.keys())
