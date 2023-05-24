@@ -35,7 +35,7 @@ subject.frog = False
 subject.jumpHeight = 3
 # rate at which fov changes when dashing
 camera.dash = 10
-
+camera.fov = origFOV = 90
 
 terrain = MeshTerrain(subject, camera)
 generatingTerrain = True
@@ -85,7 +85,7 @@ def input(key):
         inv_input(key, subject, mouse)
 
 def update():
-    global count, prev_x, prev_z, earthCounter
+    global count, prev_x, prev_z, earthCounter, origFOV
     count += 1 
     terrain.update()
     # handle mob ai
@@ -139,9 +139,9 @@ def update():
             camera.fov += camera.dash * time.dt
     else:
         subject.speed = subject.walkSpeed
-        if camera.fov > 90:
+        if camera.fov > origFOV:
             camera.fov -= camera.dash * 4 * time.dt
-            if camera.fov < 90: camera.fov = 90
+            if camera.fov < origFOV: camera.fov = origFOV
 
 app.run()
 

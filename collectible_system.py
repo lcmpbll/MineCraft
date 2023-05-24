@@ -77,16 +77,21 @@ class Collectible(Entity):
     y = floor(this.subject.position.y)
     z = round(this.subject.position.z)
     #if Collectible.collectablesDic.get((x, y, z)) != None:
-    if Vec3(x, y, z) == this.original_position:
-      if Item.new_item(this.blockType) == True:
-        pick_up_audio.play()
-        if this.subject.blockType == None:
-          for h in hotspots:
-            if h.onHotbar == False: continue
-            if h.selected and h.item.blockType == this.blockType:
-              this.subject.blockType = this.blockType
-        destroy(this)
-      
+    for i in range(0, 2):
+      if y > this.subject.position.y + this.subject.height: return
+      else:
+        if Vec3(x, y, z) == this.original_position or Vec3(x, y + i, z) == this.original_position:
+          if Item.new_item(this.blockType) == True:
+            
+            pick_up_audio.play()
+            if this.subject.blockType == None:
+              for h in hotspots:
+                if h.onHotbar == False: continue
+                if h.selected and h.item.blockType == this.blockType:
+                  this.subject.blockType = this.blockType
+            destroy(this)
+            break
+        
      
   def degrade_collectables(this):
     this.shade -= 0.0005

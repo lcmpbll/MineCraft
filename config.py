@@ -16,11 +16,13 @@ minerals = {
     'soil': (10,7),
     'stone': (8,5),
     'concrete': (9,6),
-    # 'ice': (9, 7),
+    'ice': (9, 7),
     'water': (9,7),
     'snow': (8,6),
     'ruby': (9,6, Vec4(1,0,0,1)),
-    'emerald': (9,6, Vec4(0,0.8,0, 0.8)) 
+    'emerald': (9,6, Vec4(0,0.8,0, 0.8)), 
+    'wood': (11,7),
+    'foilage': (11,6)
 }
 
 mins = list(minerals.keys())
