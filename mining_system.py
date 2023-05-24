@@ -32,6 +32,8 @@ def highlight( pos, subHeight, camera, terrainDic):
       break
     else:
       bte.visible = False
+      
+
 def mine( terrainDic, vertexDic, subsets, _texture, _subject):
   if not bte.visible: 
     return
