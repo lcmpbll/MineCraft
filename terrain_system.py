@@ -8,7 +8,7 @@ from building_system import checkBuild, gapShell
 from config import six_cube_dir, minerals, mins
 from tree_system import *
 from inventory_system import *
-from temperature_system import *
+# from temperature_system import *
 
 ## WIP water flow
 # check what happens to the block beneath when building
@@ -33,10 +33,10 @@ class MeshTerrain:
     this.perlin = Perlin()
     this.setup_subsets()
       
-  def findTemp(this, _x, _y, _z):
-    deg = TemperatureSystem.genGlobalTemps(_x, _y, _z)
-    print(deg)
-    return deg
+  # def findTemp(this, _x, _y, _z):
+  #   deg = TemperatureSystem.genGlobalTemps(_x, _y, _z)
+  #   print(deg)
+  #   return deg
         
     
   def plantTree(this, _x, _y, _z):
@@ -156,8 +156,8 @@ class MeshTerrain:
       for j in range(-d, d):
         y = floor(this.perlin.getHeight(x+k, z+j))
         if this.getDic(this.terrainDic, x+k, y, z+j) == None:
-          temp = this.findTemp(x, y, z)
-          this.genBlock(x+k, y, z+j, temp=temp)
+          
+          this.genBlock(x+k, y, z+j)
           this.plantTree(x+k, y+1, z+j)
                 
     this.subsets[this.currentSubset].model.generate() 
@@ -167,8 +167,8 @@ class MeshTerrain:
       this.currentSubset = 0 
     this.swirlEngine.move() 
   
-  def genBlock(this, _x, _y, _z, subset=-1, mining=False, building=False, blockType='soil', temp = None):
-      print(temp, _y)
+  def genBlock(this, _x, _y, _z, subset=-1, mining=False, building=False, blockType='soil'):
+
       if subset == -1:
         subset = this.currentSubset
       # Extend to the vertices of our model, or first subset
@@ -200,11 +200,11 @@ class MeshTerrain:
                 else: 
                     blockType = 'soil'
             else:
-              if temp > 32:
+              # if temp > 32:
                 blockType = 'water'
                 og_y = _y
                 this.genWaterBlock(_x, _y + 1, _z, og_y)
-              else: blockType = 'ice'
+              # else: blockType = 'ice'
                   
       
         elif mining == False and building == False:
