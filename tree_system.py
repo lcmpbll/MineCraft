@@ -37,11 +37,11 @@ class TreeSystem():
     if _z % 11 == 0: return 0
   
     if _y < -1: 
-      environment = 50
+      environment = 5
     elif _y > 2:
-      environment = 40
+      environment = 3
     else:
-      environment = 10
+      environment = 1
       
     ent = TreeSystem.noisyEnt([_x/TreeSystem.treeFreq, _z/TreeSystem.treeFreq])
     ent *= TreeSystem.amp
