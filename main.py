@@ -35,7 +35,7 @@ subject.frog = False
 subject.jumpHeight = 3
 # rate at which fov changes when dashing
 camera.dash = 10
-camera.fov = origFOV = 90
+# camera.fov = origFOV = 90
 
 terrain = MeshTerrain(subject, camera)
 generatingTerrain = True
