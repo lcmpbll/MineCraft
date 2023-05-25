@@ -204,7 +204,7 @@ class MeshTerrain:
       # c = random() - 0.5
       # model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
       if blockType == 'soil':
-      
+
         if _y > 2 and mining == False and building == False:
             # if random() > 0.86:
             #     blockType = 'stone'
@@ -217,7 +217,7 @@ class MeshTerrain:
         elif _y < -2 and building == False:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
                 # We generated a gap when mining, decide what to fill it with, check for near by water
-                if this.checkForWater(_x, _y, _z, 'w'):
+                if this.checkForWater(_x, _y, _z, 'water'):
                 #or this.checkForWater(_x, _y, _z, 'water') == True:
                     blockType = 'water'
                     og_y = _y - 1
@@ -231,6 +231,12 @@ class MeshTerrain:
                 og_y = _y
                 this.genWaterBlock(_x, _y + 1, _z, og_y)
               # else: blockType = 'ice'
+        elif blockType == 'water':
+          # if temp > 32:
+          # blockType = 'water'
+          og_y = _y
+          this.genWaterBlock(_x, _y + 1, _z, og_y)
+      
         elif mining == False and building == False:
           # chance = rando.random()
           # if chance > 0.95:
@@ -297,18 +303,25 @@ class MeshTerrain:
     if subset == -1:
       subset = this.currentSubset
     #figure out this posititioning
-    wp = [
-      Vec3(0, -1, 0),
-      Vec3(1, 1 , 0),
-      Vec3(-1, 1, 0),
-      Vec3(0, 1, 1),
-      Vec3(0, 1, -1),
-      Vec3(1, -1, 0),
-      Vec3(-1, -1, 0),
-      Vec3(0, -1, -1)
+    # wp = [
+    #   Vec3(0, -1, 0),
+    #   Vec3(1, 1 , 0),
+    #   Vec3(-1, 1, 0),
+    #   Vec3(0, 0, 1),
+    #   Vec3(, 0, 0),
+    #   Vec3(1, -1, 0),
+    #   Vec3(-1, -1, 0),
+    #   Vec3(0, -1, -1)
+    # ]
+    four_square_dir = [
+      Vec3(1,0,0),
+      Vec3(-1,0,0),
+      Vec3(0,0,1),
+      Vec3(0, 0, -1)
+      
     ]
-    for i in range(0, 6):
-      np  = cp + wp[i]
+    for i in range(0, 4):
+      np  = cp + four_square_dir[i]
       if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
         isByWater = True
         break
@@ -339,6 +352,7 @@ class MeshTerrain:
           elif _y < -2 and mining == False and this.checkForWater(_x, _y, _z, 'g') == True: 
               _y += 1
               this.genWaterBlock(_x, _y, _z, og_y)
+          
           model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
   # After mining to create illusion of depth
   # soil is perhaps pass 
