@@ -43,7 +43,7 @@ generatingTerrain = True
 # loadMap(subject, terrain)
 for i in range(64):
     terrain.genTerrain()
-snowFall = SnowFall(subject)   
+# snowFall = SnowFall(subject)   
 # audio stuff
 step_audio = Audio('step.ogg', autoplay=False, loop=False)
 snow_step_audio = Audio('snowStep.mp3', autoplay=False, loop=False)
