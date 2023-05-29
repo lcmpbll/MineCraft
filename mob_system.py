@@ -19,6 +19,10 @@ grey.chaseDistance = 8
 grey.intamacyDistance = 3
 grey.sub = False
 
+vincentModel = load_model('vincent.obj', use_deepcopy=True)
+vincent = Entity(model=vincentModel)
+vincent.z = -10
+
 def mob_movement(mob, _subjectPos, _terrainDic):
   #WIP chasing
   dist = _subjectPos - mob.position
