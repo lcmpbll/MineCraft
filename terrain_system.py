@@ -56,9 +56,10 @@ class MeshTerrain:
     wiggle = floor(sin(_z*_x) * 3)
     wiggled_x = _x + wiggle
     wiggled_z = _z + wiggle
-    ent = TreeSystem.genTree(_x, _y, _z)
+    wiggled_y = floor(this.perlin.getHeight(wiggled_x, wiggled_z))
+    ent = TreeSystem.genTree(wiggled_x, wiggled_y, wiggled_z)
     habitability = 0
-    tType = this.terrainDic.get((wiggled_x, _y, wiggled_z))
+    tType = this.terrainDic.get((wiggled_x, wiggled_y, wiggled_z))
     if tType == 'soil' or tType == 'grass':
       growthFactor = rando.randint(2, 10)
     else: 
@@ -72,9 +73,9 @@ class MeshTerrain:
       # add sin wave for x , z variability
       for i in range(treeH):
         # Trunk
-        this.genBlock(wiggled_x, _y + i, wiggled_z, blockType='wood')
+        this.genBlock(wiggled_x, wiggled_y + i, _z, blockType='wood')
         if i < treeH:
-          currentp = Vec3(wiggled_x, _y+i, wiggled_z )
+          currentp = Vec3(wiggled_x, wiggled_y+i, wiggled_z )
           dir=[
               Vec3(1, 0, 0),
               Vec3(-1, 0, 0),
@@ -83,13 +84,13 @@ class MeshTerrain:
           ]
           for j in range(0,4):
             rt = currentp + dir[j]
-            if this.terrainDic.get((rt.x, rt.y, rt.z)) == None:
-              this.recDic(this.terrainDic, rt.x, rt.y, rt.z, 'a')
+            # if this.terrainDic.get((rt.x, rt.y, rt.z)) == None:
+            #   this.recDic(this.terrainDic, rt.x, rt.y, rt.z, 'a')
       for t in range(-2, 3):
         for tt in range(4):
           for ttt in range(-2, 3):
           #crown
-            this.genBlock(wiggled_x +  t, _y + treeH + tt, wiggled_z + ttt, blockType='foilage')
+            this.genBlock(wiggled_x +  t, wiggled_y + treeH + tt, wiggled_z + ttt, blockType='foilage')
             # if tt == 4:
             #   # add air to tops of trees
             #   this.recDic(this.terrainDic, _x +  t, _y + treeH + 1 + tt, _z + ttt, 'a')
