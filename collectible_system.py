@@ -49,7 +49,7 @@ class Collectible(Entity):
     e = Audio('pop.mp3', autoplay=False, loop=False)
     e.pitch = 1 + random()
     e.play()
-    destroy(e)
+    
     this.drop_collectible()
     
   def drop_collectible(this):
