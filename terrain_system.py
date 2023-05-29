@@ -76,14 +76,9 @@ class MeshTerrain:
         this.genBlock(wiggled_x, wiggled_y + i, _z, blockType='wood')
         if i < treeH:
           currentp = Vec3(wiggled_x, wiggled_y+i, wiggled_z )
-          dir=[
-              Vec3(1, 0, 0),
-              Vec3(-1, 0, 0),
-              Vec3(0, 0, 1), 
-              Vec3(0, 0, -1)
-          ]
-          for j in range(0,4):
-            rt = currentp + dir[j]
+
+          # for j in range(0,4):
+          #   rt = currentp + four_square_dir[j]
             # if this.terrainDic.get((rt.x, rt.y, rt.z)) == None:
             #   this.recDic(this.terrainDic, rt.x, rt.y, rt.z, 'a')
       for t in range(-2, 3):
@@ -254,7 +249,9 @@ class MeshTerrain:
             blockType = 'soil'
             # uu = 10
             # uv = 7
-      
+      elif blockType == 'water':
+        og_y = _y
+        this.genWaterBlock(_x, _y + 1, _z, og_y)
       uu = minerals[blockType][0]
       uv = minerals[blockType][1]
       # random tint for blocks
@@ -301,6 +298,7 @@ class MeshTerrain:
     # Make ice?  
     cp = Vec3(_x, _y, _z)
     isByWater = False
+    location = cp
     if subset == -1:
       subset = this.currentSubset
     #figure out this posititioning
@@ -314,19 +312,14 @@ class MeshTerrain:
     #   Vec3(-1, -1, 0),
     #   Vec3(0, -1, -1)
     # ]
-    four_square_dir = [
-      Vec3(1,0,0),
-      Vec3(-1,0,0),
-      Vec3(0,0,1),
-      Vec3(0, 0, -1)
-      
-    ]
+   
     for i in range(0, 4):
       np  = cp + four_square_dir[i]
       if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
         isByWater = True
+        location = Vec3(np.x, np.y, np.z)
         break
-    return isByWater
+    return (isByWater, location)
       
   def genWaterBlock(this, _x, _y, _z, og_y, subset=-1, mining = False):
       if subset == -1:
@@ -347,13 +340,16 @@ class MeshTerrain:
           uu = 9 
           uv = 7
           # if it is still deep do it again!
-          if _y < -2 and mining == False:
-              _y += 1
-              this.genWaterBlock(_x, _y, _z, og_y)
-          elif _y < -2 and mining == False and this.checkForWater(_x, _y, _z, 'g') == True: 
-              _y += 1
-              this.genWaterBlock(_x, _y, _z, og_y)
           
+          if _y < -2 and mining == False:
+            _y += 1
+            this.genWaterBlock(_x, _y, _z, og_y)
+          elif _y < -2 and mining == False and this.checkForWater(_x, _y, _z, 'g')[0] == True: 
+            _y += 1
+            this.genWaterBlock(_x, _y, _z, og_y)
+          elif _y < -2 and mining == True and this.checkForWater(_x, _y, _z, 'g')[0] == True:
+            wp = this.checkForWater(_x, _y, _z, 'g')[1]
+            this.genWaterBlock(wp.x, wp.y, wp.z, og_y)
           model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
   # After mining to create illusion of depth
   # soil is perhaps pass 
