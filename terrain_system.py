@@ -56,9 +56,10 @@ class MeshTerrain:
     wiggle = floor(sin(_z*_x) * 3)
     wiggled_x = _x + wiggle
     wiggled_z = _z + wiggle
-    ent = TreeSystem.genTree(_x, _y, _z)
+    wiggled_y = floor(this.perlin.getHeight(wiggled_x, wiggled_z))
+    ent = TreeSystem.genTree(wiggled_x, wiggled_y, wiggled_z)
     habitability = 0
-    tType = this.terrainDic.get((wiggled_x, _y, wiggled_z))
+    tType = this.terrainDic.get((wiggled_x, wiggled_y, wiggled_z))
     if tType == 'soil' or tType == 'grass':
       growthFactor = rando.randint(2, 10)
     else: 
@@ -72,24 +73,21 @@ class MeshTerrain:
       # add sin wave for x , z variability
       for i in range(treeH):
         # Trunk
-        this.genBlock(wiggled_x, _y + i, wiggled_z, blockType='wood')
+        this.genBlock(wiggled_x, wiggled_y + i, _z, blockType='wood')
         if i < treeH:
-          currentp = Vec3(wiggled_x, _y+i, wiggled_z )
-          dir=[
-              Vec3(1, 0, 0),
-              Vec3(-1, 0, 0),
-              Vec3(0, 0, 1), 
-              Vec3(0, 0, -1)
-          ]
-          for j in range(0,4):
-            rt = currentp + dir[j]
-            if this.terrainDic.get((rt.x, rt.y, rt.z)) == None:
-              this.recDic(this.terrainDic, rt.x, rt.y, rt.z, 'a')
+          currentp = Vec3(wiggled_x, wiggled_y+i, wiggled_z )
+
+          # for j in range(0,4):
+          #   rt = currentp + four_square_dir[j]
+            # if this.terrainDic.get((rt.x, rt.y, rt.z)) == None:
+            #   this.recDic(this.terrainDic, rt.x, rt.y, rt.z, 'a')
       for t in range(-2, 3):
         for tt in range(4):
           for ttt in range(-2, 3):
           #crown
-            this.genBlock(wiggled_x +  t, _y + treeH + tt, wiggled_z + ttt, blockType='foilage')
+            # whatsH =this.terrainDic.get((wiggled_x +  t, wiggled_y + treeH + tt, wiggled_z + ttt))
+            # if whatsH == None or whatsH == 'a':
+              this.genBlock(wiggled_x +  t, wiggled_y + treeH + tt, wiggled_z + ttt, blockType='foilage')
             # if tt == 4:
             #   # add air to tops of trees
             #   this.recDic(this.terrainDic, _x +  t, _y + treeH + 1 + tt, _z + ttt, 'a')
@@ -204,7 +202,7 @@ class MeshTerrain:
       # c = random() - 0.5
       # model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
       if blockType == 'soil':
-      
+
         if _y > 2 and mining == False and building == False:
             # if random() > 0.86:
             #     blockType = 'stone'
@@ -217,20 +215,26 @@ class MeshTerrain:
         elif _y < -2 and building == False:
             if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
                 # We generated a gap when mining, decide what to fill it with, check for near by water
-                if this.checkForWater(_x, _y, _z, 'w'):
+                if this.checkForWater(_x, _y, _z, 'water'):
                 #or this.checkForWater(_x, _y, _z, 'water') == True:
-                    blockType = 'water'
-                    og_y = _y - 1
-                    this.genWaterBlock(_x, _y + 1, _z, og_y)
+                  blockType = 'water'
+                  og_y = _y - 1
+                  this.genWaterBlock(_x, _y + 1, _z, og_y)
                     
                 else: 
-                    blockType = 'soil'
+                  blockType = 'soil'
             else:
               # if temp > 32:
-                blockType = 'water'
-                og_y = _y
-                this.genWaterBlock(_x, _y + 1, _z, og_y)
+              blockType = 'water'
+              og_y = _y
+              this.genWaterBlock(_x, _y + 1, _z, og_y)
               # else: blockType = 'ice'
+        elif blockType == 'water':
+          # if temp > 32:
+          # blockType = 'water'
+          og_y = _y
+          this.genWaterBlock(_x, _y + 1, _z, og_y)
+      
         elif mining == False and building == False:
           # chance = rando.random()
           # if chance > 0.95:
@@ -243,26 +247,28 @@ class MeshTerrain:
           blockType = 'grass'
     
         elif building == False: 
-            #soil
-            blockType = 'soil'
-            # uu = 10
-            # uv = 7
-      
+          #soil
+          blockType = 'soil'
+          # uu = 10
+          # uv = 7
+      elif blockType == 'water':
+        og_y = _y
+        this.genWaterBlock(_x, _y + 1, _z, og_y)
       uu = minerals[blockType][0]
       uv = minerals[blockType][1]
       # random tint for blocks
       c = rando.random() -0.5
       # get Vec4 color data
       if len(minerals[blockType]) > 2:
-          ce = minerals[blockType][2]
-          # adjust each color channel separately to ensure hard-coded RGB combination is continued
-          model.colors.extend((Vec4(ce[0] - c, ce[1]-c, ce[2] - c, ce[3]),) * this.numVertices)
+        ce = minerals[blockType][2]
+        # adjust each color channel separately to ensure hard-coded RGB combination is continued
+        model.colors.extend((Vec4(ce[0] - c, ce[1]-c, ce[2] - c, ce[3]),) * this.numVertices)
       elif blockType == 'water':
-          s = (abs(_y) /100) * 4
-          model.colors.extend((Vec4( s,  s,  s, 0.5),) * this.numVertices)   
+        s = (abs(_y) /100) * 4
+        model.colors.extend((Vec4( s,  s,  s, 0.5),) * this.numVertices)   
       else: 
           
-          model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
+        model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
 
         
       model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
@@ -294,25 +300,28 @@ class MeshTerrain:
     # Make ice?  
     cp = Vec3(_x, _y, _z)
     isByWater = False
+    location = cp
     if subset == -1:
       subset = this.currentSubset
     #figure out this posititioning
-    wp = [
-      Vec3(0, -1, 0),
-      Vec3(1, 1 , 0),
-      Vec3(-1, 1, 0),
-      Vec3(0, 1, 1),
-      Vec3(0, 1, -1),
-      Vec3(1, -1, 0),
-      Vec3(-1, -1, 0),
-      Vec3(0, -1, -1)
-    ]
-    for i in range(0, 6):
-      np  = cp + wp[i]
+    # wp = [
+    #   Vec3(0, -1, 0),
+    #   Vec3(1, 1 , 0),
+    #   Vec3(-1, 1, 0),
+    #   Vec3(0, 0, 1),
+    #   Vec3(, 0, 0),
+    #   Vec3(1, -1, 0),
+    #   Vec3(-1, -1, 0),
+    #   Vec3(0, -1, -1)
+    # ]
+   
+    for i in range(0, 4):
+      np  = cp + four_square_dir[i]
       if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
         isByWater = True
+        location = Vec3(np.x, np.y, np.z)
         break
-    return isByWater
+    return (isByWater, location)
       
   def genWaterBlock(this, _x, _y, _z, og_y, subset=-1, mining = False):
       if subset == -1:
@@ -333,12 +342,18 @@ class MeshTerrain:
           uu = 9 
           uv = 7
           # if it is still deep do it again!
+          
           if _y < -2 and mining == False:
-              _y += 1
-              this.genWaterBlock(_x, _y, _z, og_y)
-          elif _y < -2 and mining == False and this.checkForWater(_x, _y, _z, 'g') == True: 
-              _y += 1
-              this.genWaterBlock(_x, _y, _z, og_y)
+            _y += 1
+            this.genWaterBlock(_x, _y, _z, og_y)
+          elif _y < -2 and mining == False and this.checkForWater(_x, _y, _z, 'g')[0] == True: 
+            _y += 1
+            this.genWaterBlock(_x, _y, _z, og_y)
+          elif _y < -2 and mining == True and this.checkForWater(_x, _y, _z, 'g')[0] == True:
+            wp = this.checkForWater(_x, _y, _z, 'g')[1]
+            this.genWaterBlock(wp.x, wp.y, wp.z, og_y)
+          else:
+            return
           model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
   # After mining to create illusion of depth
   # soil is perhaps pass 

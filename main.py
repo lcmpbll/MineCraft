@@ -35,7 +35,7 @@ subject.frog = False
 subject.jumpHeight = 3
 # rate at which fov changes when dashing
 camera.dash = 10
-camera.fov = origFOV = 90
+camera.fov = origFOV = 70
 
 terrain = MeshTerrain(subject, camera)
 generatingTerrain = True
@@ -43,9 +43,10 @@ generatingTerrain = True
 # loadMap(subject, terrain)
 for i in range(64):
     terrain.genTerrain()
-snowFall = SnowFall(subject)   
+# snowFall = SnowFall(subject)   
 # audio stuff
 step_audio = Audio('step.ogg', autoplay=False, loop=False)
+step_audio.volume = 0.5
 snow_step_audio = Audio('snowStep.mp3', autoplay=False, loop=False)
 
 # For Earth quakes
