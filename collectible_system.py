@@ -1,7 +1,7 @@
 """
 System for mined blocks dropping collectable materials.
 """
-from ursina import Entity, Vec2, Vec3, Vec4, load_model, time, destroy, Audio, Sequence, Func
+from ursina import Entity, Vec2, Vec3, Vec4, load_model, destroy, Audio, Sequence, Func
 from config import minerals
 from random import random
 from math import sin, floor
