@@ -11,6 +11,13 @@ six_cube_dir = [
   Vec3(0, 0, 1)
 ]
 
+four_square_dir = [
+  Vec3(-1, 0, 0),
+  Vec3(1, 0, 0),
+  Vec3(0, 0, -1),
+  Vec3(0, 0, 1)
+]
+
 minerals = {
     'grass': (8,7),
     'soil': (10,7),
