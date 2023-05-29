@@ -215,17 +215,17 @@ class MeshTerrain:
                 # We generated a gap when mining, decide what to fill it with, check for near by water
                 if this.checkForWater(_x, _y, _z, 'water'):
                 #or this.checkForWater(_x, _y, _z, 'water') == True:
-                    blockType = 'water'
-                    og_y = _y - 1
-                    this.genWaterBlock(_x, _y + 1, _z, og_y)
+                  blockType = 'water'
+                  og_y = _y - 1
+                  this.genWaterBlock(_x, _y + 1, _z, og_y)
                     
                 else: 
-                    blockType = 'soil'
+                  blockType = 'soil'
             else:
               # if temp > 32:
-                blockType = 'water'
-                og_y = _y
-                this.genWaterBlock(_x, _y + 1, _z, og_y)
+              blockType = 'water'
+              og_y = _y
+              this.genWaterBlock(_x, _y + 1, _z, og_y)
               # else: blockType = 'ice'
         elif blockType == 'water':
           # if temp > 32:
@@ -245,10 +245,10 @@ class MeshTerrain:
           blockType = 'grass'
     
         elif building == False: 
-            #soil
-            blockType = 'soil'
-            # uu = 10
-            # uv = 7
+          #soil
+          blockType = 'soil'
+          # uu = 10
+          # uv = 7
       elif blockType == 'water':
         og_y = _y
         this.genWaterBlock(_x, _y + 1, _z, og_y)
@@ -258,15 +258,15 @@ class MeshTerrain:
       c = rando.random() -0.5
       # get Vec4 color data
       if len(minerals[blockType]) > 2:
-          ce = minerals[blockType][2]
-          # adjust each color channel separately to ensure hard-coded RGB combination is continued
-          model.colors.extend((Vec4(ce[0] - c, ce[1]-c, ce[2] - c, ce[3]),) * this.numVertices)
+        ce = minerals[blockType][2]
+        # adjust each color channel separately to ensure hard-coded RGB combination is continued
+        model.colors.extend((Vec4(ce[0] - c, ce[1]-c, ce[2] - c, ce[3]),) * this.numVertices)
       elif blockType == 'water':
-          s = (abs(_y) /100) * 4
-          model.colors.extend((Vec4( s,  s,  s, 0.5),) * this.numVertices)   
+        s = (abs(_y) /100) * 4
+        model.colors.extend((Vec4( s,  s,  s, 0.5),) * this.numVertices)   
       else: 
           
-          model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
+        model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
 
         
       model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
