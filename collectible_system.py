@@ -41,8 +41,14 @@ class Collectible(Entity):
     # put in after adjusting position
     this.original_y = this.position.y
     this.is_bouncing = True
+    # sounds
     this.pick_up_audio =  Audio('pickup.mp3', autoplay=False, loop=False)
     this.pick_up_audio.pitch = 1 + random()
+    this.pick_up_audio.volume = 1
+    # mining sound
+    e = Audio('pop.mp3', autoplay=False, loop=False)
+    e.pitch = 1 + random()
+    e.play()
     this.drop_collectible()
     
   def drop_collectible(this):
@@ -62,7 +68,7 @@ class Collectible(Entity):
     
     this.model.uvs = ([Vec2(uu, uv) + u for u in this.model.uvs])
     # make sound
-    pop_audio.play()
+    
     this.model.generate()
     # destroy after some amount of time
     
