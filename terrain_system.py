@@ -350,6 +350,8 @@ class MeshTerrain:
           elif _y < -2 and mining == True and this.checkForWater(_x, _y, _z, 'g')[0] == True:
             wp = this.checkForWater(_x, _y, _z, 'g')[1]
             this.genWaterBlock(wp.x, wp.y, wp.z, og_y)
+          else:
+            return
           model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
   # After mining to create illusion of depth
   # soil is perhaps pass 
