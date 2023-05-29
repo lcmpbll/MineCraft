@@ -5,8 +5,9 @@ class Perlin:
     def __init__(this):
         # og values ord('y') ord('o')
         this.seed = ord('y') + ord('o')
+        # this.seed= 2022
         #differneces
-        world  = Text(str(this.seed), scale=0.5)
+        world  = Text(str(this.seed), scale=0.4)
         #destroy text on screen after 10 seconds. 
         destroy(world, 10)
         # 8
