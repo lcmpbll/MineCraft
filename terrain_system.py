@@ -85,7 +85,9 @@ class MeshTerrain:
         for tt in range(4):
           for ttt in range(-2, 3):
           #crown
-            this.genBlock(wiggled_x +  t, wiggled_y + treeH + tt, wiggled_z + ttt, blockType='foilage')
+            # whatsH =this.terrainDic.get((wiggled_x +  t, wiggled_y + treeH + tt, wiggled_z + ttt))
+            # if whatsH == None or whatsH == 'a':
+              this.genBlock(wiggled_x +  t, wiggled_y + treeH + tt, wiggled_z + ttt, blockType='foilage')
             # if tt == 4:
             #   # add air to tops of trees
             #   this.recDic(this.terrainDic, _x +  t, _y + treeH + 1 + tt, _z + ttt, 'a')
