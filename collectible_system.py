@@ -13,8 +13,8 @@ from inventory_system import Item, hotspots
 
 
 #collectable dictionary, store present block position
-pop_audio = Audio('pop.mp3', autoplay=False, loop=False)
-pick_up_audio =  Audio('pickup.mp3', autoplay=False, loop=False)
+# pop_audio = Audio('pop.mp3', autoplay=False, loop=False)
+# pick_up_audio =  Audio('pickup.mp3', autoplay=False, loop=False)
 # WIP change to class
 class Collectible(Entity):
   #collectablesDic = {}
@@ -41,6 +41,8 @@ class Collectible(Entity):
     # put in after adjusting position
     this.original_y = this.position.y
     this.is_bouncing = True
+    this.pick_up_audio =  Audio('pickup.mp3', autoplay=False, loop=False)
+    this.pick_up_audio.pitch = 1 + random()
     this.drop_collectible()
     
   def drop_collectible(this):
@@ -83,7 +85,7 @@ class Collectible(Entity):
         if Vec3(x, y, z) == this.original_position or Vec3(x, y + i, z) == this.original_position:
           if Item.new_item(this.blockType) == True:
             
-            pick_up_audio.play()
+            this.pick_up_audio.play()
             if this.subject.blockType == None:
               for h in hotspots:
                 if h.onHotbar == False: continue
