@@ -46,6 +46,7 @@ for i in range(64):
 # snowFall = SnowFall(subject)   
 # audio stuff
 step_audio = Audio('step.ogg', autoplay=False, loop=False)
+step_audio.volume = 0.5
 snow_step_audio = Audio('snowStep.mp3', autoplay=False, loop=False)
 
 # For Earth quakes
