@@ -58,7 +58,7 @@ class MeshTerrain:
     wiggled_z = _z + wiggle
     wiggled_y = floor(this.perlin.getHeight(wiggled_x, wiggled_z))
     ent = TreeSystem.genTree(wiggled_x, wiggled_y, wiggled_z)
-    habitability = 0
+    
     tType = this.terrainDic.get((wiggled_x, wiggled_y, wiggled_z))
     if tType == 'soil' or tType == 'grass':
       growthFactor = rando.randint(2, 10)
@@ -316,7 +316,7 @@ class MeshTerrain:
     # ]
    
     for i in range(0, 4):
-      np  = cp + four_square_dir[i]
+      np  = cp + six_cube_dir[i]
       if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
         isByWater = True
         location = Vec3(np.x, np.y, np.z)
@@ -355,8 +355,7 @@ class MeshTerrain:
           else:
             return
           model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
-  # After mining to create illusion of depth
-  # soil is perhaps pass 
+
   
 
   
