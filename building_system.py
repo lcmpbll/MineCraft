@@ -27,7 +27,9 @@ def checkBuild(_bsite, _terrainDic, _camF, _pos):
   #first check there isn't already terrain there y + 1 because y is one below the site
   # if _terrainDic.get((x, y, z)) != 'a' and _terrainDic.get((x, y, z)) != 'g':
   #   if _terrainDic.get((x, y, z)) != None:
-  if _terrainDic.get((x, y, z)) in minerals:
+  wH = _terrainDic.get((x, y, z))
+
+  if wH in minerals:
       print('Cannot build here sorry')
       return None
     
