@@ -48,7 +48,9 @@ for i in range(64):
 step_audio = Audio('step.ogg', autoplay=False, loop=False)
 step_audio.volume = 0.5
 snow_step_audio = Audio('snowStep.mp3', autoplay=False, loop=False)
-
+# For water waves
+waterCounter = 0
+waves = True
 # For Earth quakes
 earthCounter = 0
 quaking = False
@@ -56,7 +58,7 @@ count = 0
 prev_x = subject.x
 prev_z = subject.z
 def input(key):
-    global generatingTerrain, quaking
+    global generatingTerrain, quaking, waves
     if key == 'q':
         app.userExit()
     elif key == 'space':
@@ -81,16 +83,19 @@ def input(key):
     elif key == 'k':
         quaking = not quaking
         print(quaking)
+    elif key == 'b':
+        waves = not waves
     else:
         terrain.input(key)
         inv_input(key, subject, mouse)
 
 def update():
-    global count, prev_x, prev_z, earthCounter, origFOV
+    global count, prev_x, prev_z, earthCounter, origFOV, waterCounter, waves, quaking
     count += 1 
     terrain.update()
     # handle mob ai
     mob_movement(grey, subject.position, terrain.terrainDic)
+    
   
     if count >= 3:
         count = 0
@@ -127,11 +132,22 @@ def update():
             earth_amplitude = 0.5
             
             h.y = h.y + (math.sin(terrain.subsets.index(h) + earthCounter) * earth_amplitude) * time.dt
-        else:
+        else: 
             h.y = 0
+    
+       
+    if waves == True:   
+        for k in terrain.subsets:
+            
+            if terrain.terrainDic.get((k.x, k.y, k.z)) == 'w':
+                water_freq = 0.5
+                waterCounter += water_freq
+                wave_amplitude = 0.5
+                k.y = k.y (math.sin(terrain.subsets.index(k) + waterCounter) * wave_amplitude) * time.dt
+            
         #**********************
         # Walk on solid terrain and wall collisions
-    
+
     bumpWall(subject, terrain, quaking, h.y)
     # runnning and dash effect
     if held_keys['shift'] and held_keys['w']:
