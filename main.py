@@ -136,14 +136,16 @@ def update():
             h.y = 0
     
        
-    if waves == True:   
-        for k in terrain.subsets:
-            
-            if terrain.terrainDic.get((k.x, k.y, k.z)) == 'w':
-                water_freq = 0.5
-                waterCounter += water_freq
-                wave_amplitude = 0.5
-                k.y = k.y (math.sin(terrain.subsets.index(k) + waterCounter) * wave_amplitude) * time.dt
+    # if waves == True:   
+    #     for k in terrain.subsets:
+                
+    #         # for j in terrain.subsets.model:
+    #             print(k.x, k.y, k.z)
+    #             if terrain.terrainDic.get((k.x, k.y, k.z)) == 'water':
+    #                 water_freq = 1
+    #                 waterCounter += water_freq
+    #                 wave_amplitude = 0.5
+    #                 k.y = k.y (math.sin(terrain.subsets.index(k) + waterCounter) * wave_amplitude) * time.dt
             
         #**********************
         # Walk on solid terrain and wall collisions
