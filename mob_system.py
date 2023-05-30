@@ -8,7 +8,7 @@ grey = FrameAnimation3d('panda_walk_', fps=1)
 grey.texture='panda_texture'
 # grey.position = copy(subject.position) + Vec3(-6, -1, 9)
 # static for reset
-grey.startPoint = Vec3(-6, -1, 9)
+grey.startPoint = Vec3(-8, -1, 9)
 grey.position = Vec3(-6, -1, 9)
 grey.turnSpeed = 2
 grey.speed = 1
@@ -19,9 +19,10 @@ grey.chaseDistance = 8
 grey.intamacyDistance = 3
 grey.sub = False
 
-vincentModel = load_model('vincent.obj', use_deepcopy=True)
-vincent = Entity(model=vincentModel)
-vincent.z = -10
+vincentModel = load_model('creeper.obj', use_deepcopy=True)
+vincent = Entity(model=vincentModel, texture='creeper.png')
+vincent.position = Vec3(-6, -1, 0)
+vincent.scale *= 0.01
 
 def mob_movement(mob, _subjectPos, _terrainDic):
   #WIP chasing
