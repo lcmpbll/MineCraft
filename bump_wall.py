@@ -62,10 +62,11 @@ def bumpWall(subject, terrain, quaking, eQuake):
   # Walking on the terrain itself.
  # walk on top of water
   for i in range(-2,step):
+    
       whatT1=terrain.terrainDic.get((x,y+i,z))
       whatT0 = terrain.terrainDic.get((x, y-1, z))
-      
-      # print(whatT0, whatT1)
+
+
       if whatT1 in minerals:
         
             whatT2=terrain.terrainDic.get((x,y+i+1,z))

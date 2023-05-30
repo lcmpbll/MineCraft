@@ -178,7 +178,7 @@ class MeshTerrain:
             bType = 'stone'
           if y > 2:
             bType = 'snow'
-          if y < -1:
+          if y < -2:
             bType = 'water'
           this.genBlock(x+k, y, z+j, blockType=bType)
           this.plantTree(x+k, y+1, z+j)
@@ -197,63 +197,14 @@ class MeshTerrain:
       # Extend to the vertices of our model, or first subset
       model = this.subsets[subset].model
       model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
+      # if blockType == 'water':
+   
+      #   this.genWaterBlock(_x, _y , _z, _y, mining)
+      if mining == True and _y > 0:
+        blockType = 'soil'
+      elif mining == True:
+        blockType = 'water'
       
-      # decide random tint for color of block
-      # c = random() - 0.5
-      # model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
-      if blockType == 'soil':
-
-        if _y > 2 and mining == False and building == False:
-            # if random() > 0.86:
-            #     blockType = 'stone'
-            # elif random() > 0.9: 
-            #     blockType = 'emerald'
-            # elif random() > 0.95:
-            #     blockType = 'ruby'
-            # else:
-            blockType = 'snow'
-        elif _y < -2 and building == False:
-            if this.getDic(this.terrainDic, _x, _y + 1, _z) == 'g':
-                # We generated a gap when mining, decide what to fill it with, check for near by water
-                if this.checkForWater(_x, _y, _z, 'water'):
-                #or this.checkForWater(_x, _y, _z, 'water') == True:
-                  blockType = 'water'
-                  og_y = _y - 1
-                  this.genWaterBlock(_x, _y + 1, _z, og_y)
-                    
-                else: 
-                  blockType = 'soil'
-            else:
-              # if temp > 32:
-              blockType = 'water'
-              og_y = _y
-              this.genWaterBlock(_x, _y + 1, _z, og_y)
-              # else: blockType = 'ice'
-        elif blockType == 'water':
-          # if temp > 32:
-          # blockType = 'water'
-          og_y = _y
-          this.genWaterBlock(_x, _y + 1, _z, og_y)
-      
-        elif mining == False and building == False:
-          # chance = rando.random()
-          # if chance > 0.95:
-          #     blockType = 'ruby'
-          # elif chance > 0.9: 
-          #   blockType = 'emerald'
-          # elif chance > 0.86:
-          #   blockType = 'stone'
-          # else:
-          blockType = 'grass'
-    
-        elif building == False: 
-          #soil
-          blockType = 'soil'
-          # uu = 10
-          # uv = 7
-      elif blockType == 'water':
-        og_y = _y
-        this.genWaterBlock(_x, _y + 1, _z, og_y)
       uu = minerals[blockType][0]
       uv = minerals[blockType][1]
       # random tint for blocks
@@ -265,9 +216,10 @@ class MeshTerrain:
         model.colors.extend((Vec4(ce[0] - c, ce[1]-c, ce[2] - c, ce[3]),) * this.numVertices)
       elif blockType == 'water':
         s = (abs(_y) /100) * 4
-        model.colors.extend((Vec4( s,  s,  s, 0.5),) * this.numVertices)   
+        model.colors.extend((Vec4( s,  s,  s, 1),) * this.numVertices) 
+        this.genWaterBlock(_x, _y , _z, _y, mining)  
       else: 
-          
+        
         model.colors.extend((Vec4(1-c, 1-c, 1-c, 1),) * this.numVertices)
 
         
@@ -281,9 +233,10 @@ class MeshTerrain:
               if this.terrainDic.get((checkPos.x, checkPos.y, checkPos.z)) == None:
                   this.recDic(this.terrainDic, checkPos.x, checkPos.y, checkPos.z, 'a')
           
-      if mining == False:
+      if mining == False and blockType != 'water':
           if this.getDic(this.terrainDic, _x, _y + 1, _z) == None:
               this.recDic(this.terrainDic, _x, _y + 1, _z, 'a')
+              
       # if building == True:
       #       #not sure if this is necessary
   
@@ -303,18 +256,6 @@ class MeshTerrain:
     location = cp
     if subset == -1:
       subset = this.currentSubset
-    #figure out this posititioning
-    # wp = [
-    #   Vec3(0, -1, 0),
-    #   Vec3(1, 1 , 0),
-    #   Vec3(-1, 1, 0),
-    #   Vec3(0, 0, 1),
-    #   Vec3(, 0, 0),
-    #   Vec3(1, -1, 0),
-    #   Vec3(-1, -1, 0),
-    #   Vec3(0, -1, -1)
-    # ]
-   
     for i in range(0, 4):
       np  = cp + four_square_dir[i]
       if this.getDic(this.terrainDic, np.x, np.y, np.z ) == checkfor:
@@ -324,37 +265,37 @@ class MeshTerrain:
     return (isByWater, location)
       
   def genWaterBlock(this, _x, _y, _z, og_y, subset=-1, mining = False):
-      if subset == -1:
-          subset = this.currentSubset
-      if _y < -1:
-          # Extend to the vertices of our model, or first subset
-          model = this.subsets[subset].model
-          model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
-          # record terrain in dictionary
-          this.recDic(this.terrainDic, _x, _y, _z, "w")
-          # record subet index and first vertext of the block. 
-          # vob = (subset, len(model.vertices) - 37)
-          # this.recDic(this.vertexDic, _x, _y, _z, vob)
-          # decide random tint for color of block
-          c = (abs(og_y) /100) * 4
-          model.colors.extend((Vec4( c,  c,  c, 0.5),) * this.numVertices)
-          # water coords
-          uu = 9 
-          uv = 7
-          # if it is still deep do it again!
-          
-          if _y < -2 and mining == False:
-            _y += 1
-            this.genWaterBlock(_x, _y, _z, og_y)
-          elif _y < -2 and mining == False and this.checkForWater(_x, _y, _z, 'g')[0] == True: 
-            _y += 1
-            this.genWaterBlock(_x, _y, _z, og_y)
-          elif _y < -2 and mining == True and this.checkForWater(_x, _y, _z, 'g')[0] == True:
-            wp = this.checkForWater(_x, _y, _z, 'g')[1]
-            this.genWaterBlock(wp.x, wp.y, wp.z, og_y)
-          else:
-            return
-          model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
+    if subset == -1:
+        subset = this.currentSubset
+    # if _y < 0:
+    # Extend to the vertices of our model, or first subset
+    model = this.subsets[subset].model
+    model.vertices.extend([Vec3(_x,_y,_z) + v for v in this.block.vertices])
+    # record terrain in dictionary
+    this.recDic(this.terrainDic, _x, _y, _z, "w")
+    # record subet index and first vertext of the block. 
+    # vob = (subset, len(model.vertices) - 37)
+    # this.recDic(this.vertexDic, _x, _y, _z, vob)
+    # decide random tint for color of block
+    c = (abs(og_y) /100) * 4
+    model.colors.extend((Vec4( c,  c,  c, .5),) * this.numVertices)
+    # water coords
+    uu = 9 
+    uv = 7
+    # if it is still deep do it again!
+
+    if _y < -2 and mining == False:
+      _y += 1
+      this.genWaterBlock(_x, _y, _z, og_y)
+    # elif _y < -2 and mining == False and this.checkForWater(_x, _y, _z, 'g')[0] == True: 
+    #   _y += 1
+    #   this.genWaterBlock(_x, _y, _z, og_y)
+    # elif _y < -2 and mining == True and this.checkForWater(_x, _y, _z, 'g')[0] == True:
+    #   wp = this.checkForWater(_x, _y, _z, 'g')[1]
+    #   this.genWaterBlock(wp.x, wp.y, wp.z, og_y)
+    # else:
+    #   return
+    model.uvs.extend([Vec2(uu, uv) + u for u in this.block.uvs])
   # After mining to create illusion of depth
   # soil is perhaps pass 
   
