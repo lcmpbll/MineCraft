@@ -202,8 +202,8 @@ class MeshTerrain:
       #   this.genWaterBlock(_x, _y , _z, _y, mining)
       if mining == True and _y > 0:
         blockType = 'soil'
-      elif mining == True:
-        blockType = 'water'
+      # elif mining == True:
+      #   blockType = 'water'
       
       uu = minerals[blockType][0]
       uv = minerals[blockType][1]
