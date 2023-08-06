@@ -90,6 +90,7 @@ def update():
     count += 1 
     terrain.update()
     # handle mob ai
+    mob_on_ground(demonikat, terrain.terrainDic)
     mob_movement(grey, subject.position, terrain.terrainDic)
   
     if count >= 3:
