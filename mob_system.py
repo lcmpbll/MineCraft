@@ -1,13 +1,30 @@
 from ursina import *
 from config import minerals
 
-
-
+# demonKat = FrameAnimation3d('panda_walk_', fps=1)
 grey = FrameAnimation3d('panda_walk_', fps=1)
-#WIP texture
+
+# demonKat.texture = 'tex_demonikat'
+katText = load_texture('tex_demonikat.png')
+demonikat = Entity(model='demonikat.obj', scale=2, texture=katText)
+
 grey.texture='panda_texture'
 # grey.position = copy(subject.position) + Vec3(-6, -1, 9)
 # static for reset
+demonikat.startPoint = Vec3(-6, -1, 9)
+demonikat.position = Vec3(-8, 1, 30)
+demonikat.turnSpeed = 4
+demonikat.speed = 3
+demonikat.step = 6
+demonikat.canSwim = False
+demonikat.isChasing = False
+demonikat.chaseDistance = 30
+demonikat.intamacyDistance = 3
+demonikat.sub = False
+demonikat.onGround = False
+demonikat.gravity = 0
+demonikat.speed = 0
+
 grey.startPoint = Vec3(-6, -1, 9)
 grey.position = Vec3(-6, -1, 9)
 grey.turnSpeed = 2
@@ -18,6 +35,25 @@ grey.isChasing = False
 grey.chaseDistance = 8
 grey.intamacyDistance = 3
 grey.sub = False
+
+#WIP
+def mob_on_ground(mob, _terrainDic):
+  if mob.onGround == True:
+   
+    pass
+  else:
+    if _terrainDic.get((floor(mob.position.x), floor(mob.position.y), floor(mob.position.z))) in minerals:
+      
+      mob.onGround = True
+      mob.gravity = 0
+      
+    else:
+      print(mob.position.y)
+      print(mob.onGround)
+      mob.position.y -= 1
+       
+      
+      
 
 def mob_movement(mob, _subjectPos, _terrainDic):
   #WIP chasing
